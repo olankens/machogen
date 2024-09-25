@@ -459,6 +459,7 @@ update_appearance() {
 		"/Applications/JDownloader 2/JDownloader2.app"
 		"/Applications/Transmission.app"
 		"/Applications/Notion.app"
+		"/Applications/Discord.app"
 		"/Applications/Visual Studio Code.app"
 		"/Applications/Android Studio.app"
 		"/Applications/Xcode.app"
@@ -810,6 +811,14 @@ update_chromium() {
 
 	# Update bypass-paywalls-chrome-clean
 	update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+
+}
+
+update_discord() {
+
+	# Update package
+	brew install --cask --no-quarantine discord
+	brew upgrade --cask --no-quarantine discord
 
 }
 
@@ -1664,6 +1673,7 @@ main() {
 		"update_vscode"
 		"update_xcode"
 		"update_awscli"
+		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_github_cli"
