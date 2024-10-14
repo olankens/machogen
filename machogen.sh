@@ -465,11 +465,11 @@ update_appearance() {
 		"/Applications/Xcode.app"
 		"/Applications/pgAdmin 4.app"
 		"/Applications/PyCharm.app"
+		"/Applications/IntelliJ IDEA.app"
 		"/Applications/UTM.app"
 		"/Applications/Figma.app"
 		"/Applications/IINA.app"
 		"/Applications/OBS.app"
-		"/Applications/Pearcleaner.app"
 		"/System/Applications/System Settings.app"
 		"/System/Applications/Utilities/Terminal.app"
 	)
@@ -1003,6 +1003,46 @@ update_iina() {
 
 }
 
+update_intellij_idea() {
+
+	# Handle parameters
+	local deposit="${1:-$HOME/Projects}"
+
+	# Update dependencies
+	brew install fileicon
+	brew upgrade fileicon
+
+	# Update package
+	local present=$([[ -d "/Applications/IntelliJ IDEA.app" ]] && echo "true" || echo "false")
+	brew install --cask --no-quarantine intellij-idea
+	brew upgrade --cask --no-quarantine intellij-idea
+
+	# Launch it once
+	if [[ "$present" == "false" ]]; then
+		osascript <<-EOD
+			set checkup to "/Applications/IntelliJ IDEA.app"
+			tell application checkup
+				activate
+				reopen
+				tell application "System Events"
+					tell process "IntelliJ IDEA"
+						with timeout of 30 seconds
+							repeat until (exists window 1)
+								delay 1
+							end repeat
+						end timeout
+					end tell
+				end tell
+				delay 4
+				quit app "IntelliJ IDEA"
+				delay 4
+			end tell
+		EOD
+		pkill -9 -f 'IntelliJ IDEA'
+	fi
+
+}
+
 update_jdownloader() {
 
 	# Handle parameters
@@ -1252,14 +1292,6 @@ update_obs() {
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/OBS.app" "$picture" || sudo !!
-
-}
-
-update_pearcleaner() {
-
-	# Update package
-	brew install --cask --no-quarantine alienator88/homebrew-cask/pearcleaner
-	brew upgrade --cask --no-quarantine alienator88/homebrew-cask/pearcleaner
 
 }
 
@@ -1545,6 +1577,8 @@ update_yt_dlp() {
 
 }
 
+#endregion
+
 #region DEVTOOLS
 
 update_odoo_devtools() {
@@ -1585,6 +1619,24 @@ update_odoo_devtools() {
 	jq '."[python]"."editor.defaultFormatter" = "ms-python.black-formatter"' "$configs" | sponge "$configs"
 	jq '."[python]"."editor.formatOnSave" = true' "$configs" | sponge "$configs"
 	jq '."[python]"."editor.tabSize" = 4' "$configs" | sponge "$configs"
+
+}
+
+update_spring_devtools() {
+
+	# Update dependencies
+	update_intellij_idea
+	update_vscode
+	brew install maven tomcat
+	brew install --cask --no-quarantine temurin
+	brew upgrade --cask --no-quarantine temurin
+
+	# Update vscode extensions
+	update_vscode_extension "vmware.vscode-boot-dev-pack"
+	update_vscode_extension "vscjava.vscode-java-pack"
+
+	# Update intellij plugins
+	idea installPlugins tanvd.grazi
 
 }
 
@@ -1678,6 +1730,7 @@ main() {
 		"update_figma"
 		"update_github_cli"
 		"update_iina"
+		"update_intellij_idea"
 		"update_jdownloader"
 		"update_joal_desktop"
 		"update_keepingyouawake"
@@ -1686,7 +1739,6 @@ main() {
 		"update_nodejs"
 		"update_notion"
 		"update_obs"
-		"update_pearcleaner"
 		"update_pgadmin"
 		"update_postgresql"
 		"update_pycharm"
@@ -1695,8 +1747,9 @@ main() {
 		"update_transmission"
 		"update_utm"
 		"update_yt_dlp"
-		"update_odoo_devtools"
-		"update_react_devtools"
+		# "update_odoo_devtools"
+		"update_spring_devtools"
+		# "update_react_devtools"
 		"update_appearance"
 	)
 
