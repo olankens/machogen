@@ -425,13 +425,13 @@ update_appearance() {
 		"/Applications/KeePassXC.app"
 		# Development
 		"/Applications/UTM.app"
-		"/Applications/Hoppscotch.app"
 		"/Applications/IntelliJ IDEA.app"
 		"/Applications/DataGrip.app"
 		"/Applications/Xcode.app"
 		"/Applications/Android Studio.app"
 		"/Applications/Visual Studio Code.app"
 		"/Applications/StarUML.app"
+		"/Applications/Hoppscotch.app"
 		"/Applications/Tower.app"
 		# Graphics
 		"/Applications/Figma.app"
