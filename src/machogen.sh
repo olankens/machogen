@@ -419,11 +419,13 @@ update_appearance() {
 		"/Applications/Transmission.app"
 		# Social
 		"/Applications/Discord.app"
+		"/Applications/Microsoft Teams.app"
 		# Productivity
 		"/Applications/Notion.app"
 		"/Applications/KeePassXC.app"
 		# Development
 		"/Applications/UTM.app"
+		"/Applications/Hoppscotch.app"
 		"/Applications/IntelliJ IDEA.app"
 		"/Applications/DataGrip.app"
 		"/Applications/Xcode.app"
@@ -778,7 +780,7 @@ update_chromium() {
 	fi
 
 	# TODO: Handle blocking password prompt properly.
-	# if [[ "$present" == "true" ]]; then return 0; fi
+	if [[ "$present" == "true" ]]; then return 0; fi
 
 	# Update bypass-paywalls-chrome-clean
 	update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
@@ -935,6 +937,24 @@ update_homebrew() {
 
 	# Vanish cache
 	brew cleanup &>/dev/null
+
+}
+
+update_hoppscotch() {
+
+	# Update dependencies
+	brew install curl fileicon
+	brew upgrade curl fileicon
+
+	# Update package
+	brew install --cask --no-quarantine hoppscotch
+	brew upgrade --cask --no-quarantine hoppscotch
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/hoppscotch.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Hoppscotch.app" "$picture" || sudo !!
 
 }
 
@@ -1420,6 +1440,14 @@ update_system() {
 
 }
 
+update_teams() {
+
+	# Update package
+	brew install --cask --no-quarantine microsoft-teams
+	brew upgrade --cask --no-quarantine microsoft-teams
+
+}
+
 update_the_unarchiver() {
 
 	# Update package
@@ -1787,41 +1815,43 @@ main() {
 
 	# Handle elements
 	local members=(
-		"update_system"
-		"update_android_studio"
-		"update_chromium"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_vscode"
-		"update_xcode"
-		"update_awscli"
-		"update_datagrip"
-		"update_discord"
-		"update_docker"
-		"update_figma"
-		"update_flutter"
-		"update_github_cli"
-		"update_iina"
-		"update_intellij_idea"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_obs"
-		"update_postgresql"
-		"update_pycharm"
-		"update_scrcpy"
-		"update_staruml"
-		"update_the_unarchiver"
-		"update_tower"
-		"update_transmission"
-		"update_utm"
-		"update_whisky"
-		"update_youtube_music"
-		"update_yt_dlp"
+		# "update_system"
+		# "update_android_studio"
+		# "update_chromium"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_vscode"
+		# "update_xcode"
+		# "update_awscli"
+		# "update_datagrip"
+		# "update_discord"
+		# "update_docker"
+		# "update_figma"
+		# "update_flutter"
+		# "update_github_cli"
+		"update_hoppscotch"
+		# "update_iina"
+		# "update_intellij_idea"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_obs"
+		# "update_postgresql"
+		# "update_pycharm"
+		# "update_scrcpy"
+		# "update_staruml"
+		# "update_teams"
+		# "update_the_unarchiver"
+		# "update_tower"
+		# "update_transmission"
+		# "update_utm"
+		# "update_whisky"
+		# "update_youtube_music"
+		# "update_yt_dlp"
 		# "update_angular_devtools"
 		# "update_odoo_devtools"
 		# "update_spring_devtools"
