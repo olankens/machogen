@@ -942,19 +942,9 @@ update_homebrew() {
 
 update_hoppscotch() {
 
-	# Update dependencies
-	brew install curl fileicon
-	brew upgrade curl fileicon
-
 	# Update package
 	brew install --cask --no-quarantine hoppscotch
 	brew upgrade --cask --no-quarantine hoppscotch
-
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/hoppscotch.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Hoppscotch.app" "$picture" || sudo !!
 
 }
 
