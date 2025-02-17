@@ -419,7 +419,6 @@ update_appearance() {
 		"/Applications/Transmission.app"
 		# Social
 		"/Applications/Discord.app"
-		"/Applications/Microsoft Teams.app"
 		# Productivity
 		"/Applications/Notion.app"
 		"/Applications/KeePassXC.app"
@@ -431,7 +430,6 @@ update_appearance() {
 		"/Applications/Android Studio.app"
 		"/Applications/Visual Studio Code.app"
 		"/Applications/StarUML.app"
-		"/Applications/Hoppscotch.app"
 		"/Applications/Tower.app"
 		# Graphics
 		"/Applications/Figma.app"
@@ -940,14 +938,6 @@ update_homebrew() {
 
 }
 
-update_hoppscotch() {
-
-	# Update package
-	brew install --cask --no-quarantine hoppscotch
-	brew upgrade --cask --no-quarantine hoppscotch
-
-}
-
 update_iina() {
 
 	# Update dependencies
@@ -1351,6 +1341,14 @@ update_pycharm() {
 
 }
 
+update_rapidapi() {
+
+	# Update package
+	brew install --cask --no-quarantine rapidapi
+	brew upgrade --cask --no-quarantine rapidapi
+
+}
+
 update_scrcpy() {
 
 	# Update package
@@ -1427,14 +1425,6 @@ update_system() {
 
 	# Update system (takes ages)
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
-
-}
-
-update_teams() {
-
-	# Update package
-	brew install --cask --no-quarantine microsoft-teams
-	brew upgrade --cask --no-quarantine microsoft-teams
 
 }
 
@@ -1707,11 +1697,10 @@ update_odoo_devtools() {
 update_spring_devtools() {
 
 	# Update dependencies
-	# TODO: Remove tomcat@10 from dependencies
 	update_intellij_idea
 	update_vscode
-	brew install gradle maven tomcat@10
-	brew upgrade gradle maven tomcat@10
+	brew install gradle maven
+	brew upgrade gradle maven
 	brew install --cask --no-quarantine temurin
 	brew upgrade --cask --no-quarantine temurin
 
@@ -1805,47 +1794,45 @@ main() {
 
 	# Handle elements
 	local members=(
-		# "update_system"
-		# "update_android_studio"
-		# "update_chromium"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_vscode"
-		# "update_xcode"
-		# "update_awscli"
-		# "update_datagrip"
-		# "update_discord"
-		# "update_docker"
-		# "update_figma"
-		# "update_flutter"
-		# "update_github_cli"
-		"update_hoppscotch"
-		# "update_iina"
-		# "update_intellij_idea"
-		# "update_jdownloader"
-		# "update_joal_desktop"
-		# "update_keepingyouawake"
-		# "update_miniforge"
-		# "update_mpv"
-		# "update_nightlight"
-		# "update_nodejs"
-		# "update_notion"
-		# "update_obs"
-		# "update_postgresql"
-		# "update_pycharm"
-		# "update_scrcpy"
-		# "update_staruml"
-		# "update_teams"
-		# "update_the_unarchiver"
-		# "update_tower"
-		# "update_transmission"
-		# "update_utm"
-		# "update_whisky"
-		# "update_youtube_music"
-		# "update_yt_dlp"
-		# "update_angular_devtools"
-		# "update_odoo_devtools"
-		# "update_spring_devtools"
-		# "update_react_devtools"
+		"update_system"
+		"update_android_studio"
+		"update_chromium"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_vscode"
+		"update_xcode"
+		"update_awscli"
+		"update_datagrip"
+		"update_discord"
+		"update_docker"
+		"update_figma"
+		"update_flutter"
+		"update_github_cli"
+		"update_iina"
+		"update_intellij_idea"
+		"update_jdownloader"
+		"update_joal_desktop"
+		"update_keepingyouawake"
+		"update_miniforge"
+		"update_mpv"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_obs"
+		"update_postgresql"
+		"update_pycharm"
+		"update_scrcpy"
+		"update_staruml"
+		"update_the_unarchiver"
+		"update_tower"
+		"update_transmission"
+		"update_utm"
+		"update_whisky"
+		"update_youtube_music"
+		"update_yt_dlp"
+		"update_angular_devtools"
+		"update_odoo_devtools"
+		"update_spring_devtools"
+		"update_react_devtools"
 		"update_appearance"
 	)
 
