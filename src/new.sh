@@ -764,6 +764,18 @@ update_awscli() {
 	update_brew awscli
 }
 
+# @define Updates calibre
+update_calibre() {
+	update_brew curl fileicon
+	update_cask calibre
+	mv -f /Applications/calibre.app /Applications/Calibre.app
+
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/calibre.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Calibre.app" "$picture" || sudo !!
+}
+
 # @define Updates chromium
 update_chromium() {
 	#TODO
@@ -1198,8 +1210,10 @@ main() {
 	╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
 	EOD
 	local members=(
-		"update_appearance"
+		"update_calibre"
+		"update_mpv"
 		"update_vesktop"
+		"update_appearance"
 	)
 	invoke_wrapper "$welcome" "${members[@]}"
 }
