@@ -859,7 +859,98 @@ update_calibre() {
 
 # @define Update chromium
 update_chromium() {
-	#TODO
+	
+	# Handle parameters
+	local deposit=${1:-$HOME/Downloads/DDL}
+	local pattern=${2:-duckduckgo}
+	local tabpage=${3:-about:blank}
+
+	# Handle dependencies
+	update_brew curl jq
+
+	# Update package
+	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
+	update_cask eloston-chromium
+	killall Chromium || true
+
+	# Change default browser
+	change_default_browser "chromium"
+
+	# Finish installation
+	if [[ "$present" == "false" ]]; then
+
+		# Handle notifications
+		open -a "/Applications/Chromium.app"
+		osascript <<-EOD
+			if running of application "Chromium" then tell application "Chromium" to quit
+			do shell script "/usr/bin/osascript -e 'tell application \"Chromium\" to do shell script \"\"' &>/dev/null &"
+			repeat 5 times
+				try
+					tell application "System Events"
+						tell application process "UserNotificationCenter"
+							click button 3 of window 1
+						end tell
+					end tell
+				end try
+				delay 1
+			end repeat
+			if running of application "Chromium" then tell application "Chromium" to quit
+			delay 4
+		EOD
+		killall "Chromium" && sleep 4
+
+		# Change settings
+		change_chromium_download "$deposit"
+
+		# Change engine
+		change_chromium_engine "$pattern"
+
+		# Change flags
+		change_chromium_flag "custom-ntp" "about:blank"
+		change_chromium_flag "extension-mime-request-handling" "always"
+		change_chromium_flag "remove-tabsearch-button" "enabled"
+		change_chromium_flag "show-avatar-button" "never"
+
+		# Toggle bookmarks
+		osascript <<-EOD
+			set starter to "/Applications/Chromium.app"
+			tell application starter
+				activate
+				reopen
+				delay 4
+				open location "about:blank"
+				delay 2
+				tell application "System Events"
+					keystroke "b" using {shift down, command down}
+				end tell
+				delay 2
+				quit
+				delay 2
+			end tell
+		EOD
+
+		# Revert language
+		defaults delete org.chromium.Chromium AppleLanguages
+
+		# Update chromium-web-store
+		local website="https://api.github.com/repos/NeverDecaf/chromium-web-store/releases"
+		local version=$(curl -s "$website" | jq -r ".[0].tag_name" | tr -d "v")
+		local address="https://github.com/NeverDecaf/chromium-web-store/releases/download/v$version/Chromium.Web.Store.crx"
+		update_chromium_extension "$address"
+
+		# Update extensions
+		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
+		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		update_chromium_extension "lkahpjghmdhpiojknppmlenngmpkkfma" # skip-ad-ad-block-auto-ad
+		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
+
+	fi
+
+	# Update bypass-paywalls-chrome-clean
+	update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+
 }
 
 # @define Update docker
@@ -1528,7 +1619,7 @@ update_spring_devtools() {
 
 # endregion
 
-# @define Handles main script logic
+# @define Handle main script logic
 main() {
 
 	read -r -d "" welcome <<-EOD
