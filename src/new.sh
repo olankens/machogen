@@ -3,9 +3,10 @@
 
 # region services
 
-# @define Appends application to the dock
+# @define Append application to the dock
 # @params The application full path
 append_dock_application() {
+
 	local element=${1}
 	if [[ -d "$element" ]]; then
 		defaults write com.apple.dock persistent-apps -array-add "<dict>
@@ -21,14 +22,16 @@ append_dock_application() {
 			</dict>
 		</dict>"
 	fi
+
 }
 
-# @define Appends folder to the dock
+# @define Append folder to the dock
 # @params The folder full path
 # @params The arrangement integer (1: name, 2: added, 3: modified, 4: created, 5: kind)
 # @params The displayas integer (0: stack, 1: folder)
 # @params The showas integer (0: automatic, 1: fan, 2: grid, 3: list)
 append_dock_folder() {
+
 	local element=${1}
 	local arrangement=${2:-1}
 	local display_as=${3:-0}
@@ -57,11 +60,13 @@ append_dock_folder() {
 			<string>directory-tile</string>
 		</dict>"
 	fi
+
 }
 
-# @define Asserts apple credentials from keychain
+# @define Assert apple credentials from keychain
 # @return 0 for success, 1 for failure
 assert_apple_id() {
+
 	local username=$(gather_password apple-username generic)
 	local password=$(gather_password apple-password generic)
 	[[ -z "$username" || -z "$password" ]] && return 1
@@ -80,32 +85,40 @@ assert_apple_id() {
 			timeout { exit 0 }
 		}
 	EOD
+
 }
 
-# @define Asserts script is running with sudo privileges
+# @define Assert script is running with sudo privileges
 # @return 0 for success, 1 for failure
 assert_admin_execution() {
+
 	[[ $EUID = 0 ]]
+
 }
 
-# @define Asserts sudo password from keychain
+# @define Assert sudo password from keychain
 # @return 0 for success, 1 for failure
 assert_admin_password() {
+
 	local password=$(gather_password sudo-password generic)
 	sudo -k && echo "$password" | sudo -S -v &>/dev/null
+
 }
 
-# @define Asserts current macos version
+# @define Assert current macos version
 # @params The expected major macos version
 # @return 0 for success, 1 for failure
 assert_macos_version() {
+
 	local version=${1:-14}
 	[[ $(sw_vers -productVersion) =~ ^$version ]] || return 1
+
 }
 
-# @define Changes chromium download folder
+# @define Change chromium download folder
 # @params The download location full path
 change_chromium_download() {
+
 	local deposit=${1:-$HOME/Downloads/DDL}
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
@@ -143,11 +156,13 @@ change_chromium_download() {
 			delay 2
 		end tell
 	EOD
+
 }
 
-# @define Changes chromium search engine
+# @define Change chromium search engine
 # @params The pattern used to identify the engine in the list
 change_chromium_engine() {
+
 	# INFO: Google intentionally randomized and restricted access to search engine list to limit abuse
 	# TODO: Use keystrokes and OCR to achieve
 	# local pattern=${1:-duckduckgo}
@@ -178,12 +193,14 @@ change_chromium_engine() {
 	# 		delay 2
 	# 	end tell
 	# EOD
+
 }
 
-# @define Changes chromium flag
+# @define Change chromium flag
 # @params The chromium flag to change
 # @params The payload value to set for the specified flag
 change_chromium_flag() {
+
 	local element=${1}
 	local payload=${2}
 	[[ -d "/Applications/Chromium.app" ]] || return 1
@@ -305,16 +322,13 @@ change_chromium_flag() {
 			end tell
 		EOD
 	fi
+
 }
 
-# @define Changes current shell privileges, requires user interaction
-change_shell_security() {
-	return 1
-}
-
-# @define Changes default web browser
+# @define Change default web browser
 # @params The browser name (chrome, chromium, firefox, safari, vivaldi, ...)
 change_default_browser() {
+
 	local browser=${1:-safari}
 	update_brew defaultbrowser
 	defaultbrowser "$browser" && osascript <<-EOD
@@ -328,18 +342,22 @@ change_default_browser() {
 			end try
 		end tell
 	EOD
+
 }
 
-# @define Changes desktop wallpaper
+# @define Change desktop wallpaper
 # @params The picture full path
 change_desktop_wallpaper() {
+
 	local picture=${1}
 	osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$picture\""
+
 }
 
-# @define Changes system sleep settings by enabling or disabling sleeping
+# @define Change system sleep settings by enabling or disabling sleeping
 # @params True to restore default sleep settings or false to disable it
 change_sleeping() {
+
 	local enabled=${1:-true}
 	if [[ "$enabled" == "true" ]]; then
 		sudo pmset restoredefaults >/dev/null
@@ -347,32 +365,38 @@ change_sleeping() {
 		sudo pmset -a displaysleep 0 && sudo pmset -a sleep 0
 		(caffeinate -i -w $$ &) &>/dev/null
 	fi
+
 }
 
-# @define Changes sudo timeouts by enabling or disabling the password prompt
+# @define Change sudo timeouts by enabling or disabling the password prompt
 # @params True to enable the timeouts or false to disable it
 change_timeouts() {
+
 	local enabled=${1:-true}
 	if [[ "$enabled" == "true" ]]; then
 		sudo rm /private/etc/sudoers.d/disable_timeout 2>/dev/null
 	else
 		echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /private/etc/sudoers.d/disable_timeout >/dev/null
 	fi
+
 }
 
-# @define Changes system timezone
+# @define Change system timezone
 # @params The timezone string
 change_timezone() {
+
 	local payload=${1}
 	sudo systemsetup -settimezone "$payload" &>/dev/null
+
 }
 
-# @define Expands archive
+# @define Expand archive
 # @params The archive path or direct http url
 # @params The deposit path for extraction
 # @params The number of leading dirs to strip
 # @return The extraction full path
 expand_archive() {
+
 	local archive=${1}
 	local deposit=${2:-.}
 	local leading=${3:-0}
@@ -385,43 +409,51 @@ expand_archive() {
 		fi
 		printf "%s" "$deposit"
 	fi
+
 }
 
-# @define Gathers password from current user's keychain
+# @define Gather password from current user's keychain
 # @params The service name
 # @params The password variant (generic or internet)
 # @return The gathered password or empty string
 gather_password() {
+
 	local service=${1}
 	local variant=${2:-generic}
 	security find-"$variant"-password -a "$USER" -s "$service" -w 2>/dev/null
+
 }
 
-# @define Gathers path
+# @define Gather path
 # @params The search pattern or directory
 # @params The maximum depth for search
 # @return The gathered full path
 gather_pattern() {
+
 	local pattern=${1}
 	local maximum=${2:-0}
 	echo "$(/bin/zsh -c "find $pattern -maxdepth $maximum" 2>/dev/null | sort -r | head -1)" || sudo !!
+
 }
 
-# @define Gathers installed application version
+# @define Gather installed application version
 # @params The application full path
 # @return The gathered version for success, 0.0.0.0 for failure
 gather_version() {
+
 	local apppath=${1}
 	update_brew grep
 	local starter=$(gather_pattern "$apppath/*ontents/*nfo.plist")
 	local version=$(defaults read "$starter" CFBundleShortVersionString 2>/dev/null)
 	echo "$version" | ggrep -oP "[\d.]+" || echo "0.0.0.0"
+
 }
 
-# @define Invokes application, wait for first window and close
+# @define Invoke application, wait for first window and close
 # @params The application name
 # @params The maximum wait time (seconds) for the window
 invoke_once() {
+
 	local appname=${1}
 	local timeout=${2:-30}
 	osascript <<-EOD
@@ -444,12 +476,14 @@ invoke_once() {
 		end tell
 	EOD
 	pkill -9 -f "$appname"
+
 }
 
-# @define Invokes functions with a welcome message and tracks time
+# @define Invoke functions with a welcome message and tracks time
 # @params The welcome message to display at the start
 # @params The functions to invoke in sequence
 invoke_wrapper() {
+
 	local welcome=${1}
 	local members=("${@:2}")
 	verify_executor || return 1
@@ -482,40 +516,48 @@ invoke_wrapper() {
 	change_sleeping true
 	change_timeouts true
 	printf "\n"
+
 }
 
-# @define Scrapes data from website using regex pattern
+# @define Scrape data from website using regex pattern
 # @params The address to scrape
 # @params The pattern to evaluate against the scraped content
 # @return The scraped string matching the provided regex pattern
 scrape_website() {
+
 	local address=${1}
 	local pattern=${2}
 	update_brew grep
 	local content=$(curl -s "$address")
 	local results=$(echo "$content" | ggrep -oP "$pattern" | head -n 1)
 	echo "$results"
+
 }
 
-# @define Updates brew packages
+# @define Update brew packages
 # @params The brew package names
 update_brew() {
+
 	local payload=("$@")
 	brew install "${payload[@]}"
 	brew upgrade "${payload[@]}"
+
 }
 
-# @define Updates cask packages
+# @define Update cask packages
 # @params The cask package names
 update_cask() {
+
 	local payload=("$@")
 	brew install --cask --no-quarantine "${payload[@]}"
 	brew upgrade --cask --no-quarantine "${payload[@]}"
+
 }
 
-# @define Updates chromium extension
+# @define Update chromium extension
 # @params The payload (crx url, zip url or extension uuid)
 update_chromium_extension() {
+
 	local payload=${1}
 	if [[ -d "/Applications/Chromium.app" ]]; then
 		if [[ ${payload:0:4} == "http" ]]; then
@@ -601,11 +643,13 @@ update_chromium_extension() {
 			EOD
 		fi
 	fi
+
 }
 
-# @define Handles apple id credential verification in the keychain
+# @define Handle apple id credential verification in the keychain
 # @return 0 for success, 1 for failure
 verify_apple_id() {
+
 	printf "\r\033[93m%s\033[00m" "CHECKING APPLE CREDENTIALS, PLEASE BE PATIENT"
 	if ! assert_apple_id; then
 		security delete-generic-password -s appmail &>/dev/null
@@ -615,29 +659,35 @@ verify_apple_id() {
 		printf "\r\033[92m%s\033[00m\n\n" "security add-generic-password -a \$USER -s apppass -w password"
 		return 1
 	fi
+
 }
 
-# @define Handles verifying the macos version
+# @define Handle verifying the macos version
 # @return 0 for success, 1 for failure
 verify_computer() {
+
 	if assert_macos_version "14"; then
 		printf "\r\033[91m%s\033[00m\n\n" "CURRENT MACOS VERSION (${"$(sw_vers -productVersion)":0:4}) IS NOT SUPPORTED"
 		return 1
 	fi
+
 }
 
-# @define Handle verifying the executor's privileges
+# @define Handl verifying the executor's privileges
 # @return 0 for success, 1 for failure
 verify_executor() {
+
 	if assert_admin_execution; then
 		printf "\r\033[91m%s\033[00m\n\n" "EXECUTING THIS SCRIPT AS ROOT IS NOT ADMITTED"
 		return 1
 	fi
+
 }
 
-# @define Handles upgrading and configuring homebrew
+# @define Handle upgrading and configuring homebrew
 # @return 0 for success, 1 for failure
 verify_homebrew() {
+
 	printf "\r\033[93m%s\033[00m" "UPGRADING HOMEBREW PACKAGE, PLEASE BE PATIENT"
 	local command=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
 	CI=1 /bin/bash -c "$command" &>/dev/null
@@ -650,11 +700,13 @@ verify_homebrew() {
 	fi
 	brew cleanup &>/dev/null
 	return 0
+
 }
 
-# @define Handles current shell privileges, requires user interaction 
+# @define Handle current shell privileges, requires user interaction 
 # @return 0 for success, 1 for failure
 verify_security() {
+
 	printf "\r\033[93m%s\033[00m" "CHANGING SECURITY, PLEASE FOLLOW THE MESSAGES"
 	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null }
 	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null }
@@ -680,17 +732,21 @@ verify_security() {
 		open -W "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
 	done
 	return 0
+
 }
 
 # endregion
 
 # region updaters
 
-# @define Updates android-cmdline
+# @define Update android-cmdline
 update_android_cmdline() {
+
+	# Handle dependencies
 	update_brew curl grep jq
 	update_temurin
 
+	# Update package
 	local sdkroot="$HOME/Library/Android/sdk"
 	local deposit="$sdkroot/cmdline-tools"
 	if [[ ! -d $deposit ]]; then
@@ -705,6 +761,7 @@ update_android_cmdline() {
 		rm -rf "$deposit/cmdline-tools"
 	fi
 
+	# Change environment
 	local configs="$HOME/.zshrc"
 	if ! grep -q "ANDROID_HOME" "$configs" 2>/dev/null; then
 		[[ -s "$configs" ]] || touch "$configs"
@@ -718,24 +775,34 @@ update_android_cmdline() {
 		export PATH="$PATH:$ANDROID_HOME/emulator"
 		export PATH="$PATH:$ANDROID_HOME/platform-tools"
 	fi
+
 }
 
-# @define Updates android-studio
+# @define Update android-studio
 update_android_studio() {
+
+	# Handle dependencies
 	update_brew grep xmlstarlet
+
+	# Update package
 	local present="$([[ -d "/Applications/Android Studio.app" ]] && echo true || echo false)"
 	update_cask android-studio
 
+	# Change settings
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
+
 }
 
-# @define Updates appearance
+# @define Update appearance
 update_appearance() {
+
+	# Change dock
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
 	append_dock_application "/Applications/Chromium.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	append_dock_application "/Applications/NetNewsWire.app"
+	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Vesktop.app"
 	append_dock_application "/Applications/Notion.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
@@ -756,61 +823,103 @@ update_appearance() {
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
-	# TODO: Update the wallpapers
+
 }
 
-# @define Updates awscli
+# @define Update awscli
 update_awscli() {
+
+	# Update package
 	update_brew awscli
+
+	# Change settings
+	# TODO
+
 }
 
-# @define Updates calibre
+# @define Update calibre
 update_calibre() {
-	update_brew curl fileicon
-	update_cask calibre
-	mv -f /Applications/calibre.app /Applications/Calibre.app
 
+	# Handle dependencies
+	update_brew curl fileicon
+
+	# Update package
+	update_cask calibre
+
+	# Change application
+	sudo mv -f /Applications/calibre.app /Applications/Calibre.app
+	sudo plutil -replace CFBundleName -string "Calibre" /Applications/calibre.app/Contents/Info.plist
+
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/calibre.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/Calibre.app" "$picture" || sudo !!
 }
 
-# @define Updates chromium
+# @define Update chromium
 update_chromium() {
 	#TODO
 }
 
-# @define Updates docker
+# @define Update docker
 update_docker() {
-	update_brew colima docker docker-compose jq sponge
+
+	# Handle dependencies
+	update_brew colima docker-compose jq sponge
+
+	# Update package
+	update_brew docker
+
+	# Launch service
 	colima start
 
+	# Change settings
 	local configs="$HOME/.docker/config.json"
 	jq '. + {cliPluginsExtraDirs: ["/opt/homebrew/lib/docker/cli-plugins"]}' "$configs" | sponge "$configs"
+
 }
 
-# @define Updates eid_belgium
+# @define Update eid_belgium
 update_eid_belgium() {
 	#TODO
 }
 
-# @define Updates figma
+# @define Update figma
 update_figma() {
+
+	# Handle dependencies
 	update_brew jq sponge
+
+	# Update package
 	update_cask figma
 
+	# Change settings
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
+
 }
 
-# @define Updates git
+# @define Update fork
+update_fork() {
+
+	# Update package
+	update_cask fork
+
+}
+
+# @define Update git
 update_git() {
+
+	# Handle parameters
 	local default=${1:-main}
 	local gituser=${2}
 	local gitmail=${3}
+
+	# Update package
 	update_brew git
 
+	# Change settings
 	[[ -n "$gitmail" ]] && git config --global user.email "$gitmail"
 	[[ -n "$gituser" ]] && git config --global user.name "$gituser"
 	git config --global checkout.workers 0
@@ -818,33 +927,58 @@ update_git() {
 	git config --global http.postBuffer 1048576000
 	git config --global init.defaultBranch "$default"
 	git config --global push.autoSetupRemote true
+
 }
 
-# @define Updates git
+# @define Update git
 update_github_cli() {
+
+	# Update package
 	update_brew gh
+
 }
 
-# @define Updates insomnia
+# @define Update insomnia
 update_insomnia() {
+
+	# Update package
 	update_cask insomnia
+
+	# Change settings
+	# TODO
+
 }
 
-# @define Updates intellij
+# @define Update intellij
 update_intellij() {
-	local present=$([[ -d "/Applications/IntelliJ IDEA.app" ]] && echo "true" || echo "false")
+
+	# Handle dependencies
+	update_brew grep xmlstarlet
+
+	# Update package
+	local present="$([[ -d "/Applications/IntelliJ IDEA.app" ]] && echo "true" || echo "false")"
 	update_cask intellij-idea
 
+	# Change settings
+	# TODO
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
+
 }
 
-# @define Updates jdownloader
+# @define Update jdownloader
 update_jdownloader() {
+
+	# Handle parameters
 	local deposit=${1:-$HOME/Downloads/JD2}
+
+	# Handle dependencies
 	update_brew coreutils curl fileicon jq
-	local present=$([[ -d "/Applications/JDownloader 2/JDownloader2.app" ]] && echo "true" || echo "false")
+
+	# Update package
+	local present="$([[ -d "/Applications/JDownloader 2/JDownloader2.app" ]] && echo "true" || echo "false")"
 	update_cask jdownloader
 
+	# Finish install
 	if [[ "$present" == "false" ]]; then
 		local appdata="/Applications/JDownloader 2/cfg"
 		local config1="$appdata/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
@@ -887,6 +1021,7 @@ update_jdownloader() {
 		update_chromium_extension "fbcohnmimjicjdomonkcbcpbpnhggkip"
 	fi
 
+	# Changes icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
@@ -897,20 +1032,82 @@ update_jdownloader() {
 	sips -Z 128 -s format png "$picture" --out "$sitting"
 }
 
-# @define Updates miniforge
-update_miniforge() {
-	update_cask miniforge
+# @define Update joal-desktop
+update_joal_desktop() {
 
-	conda init zsh
-	conda config --set auto_activate_base false
+	# Handle dependencies
+	brew install curl fileicon grep jq
+	brew upgrade curl fileicon grep jq
+
+	# Update package
+	local address="https://api.github.com/repos/anthonyraymond/joal-desktop/releases/latest"
+	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
+	local current=$(expand_version "/*ppl*/*oal*esk*")
+	autoload is-at-least
+	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
+	if [[ "$updated" == "false" ]]; then
+		local address="https://github.com/anthonyraymond/joal-desktop/releases"
+		local address="$address/download/v$version/JoalDesktop-$version-mac-x64.dmg"
+		local package=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$package"
+		hdiutil attach "$package" -noautoopen -nobrowse
+		cp -fr /Volumes/Joal*/Joal*.app /Applications
+		hdiutil detach /Volumes/Joal*
+		sudo xattr -rd com.apple.quarantine /Applications/Joal*.app
+	fi
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/JoalDesktop/joal-core/config.json"
+	mkdir -p "$(dirname $configs)"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."minUploadRate" = 300' "$configs" | sponge "$configs"
+	jq '."maxUploadRate" = 450' "$configs" | sponge "$configs"
+	jq '."simultaneousSeed" = 200' "$configs" | sponge "$configs"
+	jq '."client" = "transmission-3.00.client"' "$configs" | sponge "$configs"
+	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs" 
+	jq '."uploadRatioTarget" = -1' "$configs" | sponge "$configs"
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/joal-desktop.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/JoalDesktop.app" "$picture" || sudo !!
+
 }
 
-# @define Updates mpv
-update_mpv() {
-	update_brew curl fileicon yt-dlp
-	update_cask mpv
-	mv -f /Applications/mpv.app /Applications/Mpv.app
+# @define Update keepingyouawake
+update_keepingyouawake() {
 
+	# Update package
+	update_cask keepingyouawake
+
+}
+
+# @define Update miniforge
+update_miniforge() {
+
+	# Update package
+	update_cask miniforge
+
+	# Change settings
+	conda init zsh
+	conda config --set auto_activate_base false
+
+}
+
+# @define Update mpv
+update_mpv() {
+
+	# Handle dependencies
+	update_brew curl fileicon yt-dlp
+
+	# Update package
+	update_cask mpv
+
+	# Change application
+	mv -f /Applications/mpv.app /Applications/Mpv.app
+	plutil -replace CFBundleName -string "Mpv" /Applications/Mpv.app/Contents/Info.plist
+
+	# Change settings
 	local configs="$HOME/.config/mpv/mpv.conf"
 	mkdir -p "$(dirname "$configs")" && cat /dev/null >"$configs"
 	echo "profile=gpu-hq" >>"$configs"
@@ -928,29 +1125,42 @@ update_mpv() {
 	echo "[protocol.ytdl]" >>"$configs"
 	echo "profile=protocol.http" >>"$configs"
 
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/mpv.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/Mpv.app" "$picture" || sudo !!
+
 }
 
-# @define Updates nightlight
+# @define Update nightlight
 update_nightlight() {
+
+	# Handle parameters
 	local percent=${1:-75}
 	local forever=${2:-true}
+
+	# Update package
 	update_brew smudge/smudge/nightlight
 
+	# Change settings
 	[[ "$forever" == "true" ]] && nightlight schedule 3:00 2:59
 	nightlight temp "$percent" && nightlight on
+
 }
 
-# @define Updates nodejs
+# @define Update nodejs (lts)
 update_nodejs() {
-	update_brew grep jq
+
+	# Handle dependencies
+	update_brew curl grep jq
+
+	# Update package
 	local address="https://raw.githubusercontent.com/scoopinstaller/main/master/bucket/nodejs-lts.json"
 	local version=$(curl -LA "mozilla/5.0" "$address" | jq '.version' | ggrep -oP "[\d]+" | head -1)
 	update_brew node@"$version"
 
+	# Change environment
 	if ! grep -q "/opt/homebrew/opt/node" "$HOME/.zshrc" 2>/dev/null; then
 		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
 		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
@@ -960,100 +1170,142 @@ update_nodejs() {
 		sed -i "" -e "s#/opt/homebrew/opt/node.*/bin#/opt/homebrew/opt/node@$version/bin#" "$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
+
 }
 
-# @define Updates notion
+# @define Update notion
 update_notion() {
+
+	# Handle dependencies
 	update_brew curl fileicon
+
+	# Update package
 	update_cask notion
 
+	# Change settings
 	local configs="$HOME/Library/Application Support/Notion/state.json"
 	mkdir -p "$(dirname $configs)"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '.appState.preferences.isMenuBarIconEnabled = false' "$configs" | sponge "$configs"
 	jq '.appState.preferences.isAutoUpdaterDisabled = true' "$configs" | sponge "$configs"
 
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/notion.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/Notion.app" "$picture" || sudo !!
+
 }
 
-# @define Updates obs
+# @define Update obs
 update_obs() {
+
+	# Handle dependencies
 	update_brew curl fileicon
+
+	# Update package
 	update_cask obs
 
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/obs.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/OBS.app" "$picture" || sudo !!
 }
 
-# @define Updates pearcleaner
+# @define Update pearcleaner
 update_pearcleaner() {
+
+	# Update package
 	update_cask pearcleaner
+
 }
 
-# @define Updates postgresql
+# @define Update postgresql
 update_postgresql() {
+
+	# Handle parameters
 	local version=${1:-14}
 
+	# Update package
 	# INFO: Default credentials are $USER with empty password
-	brew install postgresql@"$version"
-	brew upgrade postgresql@"$version"
+	update_brew postgresql@"$version"
+
+	# Launch service
 	brew services restart postgresql@"$version"
+
 }
 
-# @define Updates system
+# @define Update system
 update_system() {
+
+	# Handle parameters
 	local machine=${1:-macintosh}
 
+	# Change hostname
 	sudo scutil --set ComputerName "$machine"
 	sudo scutil --set HostName "$machine"
 	sudo scutil --set LocalHostName "$machine"
 	sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$machine"
 
+	# Change finder
 	defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 	defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 	defaults write com.apple.finder ShowPathbar -bool true
 
+	# Change globals
 	defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 	defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 
+	# Change preview
 	defaults write com.apple.Preview NSRecentDocumentsLimit 0
 	defaults write com.apple.Preview NSRecentDocumentsLimit 0
 
+	# Change services
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 	defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 	defaults write com.apple.LaunchServices "LSQuarantine" -bool false
 
+	# Enable tap-to-click
 	defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 	defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
 	/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
 
+	# Remove remnants
 	find ~ -name ".DS_Store" -delete
 
+	# Remove chime
 	sudo nvram StartupMute=%01
 
+	# Update rosetta
 	/usr/sbin/softwareupdate --install-rosetta --agree-to-license &>/dev/null
 
+	# Update system
 	# INFO: Takes ages
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
+
 }
 
-# @define Updates temurin (lts)
+# @define Update temurin (lts)
 update_temurin() {
-	update_brew curl grep jq
+
+	# Handle dependencies
+	update_brew curl jq
+
+	# Update package
 	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
 	update_cask temurin@"$version"
+
 }
 
-# @define Updates the-unarchiver
+# @define Update the-unarchiver
 update_the_unarchiver() {
-	local present=$([[ -d "/Applications/The Unarchiver.app" ]] && echo "true" || echo "false")
+
+	# Update package
+	local present="$([[ -d "/Applications/The Unarchiver.app" ]] && echo "true" || echo "false")"
 	update_cask the-unarchiver
 
+	# Finish install
 	if [[ "$present" == "false" ]]; then
 		osascript <<-EOD
 			set checkup to "/Applications/The Unarchiver.app"
@@ -1081,24 +1333,64 @@ update_the_unarchiver() {
 		EOD
 	fi
 
+	# Change settings
 	defaults write com.macpaw.site.theunarchiver extractionDestination -integer 3
 	defaults write com.macpaw.site.theunarchiver isFreshInstall -integer 1
 	defaults write com.macpaw.site.theunarchiver userAgreedToNewTOSAndPrivacy -integer 1
+
 }
 
-# @define Updates utm
-update_utm() {
+# @define Update transmission
+update_transmission() {
+
+	# Handle parameters
+	local deposit=${1:-$HOME/Downloads/P2P}
+	local seeding=${2:-0.1}
+
+	# Handle dependencies
 	update_brew curl fileicon
+
+	# Update package
+	update_cask transmission
+
+	# Change settings
+	mkdir -p "$deposit/Incompleted"
+	defaults write org.m0k.transmission DownloadFolder -string "$deposit"
+	defaults write org.m0k.transmission IncompleteDownloadFolder -string "$deposit/Incompleted"
+	defaults write org.m0k.transmission RatioCheck -bool true
+	defaults write org.m0k.transmission RatioLimit -int "$seeding"
+	defaults write org.m0k.transmission UseIncompleteDownloadFolder -bool true
+	defaults write org.m0k.transmission WarningDonate -bool false
+	defaults write org.m0k.transmission WarningLegal -bool false
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/transmission.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Transmission.app" "$picture" || sudo !!
+
+}
+
+# @define Update utm
+update_utm() {
+
+	# Handle dependencies
+	update_brew curl fileicon
+
+	# Update package
 	update_cask utm
 
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/utm.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/UTM.app" "$picture" || sudo !!
 }
 
-# @define Updates vesktop
+# @define Update vesktop
 update_vesktop() {
+
+	# Update package
 	local address="https://api.github.com/repos/Vencord/Vesktop/releases/latest"
 	local version=$(scrape_website "$address" '"tag_name":\s*"\K([^"]+)' | tr -d -c '0-9.')
 	[[ -z "$version" ]] && return 1
@@ -1113,15 +1405,22 @@ update_vesktop() {
 		sleep 4 && hdiutil detach /Volumes/Veskt*
 		sudo xattr -rd com.apple.quarantine /Applications/Vesktop.app
 	fi
+
 }
 
-# @define Updates vscode
+# @define Update vscode
 update_vscode() {
+
+	# Handle dependencies
 	update_brew jq sponge
+
+	# Update package
 	update_cask visual-studio-code
 
+	# Update extensions
 	code --install-extension "github.github-vscode-theme" --force
 
+	# Change settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '."editor.fontSize" = 13' "$configs" | sponge "$configs"
@@ -1132,18 +1431,25 @@ update_vscode() {
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
 	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
 	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
+
 }
 
-# @define Updates whisky
+# @define Update whisky
 update_whisky() {
+
+	# Update package
 	update_cask whisky
+
 }
 
-# @define Updates xcode
+# @define Update xcode
 update_xcode() {
+
+	# Handle dependencies
 	assert_apple_id || return 1
 	update_brew cocoapods curl fileicon grep xcodesorg/made/xcodes
 
+	# Update package
 	local starter="/Applications/Xcode.app"
 	local current=$(expand_version "$starter")
 	local version=$(xcodes list | tail -5 | grep -v Beta | tail -1 | ggrep -oP "[\d.]+" | head -1)
@@ -1157,28 +1463,44 @@ update_xcode() {
 		sudo xcodebuild -license accept
 	fi
 
+	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/xcode.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$starter" "$picture" || sudo !!
+
 }
 
-# @define Updates youtube-music
+# @define Update youtube-music
 update_youtube_music() {
+
+	# Handle dependencies
 	update_brew jq sponge
+
+	# Update package
 	update_cask th-ch/youtube-music/youtube-music
 
+	# Change settings
 	local configs="$HOME/Library/Application Support/YouTube Music/config.json"
 	jq '.plugins."quality-changer".enabled = true' "$configs" | sponge "$configs"
 	jq '.plugins."sponsorblock".enabled = true' "$configs" | sponge "$configs"
 	jq '.plugins."synced-lyrics".enabled = true' "$configs" | sponge "$configs"
 	# jq '.plugins."no-google-login".enabled = true' "$configs" | sponge "$configs"
+
 }
 
-# @define Updates android devtools
+# endregion
+
+# region devtools
+
+# @define Update android devtools
 update_android_devtools() {
+
+	# Handle dependencies
 	update_android_cmdline
 	update_android_studio
+
+	# Update sdk
 	yes | sdkmanager "build-tools;34.0.0"
 	yes | sdkmanager "emulator"
 	yes | sdkmanager "platform-tools"
@@ -1188,19 +1510,27 @@ update_android_devtools() {
 	yes | sdkmanager --licenses
 	yes | sdkmanager --update
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
+
+	# Update plugins
 	studio installPlugins com.github.airsaid.androidlocalize
+
 }
 
-# @define Updates angular devtools
-update_angular_devtools() {}
+# @define Update angular devtools
+update_angular_devtools() {
+	# TODO
+}
 
-# @define Updates spring devtools
-update_spring_devtools() {}
+# @define Update spring devtools
+update_spring_devtools() {
+	# TODO
+}
 
 # endregion
 
 # @define Handles main script logic
 main() {
+
 	read -r -d "" welcome <<-EOD
 	███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
 	████╗░████║██╔══██╗██╔══██╗██║░░██║██╔══██╗██╔════╝░██╔════╝████╗░██║
@@ -1209,13 +1539,47 @@ main() {
 	██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║╚█████╔╝╚██████╔╝███████╗██║░╚███║
 	╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
 	EOD
+
 	local members=(
+		"update_system"
+		"update_android_studio"
+		"update_chromium"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_vscode"
+		"update_xcode"
+		"update_awscli"
 		"update_calibre"
+		"update_discord"
+		"update_docker"
+		"update_figma"
+		"update_flutter"
+		"update_fork"
+		"update_github_cli"
+		"update_intellij_idea"
+		"update_jdownloader"
+		"update_joal_desktop"
+		"update_keepingyouawake"
+		"update_miniforge"
 		"update_mpv"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_obs"
+		"update_postgresql"
+		"update_the_unarchiver"
+		"update_transmission"
+		"update_utm"
 		"update_vesktop"
+		"update_whisky"
+		"update_youtube_music"
+		"update_android_devtools"
+		"update_angular_devtools"
+		"update_spring_devtools"
 		"update_appearance"
 	)
+
 	invoke_wrapper "$welcome" "${members[@]}"
+
 }
 
 # admin=$(assert_admin_execution && echo true || echo false)
