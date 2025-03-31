@@ -797,10 +797,24 @@ update_android_studio() {
 update_appearance() {
 
 	# Change dock
+	defaults write com.apple.dock autohide -bool true
+	defaults write com.apple.dock autohide-delay -float 0
+	defaults write com.apple.dock autohide-time-modifier -float 0.25
+	defaults write com.apple.dock minimize-to-application -bool true
+	defaults write com.apple.dock orientation bottom
+	defaults write com.apple.dock show-recents -bool false
+	defaults write com.apple.Dock size-immutable -bool yes
+	defaults write com.apple.dock tilesize -int 36
+	defaults write com.apple.dock wvous-bl-corner -int 0
+	defaults write com.apple.dock wvous-br-corner -int 0
+	defaults write com.apple.dock wvous-tl-corner -int 0
+	defaults write com.apple.dock wvous-tr-corner -int 0
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
 	append_dock_application "/Applications/Chromium.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	append_dock_application "/Applications/Transmission.app"
+	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/NetNewsWire.app"
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Vesktop.app"
@@ -815,9 +829,9 @@ update_appearance() {
 	append_dock_application "/Applications/Insomnia.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
-	append_dock_application "/Applications/Mpv.app"
+	append_dock_application "/Applications/mpv.app"
 	append_dock_application "/Applications/YouTube Music.app"
-	append_dock_application "/Applications/Calibre.app"
+	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Whisky.app"
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
@@ -846,15 +860,14 @@ update_calibre() {
 	# Update package
 	update_cask calibre
 
-	# Change application
-	sudo mv -f /Applications/calibre.app /Applications/Calibre.app
-	sudo plutil -replace CFBundleName -string "Calibre" /Applications/calibre.app/Contents/Info.plist
+	# Finish install
+	invoke_once "calibre"
 
 	# Change icons
 	local address="https://github.com/olankens/machogen/raw/HEAD/assets/calibre.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Calibre.app" "$picture" || sudo !!
+	fileicon set "/Applications/calibre.app" "$picture" || sudo !!
 }
 
 # @define Update chromium
@@ -1040,8 +1053,8 @@ update_insomnia() {
 
 }
 
-# @define Update intellij
-update_intellij() {
+# @define Update intellij-idea
+update_intellij_idea() {
 
 	# Handle dependencies
 	update_brew grep xmlstarlet
@@ -1193,10 +1206,6 @@ update_mpv() {
 
 	# Update package
 	update_cask mpv
-
-	# Change application
-	mv -f /Applications/mpv.app /Applications/Mpv.app
-	plutil -replace CFBundleName -string "Mpv" /Applications/Mpv.app/Contents/Info.plist
 
 	# Change settings
 	local configs="$HOME/.config/mpv/mpv.conf"
@@ -1640,13 +1649,12 @@ main() {
 		"update_xcode"
 		"update_awscli"
 		"update_calibre"
-		"update_discord"
 		"update_docker"
 		"update_figma"
-		"update_flutter"
 		"update_fork"
 		"update_github_cli"
 		"update_intellij_idea"
+		"update_insomnia"
 		"update_jdownloader"
 		"update_joal_desktop"
 		"update_keepingyouawake"
@@ -1673,11 +1681,4 @@ main() {
 
 }
 
-# admin=$(assert_admin_execution && echo true || echo false)
-# echo $admin
-# change_chromium_download "$HOME/Downloads/DDL"
-# change_chromium_flag "custom-ntp" "about:blank"
-# change_chromium_flag "extension-mime-request-handling" "always"
-# change_chromium_flag "remove-tabsearch-button" "enabled"
-# change_chromium_flag "show-avatar-button" "never"
 main "$@"
