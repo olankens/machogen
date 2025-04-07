@@ -833,6 +833,7 @@ update_appearance() {
 	append_dock_application "/Applications/YouTube Music.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Whisky.app"
+	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
@@ -952,17 +953,17 @@ update_chromium() {
 		update_chromium_extension "$address"
 
 		# Update extensions
-		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+		# update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
 		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
-		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-		update_chromium_extension "lkahpjghmdhpiojknppmlenngmpkkfma" # skip-ad-ad-block-auto-ad
-		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+		# update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		# update_chromium_extension "lkahpjghmdhpiojknppmlenngmpkkfma" # skip-ad-ad-block-auto-ad
+		# update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
 
 	fi
 
 	# Update bypass-paywalls-chrome-clean
-	update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
 
 }
 
@@ -1641,39 +1642,40 @@ main() {
 	EOD
 
 	local members=(
-		"update_system"
-		"update_android_studio"
+		# "update_system"
+		# "update_android_studio"
 		"update_chromium"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_vscode"
-		"update_xcode"
-		"update_awscli"
-		"update_calibre"
-		"update_docker"
-		"update_figma"
-		"update_fork"
-		"update_github_cli"
-		"update_intellij_idea"
-		"update_insomnia"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_obs"
-		"update_postgresql"
-		"update_the_unarchiver"
-		"update_transmission"
-		"update_utm"
-		"update_vesktop"
-		"update_whisky"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_spring_devtools"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_vscode"
+		# "update_xcode"
+		# "update_awscli"
+		# "update_calibre"
+		# "update_docker"
+		# "update_figma"
+		# "update_fork"
+		# "update_github_cli"
+		# "update_intellij_idea"
+		# "update_insomnia"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_obs"
+		"update_pearcleaner"
+		# "update_postgresql"
+		# "update_the_unarchiver"
+		# "update_transmission"
+		# "update_utm"
+		# "update_vesktop"
+		# "update_whisky"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 

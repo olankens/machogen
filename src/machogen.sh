@@ -804,8 +804,8 @@ update_discord() {
 update_docker() {
 
 	# Update dependencies
-	brew install colima docker-compose
-	brew upgrade colima docker-compose
+	brew install colima docker-compose jq sponge
+	brew upgrade colima docker-compose jq sponge
 
 	# Update package
 	brew install docker
