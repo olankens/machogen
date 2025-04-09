@@ -1685,6 +1685,6 @@ main() {
 
 }
 
-if [[ "${(%):-%N}" == "${0}" ]]; then
+if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	main "$@"
 fi
