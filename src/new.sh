@@ -1,4 +1,4 @@
-# !/bin/bash
+# !/bin/zsh
 # shellcheck shell=bash
 
 # region services
