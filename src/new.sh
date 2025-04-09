@@ -1629,8 +1629,7 @@ update_spring_devtools() {
 
 # endregion
 
-# @define Handle main script logic
-main() {
+if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 	read -r -d "" welcome <<-EOD
 	███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
@@ -1684,6 +1683,4 @@ main() {
 
 	invoke_wrapper "$welcome" "${members[@]}"
 
-}
-
-[[ $ZSH_EVAL_CONTEXT != *:file ]] && main "$@"
+fi
