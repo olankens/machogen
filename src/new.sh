@@ -1624,8 +1624,18 @@ update_angular_devtools() {
 	# TODO
 }
 
-# @define Update quarkus devtools
-update_quarkus_devtools() {
+# @define Update ios devtools
+update_ios_devtools() {
+	# TODO
+}
+
+# @define Update react devtools
+update_react_devtools() {
+	# TODO
+}
+
+# @define Update spring devtools
+update_spring_devtools() {
 	# TODO
 }
 
@@ -1646,15 +1656,13 @@ main() {
 	local members=(
 		# "update_system"
 		# "update_android_studio"
-		"update_chromium"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_vscode"
-		# "update_xcode"
 		# "update_awscli"
 		# "update_calibre"
+		"update_chromium"
 		# "update_docker"
 		# "update_figma"
 		# "update_fork"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
 		# "update_intellij_idea"
 		# "update_insomnia"
@@ -1673,10 +1681,14 @@ main() {
 		# "update_transmission"
 		# "update_utm"
 		# "update_vesktop"
+		# "update_vscode"
 		# "update_whisky"
+		# "update_xcode"
 		# "update_youtube_music"
 		# "update_android_devtools"
 		# "update_angular_devtools"
+		# "update_ios_devtools"
+		# "update_react_devtools"
 		# "update_spring_devtools"
 		"update_appearance"
 	)
