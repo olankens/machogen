@@ -673,7 +673,7 @@ verify_computer() {
 
 }
 
-# @define Handl verifying the executor's privileges
+# @define Handle verifying the executor's privileges
 # @return 0 for success, 1 for failure
 verify_executor() {
 
@@ -971,7 +971,7 @@ update_chromium() {
 update_docker() {
 
 	# Handle dependencies
-	update_brew colima docker-compose jq sponge
+	update_brew colima docker-buildx docker-compose jq sponge
 
 	# Update package
 	update_brew docker
@@ -1601,7 +1601,7 @@ update_android_devtools() {
 	update_android_cmdline
 	update_android_studio
 
-	# Update sdk
+	# Update sdks
 	yes | sdkmanager "build-tools;34.0.0"
 	yes | sdkmanager "emulator"
 	yes | sdkmanager "platform-tools"
@@ -1610,6 +1610,8 @@ update_android_devtools() {
 	yes | sdkmanager "system-images;android-34;google_apis;arm64-v8a"
 	yes | sdkmanager --licenses
 	yes | sdkmanager --update
+
+	# Create emulators
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
 	# Update plugins
