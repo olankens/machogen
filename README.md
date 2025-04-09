@@ -63,4 +63,5 @@ Invoke specific functions only.
 source <(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
 update_android_devtools
 update_react_native_devtools
+update_spring_devtools
 ```
