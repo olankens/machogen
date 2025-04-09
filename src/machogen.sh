@@ -561,7 +561,7 @@ invoke_wrapper() {
 	local welcome=${1}
 	local country=${2}
 	local machine=${3}
-	local members=("${@:3}")
+	local members=("${@:4}")
 
 	# Verify executor
 	verify_executor || return 1
