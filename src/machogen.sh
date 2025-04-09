@@ -1863,4 +1863,4 @@ main() {
 
 }
 
-main "$@"
+[[ $ZSH_EVAL_CONTEXT != *:file ]] && main "$@"
