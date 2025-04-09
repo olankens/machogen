@@ -19,10 +19,8 @@ Blindly executing this is strongly discouraged.
 Invoke specific functions only.
 
 ```shell
-# Source machogen
 source <(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
-
-# Update devtools
 update_android_devtools
 update_angular_devtools
+update_quarkus_devtools
 ```

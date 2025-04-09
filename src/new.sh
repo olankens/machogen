@@ -1624,8 +1624,8 @@ update_angular_devtools() {
 	# TODO
 }
 
-# @define Update spring devtools
-update_spring_devtools() {
+# @define Update quarkus devtools
+update_quarkus_devtools() {
 	# TODO
 }
 
