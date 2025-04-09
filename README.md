@@ -6,10 +6,23 @@ MacOS automatic setup for developers.
 
 # <samp>GUIDANCE</samp>
 
-### Launch the script
+### <samp>LAUNCH SCRIPT</samp>
 
 Blindly executing this is strongly discouraged.
 
 ```shell
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
+```
+
+### <samp>IMPORT FUNCTIONS</samp>
+
+Invoke specific functions only.
+
+```shell
+# Source machogen
+source <"$(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
+
+# Update devtools
+update_android_devtools
+update_angular_devtools
 ```

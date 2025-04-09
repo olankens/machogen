@@ -1685,4 +1685,6 @@ main() {
 
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]:-${(%):-%N}}" == "$0" ]]; then
+	main "$@"
+fi
