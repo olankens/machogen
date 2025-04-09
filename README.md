@@ -7,39 +7,41 @@ MacOS automatic setup for developers.
 # <samp>FEATURES</samp>
 
 - Update System
-- Update AndroidStudio
-- Update AwsCli
+- Update Android Studio
+- Update AWS CLI
 - Update Calibre
 - Update Chromium
 - Update Docker
 - Update Figma
 - Update Git
-- Update GithubCli
-- Update IntellijIdea
+- Update GitHub CLI
+- Update IntelliJ Idea Ultimate
 - Update Insomnia
-- Update Jdownloader
-- Update JoalDesktop
+- Update JDownloader
+- Update Joal Desktop
 - Update KeepingYouAwake
 - Update Miniforge
 - Update Mpv
 - Update Nightlight
 - Update Node
 - Update Notion
-- Update Obs
+- Update OBS
 - Update Pearcleaner
-- Update TheUnarchiver
+- Update PostgreSQL
+- Update The Unarchiver
 - Update Transmission
-- Update Utm
+- Update UTM
 - Update Vesktop
-- Update Vscode
+- Update Visual Studio Code
 - Update Whisky
 - Update Xcode
-- Update YoutubeMusic
-- Update AndroidDevtools
-- Update AngularDevtools
-- Update IosDevtools
-- Update ReactDevtools
-- Update SpringDevtools
+- Update Youtube Music
+- Update Android DevTools
+- Update Angular DevTools
+- Update iOS DevTools
+- Update React DevTools
+- Update React Native DevTools
+- Update Spring DevTools
 - Update Appearance
 
 # <samp>GUIDANCE</samp>

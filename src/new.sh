@@ -1634,6 +1634,11 @@ update_react_devtools() {
 	# TODO
 }
 
+# @define Update react native devtools
+update_react_native_devtools() {
+	# TODO
+}
+
 # @define Update spring devtools
 update_spring_devtools() {
 	# TODO
@@ -1689,6 +1694,7 @@ main() {
 		# "update_angular_devtools"
 		# "update_ios_devtools"
 		# "update_react_devtools"
+		# "update_react_native_devtools"
 		# "update_spring_devtools"
 		"update_appearance"
 	)
