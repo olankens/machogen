@@ -6,7 +6,7 @@ MacOS automatic setup for developers.
 
 # <samp>GUIDANCE</samp>
 
-### <samp>LAUNCH SCRIPT</samp>
+### Launch the script
 
 Blindly executing this is strongly discouraged.
 
@@ -14,7 +14,7 @@ Blindly executing this is strongly discouraged.
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
 ```
 
-### <samp>IMPORT FUNCTIONS</samp>
+### Import the functions
 
 Invoke specific functions only.
 
