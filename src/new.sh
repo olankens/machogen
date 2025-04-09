@@ -985,11 +985,6 @@ update_docker() {
 
 }
 
-# @define Update eid_belgium
-update_eid_belgium() {
-	#TODO
-}
-
 # @define Update figma
 update_figma() {
 
@@ -1002,14 +997,6 @@ update_figma() {
 	# Change settings
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
-
-}
-
-# @define Update fork
-update_fork() {
-
-	# Update package
-	update_cask fork
 
 }
 
@@ -1040,17 +1027,6 @@ update_github_cli() {
 
 	# Update package
 	update_brew gh
-
-}
-
-# @define Update insomnia
-update_insomnia() {
-
-	# Update package
-	update_cask insomnia
-
-	# Change settings
-	# TODO
 
 }
 
@@ -1184,6 +1160,13 @@ update_keepingyouawake() {
 
 	# Update package
 	update_cask keepingyouawake
+
+}
+
+# @define Update kubernetes
+update_kubernetes() {
+
+	# TODO
 
 }
 
@@ -1666,14 +1649,13 @@ main() {
 		"update_chromium"
 		# "update_docker"
 		# "update_figma"
-		# "update_fork"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
 		# "update_intellij_idea"
-		# "update_insomnia"
 		# "update_jdownloader"
 		# "update_joal_desktop"
 		# "update_keepingyouawake"
+		# "update_kubernetes"
 		# "update_miniforge"
 		# "update_mpv"
 		# "update_nightlight"
@@ -1682,6 +1664,7 @@ main() {
 		# "update_obs"
 		"update_pearcleaner"
 		# "update_postgresql"
+		# "update_temurin"
 		# "update_the_unarchiver"
 		# "update_transmission"
 		# "update_utm"

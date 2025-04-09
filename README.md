@@ -15,11 +15,11 @@ MacOS automatic setup for developers.
 - Update Figma
 - Update Git
 - Update GitHub CLI
-- Update IntelliJ Idea Ultimate
-- Update Insomnia
+- Update IntelliJ IDEA Ultimate
 - Update JDownloader
 - Update Joal Desktop
 - Update KeepingYouAwake
+- Update Kubernetes
 - Update Miniforge
 - Update Mpv
 - Update Nightlight
@@ -28,6 +28,7 @@ MacOS automatic setup for developers.
 - Update OBS
 - Update Pearcleaner
 - Update PostgreSQL
+- Update Temurin
 - Update The Unarchiver
 - Update Transmission
 - Update UTM
