@@ -1685,6 +1685,4 @@ main() {
 
 }
 
-if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
-	main "$@"
-fi
+[[ $ZSH_EVAL_CONTEXT != *:file ]] && main "$@"
