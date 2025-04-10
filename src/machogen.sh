@@ -111,7 +111,7 @@ assert_admin_execution() {
 assert_admin_password() {
 
 	# Handle password
-	local secret1=$(gather_password sudo-password generic)
+	local secret1=$(gather_password admin-password generic)
 
 	# Verify password
 	sudo -k && echo "$secret1" | sudo -S -v &>/dev/null
@@ -563,17 +563,19 @@ invoke_wrapper() {
 	local machine=${3}
 	local members=("${@:4}")
 
-	# Verify executor
-	verify_executor || return 1
-
-	# Prompt password
-	clear && sudo -v && clear
+	# # Prompt password
+	# clear && sudo -v && clear
 
 	# Change headline
 	printf "\033]0;%s\007" "$(basename "$ZSH_ARGZERO" | cut -d . -f 1)"
 
-	# Output welcome
-	printf "\n\033[92m%s\033[00m\n\n" "$welcome"
+	# Verify executor
+	clear && printf "\n\033[92m%s\033[00m\n\n" "$welcome"
+	verify_executor || return 1
+
+	# Prompt password
+	sudo -v; local results=$?; printf "\n"; [[ $results -ne 0 ]] && return 1
+	clear && printf "\n\033[92m%s\033[00m\n\n" "$welcome"
 
 	# Remove timeouts
 	change_timeouts false
@@ -582,9 +584,8 @@ invoke_wrapper() {
 	change_sleeping false
 
 	# Verify requirements
-	# verify_computer || return 1
 	verify_security || return 1
-	# verify_homebrew || return 1
+	verify_homebrew || return 1
 	# verify_apple_id || return 1
 
 	# Change timezone
@@ -767,24 +768,14 @@ update_chromium_extension() {
 # @return 0 for success, 1 for failure
 verify_apple_id() {
 
-	printf "\r\033[93m%s\033[00m" "CHECKING APPLE CREDENTIALS, PLEASE BE PATIENT"
+	printf "\r\033[K"
+	printf "\r\033[93m%s\033[00m" "VERIFYING KEYCHAIN ELEMENTS, BE PATIENT"
 	if ! assert_apple_id; then
-		security delete-generic-password -s appmail &>/dev/null
-		security delete-generic-password -s apppass &>/dev/null
+		security delete-generic-password -s apple-username &>/dev/null
+		security delete-generic-password -s apple-password &>/dev/null
 		printf "\r\033[91m%s\033[00m\n\n" "APPLE CREDENTIALS NOT IN KEYCHAIN OR INCORRECT"
-		printf "\r\033[92m%s\033[00m\n" "security add-generic-password -a \$USER -s appmail -w username"
-		printf "\r\033[92m%s\033[00m\n\n" "security add-generic-password -a \$USER -s apppass -w password"
-		return 1
-	fi
-
-}
-
-# @define Handle verifying the macos version
-# @return 0 for success, 1 for failure
-verify_computer() {
-
-	if assert_macos_version "14"; then
-		printf "\r\033[91m%s\033[00m\n\n" "CURRENT MACOS VERSION (${"$(sw_vers -productVersion)":0:4}) IS NOT SUPPORTED"
+		printf "\r\033[92m%s\033[00m\n" "security add-generic-password -a \$USER -s apple-username -w username"
+		printf "\r\033[92m%s\033[00m\n\n" "security add-generic-password -a \$USER -s apple-password -w password"
 		return 1
 	fi
 
@@ -795,7 +786,8 @@ verify_computer() {
 verify_executor() {
 
 	if assert_admin_execution; then
-		printf "\r\033[91m%s\033[00m\n\n" "EXECUTING THIS SCRIPT AS ROOT IS NOT ADMITTED"
+		printf "\r\033[K"
+		printf "\r\033[91m%s\033[00m\n\n" "EXECUTING MACHOGEN AS ROOT IS FORBIDDEN"
 		return 1
 	fi
 
@@ -805,7 +797,8 @@ verify_executor() {
 # @return 0 for success, 1 for failure
 verify_homebrew() {
 
-	printf "\r\033[93m%s\033[00m" "UPGRADING HOMEBREW PACKAGE, PLEASE BE PATIENT"
+	printf "\r\033[K"
+	printf "\r\033[93m%s\033[00m" "VERIFYING HOMEBREW PRESENCE, BE PATIENT"
 	local command=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
 	CI=1 /bin/bash -c "$command" &>/dev/null
 	local configs="$HOME/.zprofile"
@@ -824,7 +817,8 @@ verify_homebrew() {
 # @return 0 for success, 1 for failure
 verify_security() {
 
-	printf "\r\033[93m%s\033[00m" "CHANGING SECURITY, PLEASE FOLLOW THE MESSAGES"
+	printf "\r\033[K"
+	printf "\r\033[93m%s\033[00m" "VERIFYING TERMINAL SECURITY, FOLLOW DIALOGS"
 	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null }
 	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null }
 	granted() { ls "$HOME/Library/Messages" &>/dev/null }
@@ -1771,7 +1765,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
-		"update_obs"
+		# "update_obs"
 		"update_pearcleaner"
 		"update_postgresql"
 		"update_temurin"
