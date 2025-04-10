@@ -808,6 +808,7 @@ verify_homebrew() {
 		echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
 	fi
+	brew analytics off
 	brew cleanup &>/dev/null
 	return 0
 
@@ -1360,7 +1361,7 @@ update_nodejs() {
 		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
 		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
 		echo "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
+		source "$configs"
 	else
 		sed -i "" -e "s#/opt/homebrew/opt/node.*/bin#/opt/homebrew/opt/node@$version/bin#" "$HOME/.zshrc"
 		source "$HOME/.zshrc"
@@ -1707,7 +1708,31 @@ update_android_devtools() {
 
 # @define Update angular devtools
 update_angular_devtools() {
-	# TODO
+	
+	# Update dependencies
+	update_chromium
+	update_intellij_idea
+	update_nodejs
+
+	# Update chromium extensions
+	# update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
+
+	# Update intellij plugins
+	idea installPlugins AngularJS # angular
+
+	# Update angular cli
+	npm i -g @angular/cli
+
+	# Change environment
+	local configs="$HOME/.zshrc"
+	if ! grep -q "ng completion script" "$configs" 2>/dev/null; then
+		[[ -s "$configs" ]] || touch "$configs"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
+		echo 'autoload -Uz compinit && compinit' >>"$configs"
+		echo 'source <(ng completion script)' >>"$configs"
+		source "$configs"
+	fi
+
 }
 
 # @define Update ios devtools
@@ -1746,44 +1771,44 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		"update_system"
-		"update_android_studio"
-		"update_awscli"
-		"update_calibre"
-		"update_chromium"
-		"update_docker"
-		"update_figma"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_intellij_idea"
-		"update_jdownloader"
-		"update_joal_desktop"
+		# "update_system"
+		# "update_android_studio"
+		# "update_awscli"
+		# "update_calibre"
+		# "update_chromium"
+		# "update_docker"
+		# "update_figma"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_intellij_idea"
+		# "update_jdownloader"
+		# "update_joal_desktop"
 		"update_keepingyouawake"
-		"update_kubernetes"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
+		# "update_kubernetes"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
 		# "update_obs"
-		"update_pearcleaner"
-		"update_postgresql"
+		# "update_pearcleaner"
+		# "update_postgresql"
 		"update_temurin"
-		"update_the_unarchiver"
-		"update_transmission"
-		"update_utm"
-		"update_vesktop"
-		"update_vscode"
-		"update_whisky"
-		"update_xcode"
-		"update_youtube_music"
-		"update_android_devtools"
+		# "update_the_unarchiver"
+		# "update_transmission"
+		# "update_utm"
+		# "update_vesktop"
+		# "update_vscode"
+		# "update_whisky"
+		# "update_xcode"
+		# "update_youtube_music"
+		# "update_android_devtools"
 		"update_angular_devtools"
-		"update_ios_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_spring_devtools"
-		"update_appearance"
+		# "update_ios_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_spring_devtools"
+		# "update_appearance"
 	)
 
 	invoke_wrapper "$welcome" "$country" "$machine" "${members[@]}"
