@@ -1752,7 +1752,20 @@ update_react_native_devtools() {
 
 # @define Update spring devtools
 update_spring_devtools() {
-	# TODO
+	
+	# Update dependencies
+	update_intellij_idea
+	update_temurin
+	update_vscode
+	update_brew gradle maven
+
+	# Update intellij plugins
+	# idea installPlugins com.haulmont.jpab # jpa-buddy
+
+	# Update vscode extensions
+	code --install-extension "vmware.vscode-boot-dev-pack" --force
+	code --install-extension "vscjava.vscode-java-pack" --force
+
 }
 
 # endregion
