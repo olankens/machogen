@@ -1709,7 +1709,7 @@ update_android_devtools() {
 # @define Update angular devtools
 update_angular_devtools() {
 	
-	# Update dependencies
+	# Handle dependencies
 	update_chromium
 	update_intellij_idea
 	update_nodejs
@@ -1737,23 +1737,34 @@ update_angular_devtools() {
 
 # @define Update ios devtools
 update_ios_devtools() {
-	# TODO
+	
+	# Handle dependencies
+	update_xcode
+
+	# TODO: Update xcode plugins
+
 }
 
 # @define Update react devtools
 update_react_devtools() {
-	# TODO
+	
+	# Handle dependencies
+	update_nodejs
+
 }
 
 # @define Update react native devtools
 update_react_native_devtools() {
-	# TODO
+
+	# Handle dependencies
+	update_nodejs
+
 }
 
 # @define Update spring devtools
 update_spring_devtools() {
 	
-	# Update dependencies
+	# Handle dependencies
 	update_intellij_idea
 	update_temurin
 	update_vscode
