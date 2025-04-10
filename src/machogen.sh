@@ -1447,7 +1447,7 @@ update_rider() {
 	update_cask rider
 
 	# TODO: Change settings
-	if [[ "$present" == "false" ]]; then invoke_once "Rider"; fi
+	if [[ "$present" == "false" ]]; then invoke_once "JetBrains Rider"; fi
 
 }
 
