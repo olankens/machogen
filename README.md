@@ -12,6 +12,7 @@ MacOS automatic setup for developers.
 - Update Calibre
 - Update Chromium
 - Update Docker
+- Update Dotnet SDK
 - Update Figma
 - Update Git
 - Update GitHub CLI
@@ -28,6 +29,7 @@ MacOS automatic setup for developers.
 - Update OBS
 - Update Pearcleaner
 - Update PostgreSQL
+- Update Rider
 - Update Temurin
 - Update The Unarchiver
 - Update Transmission
@@ -39,6 +41,7 @@ MacOS automatic setup for developers.
 - Update Youtube Music
 - Update Android DevTools
 - Update Angular DevTools
+- Update Dotnet DevTools
 - Update iOS DevTools
 - Update React DevTools
 - Update React Native DevTools

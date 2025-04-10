@@ -935,10 +935,7 @@ update_appearance() {
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
-	append_dock_application "/Applications/Fork.app"
-	append_dock_application "/Applications/Tower.app"
-	append_dock_application "/Applications/MQTTX.app"
-	append_dock_application "/Applications/Insomnia.app"
+	append_dock_application "/Applications/Rider.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/mpv.app"
@@ -1097,6 +1094,14 @@ update_docker() {
 
 }
 
+# @define Update dotnet-sdk
+update_dotnet_sdk() {
+
+	# Update package
+	update_cask dotnet-sdk
+
+}
+
 # @define Update figma
 update_figma() {
 
@@ -1152,8 +1157,7 @@ update_intellij_idea() {
 	local present="$([[ -d "/Applications/IntelliJ IDEA.app" ]] && echo "true" || echo "false")"
 	update_cask intellij-idea
 
-	# Change settings
-	# TODO
+	# TODO: Change settings
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
 }
@@ -1429,6 +1433,21 @@ update_postgresql() {
 
 	# Launch service
 	brew services restart postgresql@"$version"
+
+}
+
+# @define Update rider
+update_rider() {
+
+	# Handle dependencies
+	update_brew grep xmlstarlet
+
+	# Update package
+	local present="$([[ -d "/Applications/Rider.app" ]] && echo "true" || echo "false")"
+	update_cask rider
+
+	# TODO: Change settings
+	if [[ "$present" == "false" ]]; then invoke_once "Rider"; fi
 
 }
 
@@ -1735,6 +1754,16 @@ update_angular_devtools() {
 
 }
 
+# @define Update dotnet devtools
+update_dotnet_devtools() {
+	
+	# Handle dependencies
+	update_chromium
+	update_dotnet_sdk
+	update_rider
+
+}
+
 # @define Update ios devtools
 update_ios_devtools() {
 	
@@ -1795,43 +1824,46 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		"update_system"
-		"update_android_studio"
-		"update_awscli"
-		"update_calibre"
-		"update_chromium"
-		"update_docker"
-		"update_figma"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_intellij_idea"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_kubernetes"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_obs"
-		"update_pearcleaner"
-		"update_postgresql"
-		"update_temurin"
-		"update_the_unarchiver"
-		"update_transmission"
-		"update_utm"
-		"update_vesktop"
-		"update_vscode"
-		"update_whisky"
-		"update_xcode"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_ios_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_spring_devtools"
+		# "update_system"
+		# "update_android_studio"
+		# "update_awscli"
+		# "update_calibre"
+		# "update_chromium"
+		# "update_docker"
+		"update_dotnet_sdk"
+		# "update_figma"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_intellij_idea"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_kubernetes"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_obs"
+		# "update_pearcleaner"
+		# "update_postgresql"
+		"update_rider"
+		# "update_temurin"
+		# "update_the_unarchiver"
+		# "update_transmission"
+		# "update_utm"
+		# "update_vesktop"
+		# "update_vscode"
+		# "update_whisky"
+		# "update_xcode"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		"update_dotnet_devtools"
+		# "update_ios_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
