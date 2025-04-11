@@ -1758,22 +1758,6 @@ update_ios_devtools() {
 
 }
 
-# @define Update react devtools
-update_react_devtools() {
-	
-	# Handle dependencies
-	update_nodejs
-
-}
-
-# @define Update react native devtools
-update_react_native_devtools() {
-
-	# Handle dependencies
-	update_react_devtools
-
-}
-
 # @define Update spring devtools
 update_spring_devtools() {
 	

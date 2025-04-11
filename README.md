@@ -40,8 +40,6 @@ Opinionated macOS automatic setup for developers.
 - Update Android DevTools
 - Update Angular DevTools
 - Update iOS DevTools
-- Update React DevTools
-- Update React Native DevTools
 - Update Spring DevTools
 - Update Appearance
 
@@ -62,6 +60,5 @@ Invoke specific functions only.
 ```shell
 source <(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
 update_android_devtools
-update_react_native_devtools
-update_spring_devtools
+update_angular_devtools
 ```
