@@ -524,7 +524,8 @@ invoke_once() {
 
 	# Handle parameters
 	local appname=${1}
-	local timeout=${2:-30}
+	local process=${2:-$1}
+	local timeout=${3:-30}
 
 	# Invoke application
 	osascript <<-EOD
@@ -533,7 +534,7 @@ invoke_once() {
 			activate
 			reopen
 			tell application "System Events"
-				tell process "${appname}"
+				tell process "${process}"
 					with timeout of ${timeout} seconds
 						repeat until (exists window 1)
 							delay 1
@@ -900,8 +901,10 @@ update_android_studio() {
 	local present="$([[ -d "/Applications/Android Studio.app" ]] && echo true || echo false)"
 	update_cask android-studio
 
-	# TODO: Change settings
+	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
+
+	# TODO: Change settings
 
 }
 
@@ -956,8 +959,7 @@ update_awscli() {
 	# Update package
 	update_brew awscli
 
-	# Change settings
-	# TODO
+	# TODO: Change settings
 
 }
 
@@ -1157,8 +1159,10 @@ update_intellij_idea() {
 	local present="$([[ -d "/Applications/IntelliJ IDEA.app" ]] && echo "true" || echo "false")"
 	update_cask intellij-idea
 
-	# TODO: Change settings
+	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
+
+	# TODO: Change settings
 
 }
 
@@ -1282,7 +1286,7 @@ update_keepingyouawake() {
 # @define Update kubernetes
 update_kubernetes() {
 
-	# TODO
+	# TODO: Implement function
 
 }
 
@@ -1446,8 +1450,10 @@ update_rider() {
 	local present="$([[ -d "/Applications/Rider.app" ]] && echo "true" || echo "false")"
 	update_cask rider
 
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "Rider" "JetBrains Rider"; fi
+
 	# TODO: Change settings
-	if [[ "$present" == "false" ]]; then invoke_once "JetBrains Rider"; fi
 
 }
 
@@ -1824,46 +1830,46 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		# "update_system"
-		# "update_android_studio"
-		# "update_awscli"
-		# "update_calibre"
-		# "update_chromium"
-		# "update_docker"
+		"update_system"
+		"update_android_studio"
+		"update_awscli"
+		"update_calibre"
+		"update_chromium"
+		"update_docker"
 		"update_dotnet_sdk"
-		# "update_figma"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_github_cli"
-		# "update_intellij_idea"
-		# "update_jdownloader"
-		# "update_joal_desktop"
-		# "update_keepingyouawake"
-		# "update_kubernetes"
-		# "update_miniforge"
-		# "update_mpv"
-		# "update_nightlight"
-		# "update_nodejs"
-		# "update_notion"
-		# "update_obs"
-		# "update_pearcleaner"
-		# "update_postgresql"
+		"update_figma"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_github_cli"
+		"update_intellij_idea"
+		"update_jdownloader"
+		"update_joal_desktop"
+		"update_keepingyouawake"
+		"update_kubernetes"
+		"update_miniforge"
+		"update_mpv"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_obs"
+		"update_pearcleaner"
+		"update_postgresql"
 		"update_rider"
-		# "update_temurin"
-		# "update_the_unarchiver"
-		# "update_transmission"
-		# "update_utm"
-		# "update_vesktop"
-		# "update_vscode"
-		# "update_whisky"
-		# "update_xcode"
-		# "update_youtube_music"
-		# "update_android_devtools"
-		# "update_angular_devtools"
+		"update_temurin"
+		"update_the_unarchiver"
+		"update_transmission"
+		"update_utm"
+		"update_vesktop"
+		"update_vscode"
+		"update_whisky"
+		"update_xcode"
+		"update_youtube_music"
+		"update_android_devtools"
+		"update_angular_devtools"
 		"update_dotnet_devtools"
-		# "update_ios_devtools"
-		# "update_react_devtools"
-		# "update_react_native_devtools"
-		# "update_spring_devtools"
+		"update_ios_devtools"
+		"update_react_devtools"
+		"update_react_native_devtools"
+		"update_spring_devtools"
 		"update_appearance"
 	)
 
