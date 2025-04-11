@@ -1770,7 +1770,7 @@ update_react_devtools() {
 update_react_native_devtools() {
 
 	# Handle dependencies
-	update_nodejs
+	update_react_devtools
 
 }
 
