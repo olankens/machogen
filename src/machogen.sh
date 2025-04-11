@@ -182,36 +182,41 @@ change_chromium_download() {
 # @params The pattern used to identify the engine in the list
 change_chromium_engine() {
 
-	# INFO: Google intentionally randomized and restricted access to search engine list to limit abuse
+	# INFO: Google intentionally randomized and restricted access to search engine list
 	# TODO: Use keystrokes and OCR to achieve
-	# local pattern=${1:-duckduckgo}
-	# [[ -d "/Applications/Chromium.app" ]] || return 1
-	# killall "Chromium" 2>/dev/null && sleep 4
-	# defaults write org.chromium.Chromium AppleLanguages "(en-US)"
-	# osascript <<-EOD
-	# 	set starter to "/Applications/Chromium.app"
-	# 	tell application starter
-	# 		activate
-	# 		reopen
-	# 		delay 4
-	# 		open location "chrome://settings/search"
-	# 		delay 2
-	# 		tell application "System Events"
-	# 			repeat 2 times
-	# 				key code 48
-	# 			end repeat
-	# 			delay 2
-	# 			key code 49
-	# 			delay 2
-	# 			keystroke "${pattern}"
-	# 			delay 2
-	# 			key code 49
-	# 		end tell
-	# 		delay 2
-	# 		quit
-	# 		delay 2
-	# 	end tell
-	# EOD
+	return 1
+
+	# Handle parameters
+	local pattern=${1:-duckduckgo}
+	[[ -d "/Applications/Chromium.app" ]] || return 1
+
+	# Change search engine
+	killall "Chromium" 2>/dev/null && sleep 4
+	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
+	osascript <<-EOD
+		set starter to "/Applications/Chromium.app"
+		tell application starter
+			activate
+			reopen
+			delay 4
+			open location "chrome://settings/search"
+			delay 2
+			tell application "System Events"
+				repeat 2 times
+					key code 48
+				end repeat
+				delay 2
+				key code 49
+				delay 2
+				keystroke "${pattern}"
+				delay 2
+				key code 49
+			end tell
+			delay 2
+			quit
+			delay 2
+		end tell
+	EOD
 
 }
 
