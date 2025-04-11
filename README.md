@@ -12,7 +12,6 @@ Opinionated macOS automatic setup for developers.
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Docker
-- Update Dotnet SDK
 - Update Figma
 - Update Git
 - Update GitHub CLI
@@ -29,7 +28,6 @@ Opinionated macOS automatic setup for developers.
 - Update OBS
 - Update Pearcleaner
 - Update PostgreSQL
-- Update Rider
 - Update Temurin
 - Update The Unarchiver
 - Update Transmission
@@ -41,7 +39,6 @@ Opinionated macOS automatic setup for developers.
 - Update Youtube Music
 - Update Android DevTools
 - Update Angular DevTools
-- Update Dotnet DevTools
 - Update iOS DevTools
 - Update React DevTools
 - Update React Native DevTools
