@@ -1818,7 +1818,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
-		# "update_obs"
+		"update_obs"
 		"update_pearcleaner"
 		"update_postgresql"
 		"update_temurin"
