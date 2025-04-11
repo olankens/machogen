@@ -523,7 +523,8 @@ gather_version() {
 }
 
 # @define Invoke application, wait for first window and close
-# @params The application name
+# @params The whole application name
+# @params The whole process name
 # @params The maximum wait time (seconds) for the window
 invoke_once() {
 
