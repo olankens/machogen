@@ -937,7 +937,6 @@ update_appearance() {
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	append_dock_application "/Applications/Transmission.app"
 	append_dock_application "/Applications/Joal Desktop.app"
-	append_dock_application "/Applications/NetNewsWire.app"
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Vesktop.app"
 	append_dock_application "/Applications/calibre.app"
@@ -1101,14 +1100,6 @@ update_docker() {
 
 }
 
-# @define Update dotnet-sdk
-update_dotnet_sdk() {
-
-	# Update package
-	update_cask dotnet-sdk
-
-}
-
 # @define Update figma
 update_figma() {
 
@@ -1191,7 +1182,7 @@ update_jdownloader() {
 	update_cask jdownloader
 
 	# Finish install
-	if [[ "$present" == "false" ]]; then
+	if [[ "$present" == "false" || true ]]; then
 		local appdata="/Applications/JDownloader 2/cfg"
 		local config1="$appdata/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
 		local config2="$appdata/org.jdownloader.settings.GeneralSettings.json"
@@ -1242,6 +1233,7 @@ update_jdownloader() {
 	cp "$picture" "/Applications/JDownloader 2/JDownloader2.app/Contents/Resources/app.icns"
 	local sitting="/Applications/JDownloader 2/themes/standard/org/jdownloader/images/logo/jd_logo_128_128.png"
 	sips -Z 128 -s format png "$picture" --out "$sitting"
+
 }
 
 # @define Update joal-desktop
@@ -1740,7 +1732,8 @@ update_angular_devtools() {
 	idea installPlugins AngularJS # angular
 
 	# Update angular cli
-	npm i -g @angular/cli
+	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
+	ng analytics off
 
 	# Change environment
 	local configs="$HOME/.zshrc"
@@ -1761,6 +1754,18 @@ update_ios_devtools() {
 	update_xcode
 
 	# TODO: Update xcode plugins
+
+}
+
+# @define Update nest devtools
+update_nest_devtools() {
+
+	# Handle dependencies
+	update_intellij_idea
+	update_nodejs
+
+	# Update intellij plugins
+	idea installPlugins com.github.dinbtechit.jetbrainsnestjs # nestjs
 
 }
 
@@ -1798,44 +1803,44 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		"update_system"
-		"update_android_studio"
-		"update_awscli"
-		"update_calibre"
-		"update_chromium"
-		"update_docker"
-		"update_dotnet_sdk"
-		"update_figma"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_intellij_idea"
+		# "update_system"
+		# "update_android_studio"
+		# "update_awscli"
+		# "update_calibre"
+		# "update_chromium"
+		# "update_docker"
+		# "update_figma"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_intellij_idea"
 		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_kubernetes"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_obs"
-		"update_pearcleaner"
-		"update_postgresql"
-		"update_temurin"
-		"update_the_unarchiver"
-		"update_transmission"
-		"update_utm"
-		"update_vesktop"
-		"update_vscode"
-		"update_whisky"
-		"update_xcode"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_ios_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_spring_devtools"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_kubernetes"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_obs"
+		# "update_pearcleaner"
+		# "update_postgresql"
+		# "update_temurin"
+		# "update_the_unarchiver"
+		# "update_transmission"
+		# "update_utm"
+		# "update_vesktop"
+		# "update_vscode"
+		# "update_whisky"
+		# "update_xcode"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_ios_devtools"
+		# "update_nest_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
