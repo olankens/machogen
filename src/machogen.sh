@@ -570,9 +570,6 @@ invoke_wrapper() {
 	local machine=${3}
 	local members=("${@:4}")
 
-	# # Prompt password
-	# clear && sudo -v && clear
-
 	# Change headline
 	printf "\033]0;%s\007" "$(basename "$ZSH_ARGZERO" | cut -d . -f 1)"
 
@@ -941,9 +938,11 @@ update_appearance() {
 	append_dock_application "/Applications/Vesktop.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Notion.app"
+	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
+	append_dock_application "/Applications/WebStorm.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Figma.app"
@@ -1079,6 +1078,29 @@ update_chromium() {
 
 	# Update bypass-paywalls-chrome-clean
 	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+
+}
+
+# @define Update cursor
+update_cursor() {
+
+	# Handle dependencies
+	update_brew jq sponge
+
+	# Update package
+	update_cask cursor
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
+	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/cursor.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Cursor.app" "$picture" || sudo !!
 
 }
 
@@ -1722,14 +1744,29 @@ update_angular_devtools() {
 	
 	# Handle dependencies
 	update_chromium
+	update_cursor
 	update_intellij_idea
 	update_nodejs
 
 	# Update chromium extensions
 	# update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
 
+	# Update cursor extensions
+	cursor --install-extension "angular.ng-template" --force
+	cursor --install-extension "bradlc.vscode-tailwindcss" --force
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
+
 	# Update intellij plugins
 	idea installPlugins AngularJS # angular
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = true' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
 
 	# Update angular cli
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
@@ -1761,11 +1798,27 @@ update_ios_devtools() {
 update_nest_devtools() {
 
 	# Handle dependencies
+	update_cursor
 	update_intellij_idea
 	update_nodejs
 
+	# Update cursor extensions
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "imgildev.vscode-nestjs-generator" --force
+	cursor --install-extension "imgildev.vscode-nestjs-snippets-extension" --force
+	cursor --install-extension "imgildev.vscode-nestjs-swagger-snippets" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
+
 	# Update intellij plugins
 	idea installPlugins com.github.dinbtechit.jetbrainsnestjs # nestjs
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = true' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
 
 }
 
@@ -1803,17 +1856,18 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		# "update_system"
+		"update_system"
 		# "update_android_studio"
 		# "update_awscli"
 		# "update_calibre"
 		# "update_chromium"
+		"update_cursor"
 		# "update_docker"
-		# "update_figma"
+		"update_figma"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
 		# "update_intellij_idea"
-		"update_jdownloader"
+		# "update_jdownloader"
 		# "update_joal_desktop"
 		# "update_keepingyouawake"
 		# "update_kubernetes"
@@ -1823,7 +1877,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_nodejs"
 		# "update_notion"
 		# "update_obs"
-		# "update_pearcleaner"
+		"update_pearcleaner"
 		# "update_postgresql"
 		# "update_temurin"
 		# "update_the_unarchiver"
@@ -1835,9 +1889,9 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_xcode"
 		# "update_youtube_music"
 		# "update_android_devtools"
-		# "update_angular_devtools"
+		"update_angular_devtools"
 		# "update_ios_devtools"
-		# "update_nest_devtools"
+		"update_nest_devtools"
 		# "update_react_devtools"
 		# "update_react_native_devtools"
 		# "update_spring_devtools"
