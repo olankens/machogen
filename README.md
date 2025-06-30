@@ -11,6 +11,7 @@ MacOS automatic setup for developers.
 - Update AWS CLI
 - Update Calibre
 - Update Chromium (Ungoogled)
+- Update Cursor
 - Update Docker
 - Update Figma
 - Update Git
@@ -40,6 +41,7 @@ MacOS automatic setup for developers.
 - Update Android DevTools
 - Update Angular DevTools
 - Update iOS DevTools
+- Update Nest DevTools
 - Update Spring DevTools
 - Update Appearance
 
