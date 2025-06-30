@@ -40,6 +40,7 @@ MacOS automatic setup for developers.
 - Update Youtube Music
 - Update Android DevTools
 - Update Angular DevTools
+- Update Ionic DevTools
 - Update iOS DevTools
 - Update Nest DevTools
 - Update Spring DevTools

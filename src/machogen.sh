@@ -1791,13 +1791,27 @@ update_angular_devtools() {
 
 }
 
+# @define Update ionic devtools
+update_ionic_devtools() {
+	
+	# Handle dependencies
+	update_android_devtools
+	update_angular_devtools
+	update_ios_devtools
+
+	# Update cursor extensions
+	cursor --install-extension "ionic.ionic" --force
+
+}
+
 # @define Update ios devtools
 update_ios_devtools() {
 	
 	# Handle dependencies
 	update_xcode
 
-	# TODO: Update xcode plugins
+	# Update xcode extensions
+	update_cask swiftformat-for-xcode
 
 }
 
@@ -1899,6 +1913,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_youtube_music"
 		"update_android_devtools"
 		"update_angular_devtools"
+		"update_ionic_devtools"
 		"update_ios_devtools"
 		"update_nest_devtools"
 		"update_spring_devtools"
