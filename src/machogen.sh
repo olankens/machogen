@@ -949,7 +949,7 @@ update_appearance() {
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/mpv.app"
 	append_dock_application "/Applications/YouTube Music.app"
-	append_dock_application "/Applications/Whisky.app"
+	append_dock_application "/Applications/CrossOver.app"
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
@@ -1078,6 +1078,23 @@ update_chromium() {
 
 	# Update bypass-paywalls-chrome-clean
 	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+
+}
+
+# @define Update crossover
+update_crossover() {
+
+	# Change settings
+	defaults write com.codeweavers.CrossOver AskForRatings -bool false
+	defaults write com.codeweavers.CrossOver SUAutomaticallyUpdate -bool false
+	defaults write com.codeweavers.CrossOver SUEnableAutomaticChecks -bool false
+	defaults write com.codeweavers.CrossOver SUHasLaunchedBefore -bool true
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/crossover.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/CrossOver.app" "$picture" || sudo !!
 
 }
 
@@ -1659,14 +1676,6 @@ update_vscode() {
 
 }
 
-# @define Update whisky
-update_whisky() {
-
-	# Update package
-	update_cask whisky
-
-}
-
 # @define Update xcode
 update_xcode() {
 
@@ -1879,44 +1888,44 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local country="Europe/Brussels"
 	local machine="macintosh"
 	local members=(
-		"update_system"
-		"update_android_studio"
-		"update_awscli"
-		"update_calibre"
-		"update_chromium"
-		"update_cursor"
-		"update_docker"
-		"update_figma"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_intellij_idea"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_kubernetes"
-		"update_miniforge"
-		"update_mpv"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_obs"
-		"update_pearcleaner"
-		"update_postgresql"
-		"update_temurin"
-		"update_the_unarchiver"
-		"update_transmission"
-		"update_utm"
-		"update_vesktop"
-		"update_vscode"
-		"update_whisky"
-		"update_xcode"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_ionic_devtools"
-		"update_ios_devtools"
-		"update_nest_devtools"
-		"update_spring_devtools"
+		# "update_system"
+		# "update_android_studio"
+		# "update_awscli"
+		# "update_calibre"
+		# "update_chromium"
+		"update_crossover"
+		# "update_cursor"
+		# "update_docker"
+		# "update_figma"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_intellij_idea"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_kubernetes"
+		# "update_miniforge"
+		# "update_mpv"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_obs"
+		# "update_pearcleaner"
+		# "update_postgresql"
+		# "update_temurin"
+		# "update_the_unarchiver"
+		# "update_transmission"
+		# "update_utm"
+		# "update_vesktop"
+		# "update_vscode"
+		# "update_xcode"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_ionic_devtools"
+		# "update_ios_devtools"
+		# "update_nest_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
