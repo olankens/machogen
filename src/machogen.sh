@@ -945,6 +945,7 @@ update_appearance() {
 	append_dock_application "/Applications/WebStorm.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/Applications/Balsamiq Wireframes.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/mpv.app"
@@ -1078,6 +1079,23 @@ update_chromium() {
 
 	# Update bypass-paywalls-chrome-clean
 	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+
+}
+
+# @define Update claude-code
+update_claude_code() {
+
+	# Handle dependencies
+	update_nodejs
+
+	# Update package
+	npm install -g @anthropic-ai/claude-code
+
+	# Update vscode extensions
+	code --install-extension "anthropic.claude-code" --force
+
+	# Update intellij plugins
+	idea installPlugins com.anthropic.code.plugin
 
 }
 
@@ -1893,6 +1911,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_awscli"
 		"update_calibre"
 		"update_chromium"
+		"update_claude_code"
 		"update_crossover"
 		"update_cursor"
 		"update_docker"
