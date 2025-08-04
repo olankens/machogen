@@ -938,14 +938,12 @@ update_appearance() {
 	append_dock_application "/Applications/Vesktop.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
 	append_dock_application "/Applications/WebStorm.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/UTM.app"
-	append_dock_application "/Applications/Balsamiq Wireframes.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/mpv.app"
@@ -1096,6 +1094,7 @@ update_claude_code() {
 
 	# Update intellij plugins
 	idea installPlugins com.anthropic.code.plugin
+	webstorm installPlugins com.anthropic.code.plugin
 
 }
 
@@ -1767,7 +1766,8 @@ update_android_devtools() {
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
 	# Update plugins
-	studio installPlugins com.github.airsaid.androidlocalize
+	# studio installPlugins com.github.airsaid.androidlocalize
+	"/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.airsaid.androidlocalize
 
 }
 
@@ -1907,6 +1907,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local machine="macintosh"
 	local members=(
 		"update_system"
+		"update_android_cmdline"
 		"update_android_studio"
 		"update_awscli"
 		"update_calibre"
