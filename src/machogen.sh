@@ -1084,11 +1084,11 @@ update_chromium() {
 update_claude_code() {
 
 	# Handle dependencies
-	update_nodejs
 	update_brew ccusage
 
 	# Update package
-	npm install -g @anthropic-ai/claude-code
+	# npm install -g @anthropic-ai/claude-code
+	curl -fsSL https://claude.ai/install.sh | bash
 
 	# Update vscode extensions
 	code --install-extension "anthropic.claude-code" --force
