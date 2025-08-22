@@ -11,7 +11,6 @@ MacOS automatic setup for developers.
 - Update AWS CLI
 - Update Calibre
 - Update Chromium (Ungoogled)
-- Update Cursor
 - Update Docker
 - Update Figma
 - Update Git
