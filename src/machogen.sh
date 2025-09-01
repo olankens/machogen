@@ -943,6 +943,7 @@ update_appearance() {
 	append_dock_application "/Applications/Xcode.app"
 	append_dock_application "/Applications/WebStorm.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
@@ -1113,6 +1114,29 @@ update_crossover() {
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/CrossOver.app" "$picture" || sudo !!
+
+}
+
+# @define Update cursor
+update_cursor() {
+
+	# Handle dependencies
+	update_brew jq sponge
+
+	# Update package
+	update_cask cursor
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
+	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/cursor.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Cursor.app" "$picture" || sudo !!
 
 }
 
@@ -1771,12 +1795,21 @@ update_angular_devtools() {
 	
 	# Handle dependencies
 	update_chromium
+	update_cursor
 	update_intellij_idea
 	update_nodejs
 	update_vscode
 
 	# Update chromium extensions
 	# update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
+
+	# Update cursor extensions
+	cursor --install-extension "angular.ng-template" --force
+	cursor --install-extension "bradlc.vscode-tailwindcss" --force
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
 
 	# Update vscode extensions
 	code --install-extension "angular.ng-template" --force
@@ -1788,6 +1821,14 @@ update_angular_devtools() {
 
 	# Update intellij plugins
 	idea installPlugins AngularJS # angular
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
 
 	# Change vscode settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
@@ -1821,8 +1862,11 @@ update_ionic_devtools() {
 	update_angular_devtools
 	update_ios_devtools
 
+	# Update cursor extensions
+	cursor --install-extension "WebNative.webnative" --force
+
 	# Update vscode extensions
-	code --install-extension "ionic.ionic" --force
+	code --install-extension "WebNative.webnative" --force
 
 }
 
@@ -1841,9 +1885,19 @@ update_ios_devtools() {
 update_nest_devtools() {
 
 	# Handle dependencies
+	update_cursor
 	update_intellij_idea
 	update_nodejs
 	update_vscode
+
+	# Update cursor extensions
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "imgildev.vscode-nestjs-generator" --force
+	cursor --install-extension "imgildev.vscode-nestjs-snippets-extension" --force
+	cursor --install-extension "imgildev.vscode-nestjs-swagger-snippets" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
 
 	# Update vscode extensions
 	code --install-extension "dbaeumer.vscode-eslint" --force
@@ -1856,6 +1910,14 @@ update_nest_devtools() {
 
 	# Update intellij plugins
 	idea installPlugins com.github.dinbtechit.jetbrainsnestjs # nestjs
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
 
 	# Change vscode settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
@@ -1904,6 +1966,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_system"
 		"update_android_studio"
 		"update_chromium"
+		"update_cursor"
 		"update_intellij_idea"
 		"update_webstorm"
 		"update_vscode"
@@ -1911,7 +1974,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 		"update_awscli"
 		"update_calibre"
-		"update_claude_code"
+		# "update_claude_code"
 		"update_crossover"
 		"update_docker"
 		"update_figma"

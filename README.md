@@ -12,6 +12,7 @@ MacOS automatic setup for developers.
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Claude Code
+- Update Cursor
 - Update Docker
 - Update Figma
 - Update Git
