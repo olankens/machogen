@@ -11,8 +11,6 @@ Yeah, the best extensions are not on the store and the best features are not ava
 Ungoogled Chromium is also used for development purposes with a specific Developer profile.
 This profile has to be used when debugging with your code editors and IDEs.
 
-Some advanced configurations require full system access, so that's why the script begins by changing those semi-manually.
-
 This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 Machogen is part of the Homhogen project, which regroups some (the legal ones) of my setup scripts.
 
