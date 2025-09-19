@@ -937,30 +937,17 @@ update_appearance() {
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/Visual Studio Code.app"
+	append_dock_application "/Applications/Conductor.app"
+	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
-	append_dock_application "/Applications/WebStorm.app"
-	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Fork.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Figma.app"
-	append_dock_application "/Applications/OBS.app"
-	append_dock_application "/Applications/mpv.app"
 	append_dock_application "/Applications/YouTube Music.app"
-	append_dock_application "/Applications/CrossOver.app"
-	append_dock_application "/Applications/Pearcleaner.app"
+	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
-
-}
-
-# @define Update awscli
-update_awscli() {
-
-	# Update package
-	update_brew awscli
-
-	# TODO: Change settings
 
 }
 
@@ -1079,20 +1066,28 @@ update_chromium() {
 
 }
 
-# @define Update crossover
-update_crossover() {
+# @define Update claude-code
+update_claude_code() {
+
+	# Handle dependencies
+	update_brew ccusage
+
+	# Update package
+	update_cask claude-code
 
 	# Change settings
-	defaults write com.codeweavers.CrossOver AskForRatings -bool false
-	defaults write com.codeweavers.CrossOver SUAutomaticallyUpdate -bool false
-	defaults write com.codeweavers.CrossOver SUEnableAutomaticChecks -bool false
-	defaults write com.codeweavers.CrossOver SUHasLaunchedBefore -bool true
+	claude config set -g autoUpdates false
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/crossover.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/CrossOver.app" "$picture" || sudo !!
+}
+
+# @define Update conductor
+update_conductor() {
+
+	# Handle dependencies
+	update_claude_code
+
+	# Update package
+	update_cask conductor
 
 }
 
@@ -1135,6 +1130,14 @@ update_figma() {
 
 }
 
+# @define Update fork
+update_fork() {
+
+	# Update package
+	update_cask fork
+
+}
+
 # @define Update git
 update_git() {
 
@@ -1162,6 +1165,63 @@ update_github_cli() {
 
 	# Update package
 	update_brew gh
+
+}
+
+# @define Update iina
+update_iina() {
+
+	# Update dependencies
+	brew install curl fileicon
+	brew upgrade curl fileicon
+
+	# Update package
+	local present=$([[ -d "/Applications/IINA.app" ]] && echo "true" || echo "false")
+	update_cask iina
+
+	# Finish installation
+	if [[ "$present" == "false" ]]; then
+		osascript <<-EOD
+			set checkup to "/Applications/IINA.app"
+			tell application checkup
+				activate
+				reopen
+				tell application "System Events"
+					with timeout of 10 seconds
+						repeat until (exists window 1 of application process "IINA")
+							delay 0.02
+						end repeat
+						tell application process "IINA" to set visible to false
+					end timeout
+				end tell
+				delay 4
+				quit
+				delay 4
+			end tell
+		EOD
+		update_chromium_extension "pdnojahnhpgmdhjdhgphgdcecehkbhfo"
+	fi
+
+	# Change settings
+	defaults write com.colliderli.iina recordPlaybackHistory -integer 0
+	defaults write com.colliderli.iina recordRecentFiles -integer 0
+	defaults write com.colliderli.iina SUEnableAutomaticChecks -integer 0
+	defaults write com.colliderli.iina ytdlSearchPath "/usr/local/bin"
+
+	# Change association
+	local address="https://api.github.com/repos/jdek/openwith/releases/latest"
+	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
+	local address="https://github.com/jdek/openwith/releases/download/v$version/openwith-v$version.tar.xz"
+	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
+	local deposit=$(mktemp -d)
+	expand_archive "$archive" "$deposit"
+	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/iina.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/IINA.app" "$picture" || sudo !!
 
 }
 
@@ -1301,7 +1361,7 @@ update_keepingyouawake() {
 }
 
 # @define Update keka
-updte_keka() {
+update_keka() {
 
 	# TODO: Add curl and fileicon as dependencies
 	# TODO: Add custom dock icon
@@ -1315,13 +1375,6 @@ updte_keka() {
 
 }
 
-# @define Update kubernetes
-update_kubernetes() {
-
-	# TODO: Implement function
-
-}
-
 # @define Update miniforge
 update_miniforge() {
 
@@ -1331,41 +1384,6 @@ update_miniforge() {
 	# Change settings
 	conda init zsh
 	conda config --set auto_activate_base false
-
-}
-
-# @define Update mpv
-update_mpv() {
-
-	# Handle dependencies
-	update_brew curl fileicon yt-dlp
-
-	# Update package
-	update_cask mpv
-
-	# Change settings
-	local configs="$HOME/.config/mpv/mpv.conf"
-	mkdir -p "$(dirname "$configs")" && cat /dev/null >"$configs"
-	echo "profile=gpu-hq" >>"$configs"
-	echo "hwdec=auto" >>"$configs"
-	echo "keep-open=yes" >>"$configs"
-	echo "interpolation=yes" >>"$configs"
-	echo "blend-subtitles=yes" >>"$configs"
-	echo "tscale=oversample" >>"$configs"
-	echo "video-sync=display-resample" >>"$configs"
-	echo 'ytdl-format="bestvideo[height<=?2160][vcodec!=vp9]+bestaudio/best"' >>"$configs"
-	echo "[protocol.http]" >>"$configs"
-	echo "force-window=immediate" >>"$configs"
-	echo "[protocol.https]" >>"$configs"
-	echo "profile=protocol.http" >>"$configs"
-	echo "[protocol.ytdl]" >>"$configs"
-	echo "profile=protocol.http" >>"$configs"
-
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/mpv.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Mpv.app" "$picture" || sudo !!
 
 }
 
@@ -1433,41 +1451,19 @@ update_notion() {
 
 }
 
-# @define Update obs
-update_obs() {
-
-	# Handle dependencies
-	update_brew curl fileicon
-
-	# Update package
-	update_cask obs
-
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/obs.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/OBS.app" "$picture" || sudo !!
-}
-
-# @define Update pearcleaner
-update_pearcleaner() {
-
-	# Update package
-	update_cask pearcleaner
-
-}
-
 # @define Update postgresql
 update_postgresql() {
 
 	# Handle parameters
-	local version=${1:-14}
+	local version=${1:-17}
+
+	# TODO: Remove previous
 
 	# Update package
-	# INFO: Default credentials are $USER with empty password
 	update_brew postgresql@"$version"
 
 	# Launch service
+	# INFO: Default credentials are $USER with empty password
 	brew services restart postgresql@"$version"
 
 }
@@ -1519,56 +1515,11 @@ update_temurin() {
 	# Handle dependencies
 	update_brew curl jq
 
+	# TODO: Remove previous
+
 	# Update package
 	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
 	update_cask temurin@"$version"
-
-}
-
-# @define Update the-unarchiver
-update_the_unarchiver() {
-
-	# Update package
-	local present="$([[ -d "/Applications/The Unarchiver.app" ]] && echo "true" || echo "false")"
-	update_cask the-unarchiver
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then
-		osascript <<-EOD
-			set checkup to "/Applications/The Unarchiver.app"
-			tell application checkup
-				activate
-				reopen
-				tell application "System Events"
-					with timeout of 10 seconds
-						repeat until (exists window 1 of application process "The Unarchiver")
-							delay 1
-						end repeat
-					end timeout
-					tell process "The Unarchiver"
-						try
-							click button "Accept" of window 1
-							delay 2
-						end try
-						click button "Select All" of tab group 1 of window 1
-					end tell
-				end tell
-				delay 2
-				quit
-				delay 2
-			end tell
-		EOD
-	fi
-
-	# Change settings
-	defaults write com.macpaw.site.theunarchiver AdditionalAnalyticsEnabled -integer 0
-	defaults write com.macpaw.site.theunarchiver AnalyticsEnabled -integer 0
-	defaults write com.macpaw.site.theunarchiver extractionDestination -integer 3
-	defaults write com.macpaw.site.theunarchiver isFreshInstall -integer 1
-	defaults write com.macpaw.site.theunarchiver RotatingBannerLastClosedDate "2099-12-31 23:59:59 +0000"
-	defaults write com.macpaw.site.theunarchiver RotatingBannerLastShownDate "2099-12-31 23:59:59 +0000"
-	defaults write com.macpaw.site.theunarchiver userAgreedToNewTOSAndPrivacy -integer 1
-
 
 }
 
@@ -1617,70 +1568,6 @@ update_utm() {
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/UTM.app" "$picture" || sudo !!
-}
-
-# @define Update vesktop
-update_vesktop() {
-
-	# Update package
-	local address="https://api.github.com/repos/Vencord/Vesktop/releases/latest"
-	local version=$(scrape_website "$address" '"tag_name":\s*"\K([^"]+)' | tr -d -c '0-9.')
-	[[ -z "$version" ]] && return 1
-	local current=$(gather_version "/*ppl*/Vesktop*")
-	autoload is-at-least
-	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
-	if [[ "$updated" == "false" ]]; then
-		local address=$(scrape_website "$address" 'https://github\.com/[^"]+\.dmg')
-		local package=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$package"
-		hdiutil attach "$package" -noautoopen -nobrowse
-		cp -R /Volumes/Veskt*/Vesktop.app /Applications
-		sleep 4 && hdiutil detach /Volumes/Veskt*
-		sudo xattr -rd com.apple.quarantine /Applications/Vesktop.app
-	fi
-
-}
-
-# @define Update vscode
-update_vscode() {
-
-	# Handle dependencies
-	update_brew jq sponge
-
-	# Update package
-	update_cask visual-studio-code
-
-	# Update extensions
-	code --install-extension "github.github-vscode-theme" --force
-
-	# Change settings
-	local configs="$HOME/Library/Application Support/Code/User/settings.json"
-	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	jq '."editor.fontSize" = 13' "$configs" | sponge "$configs"
-	jq '."editor.guides.bracketPairs" = "active"' "$configs" | sponge "$configs"
-	jq '."editor.lineHeight" = 36' "$configs" | sponge "$configs"
-	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
-	jq '."telemetry.telemetryLevel" = "crash"' "$configs" | sponge "$configs"
-	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
-	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
-	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
-
-}
-
-# @define Update webstorm
-update_webstorm() {
-
-	# Handle dependencies
-	update_brew grep xmlstarlet
-
-	# Update package
-	local present="$([[ -d "/Applications/WebStorm.app" ]] && echo "true" || echo "false")"
-	update_cask webstorm
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "WebStorm"; fi
-
-	# TODO: Change settings
-
 }
 
 # @define Update xcode
@@ -1756,7 +1643,6 @@ update_android_devtools() {
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
 	# Update plugins
-	# studio installPlugins com.github.airsaid.androidlocalize
 	"/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.airsaid.androidlocalize
 
 }
@@ -1768,31 +1654,14 @@ update_angular_devtools() {
 	update_chromium
 	update_intellij_idea
 	update_nodejs
-	update_vscode
 
-	# Update chromium extensions
-	# update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
+	# Update chromium
+	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
 
-	# Update vscode extensions
-	code --install-extension "angular.ng-template" --force
-	code --install-extension "bradlc.vscode-tailwindcss" --force
-	code --install-extension "dbaeumer.vscode-eslint" --force
-	code --install-extension "mikestead.dotenv" --force
-	code --install-extension "usernamehw.errorlens" --force
-	code --install-extension "yoavbls.pretty-ts-errors" --force
-
-	# Update intellij plugins
+	# Update intellij
 	idea installPlugins AngularJS # angular
 
-	# Change vscode settings
-	local configs="$HOME/Library/Application Support/Code/User/settings.json"
-	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
-	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
-	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
-	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
-
-	# Update angular cli
+	# Update angular
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
 	ng analytics off
 
@@ -1808,19 +1677,6 @@ update_angular_devtools() {
 
 }
 
-# @define Update ionic devtools
-update_ionic_devtools() {
-	
-	# Handle dependencies
-	update_android_devtools
-	update_angular_devtools
-	update_ios_devtools
-
-	# Update vscode extensions
-	code --install-extension "WebNative.webnative" --force
-
-}
-
 # @define Update ios devtools
 update_ios_devtools() {
 	
@@ -1832,51 +1688,16 @@ update_ios_devtools() {
 
 }
 
-# @define Update nest devtools
-update_nest_devtools() {
-
-	# Handle dependencies
-	update_intellij_idea
-	update_nodejs
-	update_vscode
-
-	# Update vscode extensions
-	code --install-extension "dbaeumer.vscode-eslint" --force
-	code --install-extension "imgildev.vscode-nestjs-generator" --force
-	code --install-extension "imgildev.vscode-nestjs-snippets-extension" --force
-	code --install-extension "imgildev.vscode-nestjs-swagger-snippets" --force
-	code --install-extension "mikestead.dotenv" --force
-	code --install-extension "usernamehw.errorlens" --force
-	code --install-extension "yoavbls.pretty-ts-errors" --force
-
-	# Update intellij plugins
-	idea installPlugins com.github.dinbtechit.jetbrainsnestjs # nestjs
-
-	# Change vscode settings
-	local configs="$HOME/Library/Application Support/Code/User/settings.json"
-	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
-	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
-	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
-	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
-
-}
-
 # @define Update spring devtools
 update_spring_devtools() {
 	
 	# Handle dependencies
 	update_intellij_idea
 	update_temurin
-	update_vscode
 	update_brew gradle maven
 
 	# Update intellij plugins
-	# idea installPlugins com.haulmont.jpab # jpa-buddy
-
-	# Update vscode extensions
-	code --install-extension "vmware.vscode-boot-dev-pack" --force
-	code --install-extension "vscjava.vscode-java-pack" --force
+	idea installPlugins com.haulmont.jpab # jpa-buddy
 
 }
 
@@ -1901,39 +1722,34 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_chromium"
 		"update_intellij_idea"
 		"update_webstorm"
-		"update_vscode"
 		"update_xcode"
 
-		"update_awscli"
 		"update_calibre"
-		"update_crossover"
+		"update_claude_code"
+		"update_conductor"
 		"update_docker"
 		"update_figma"
+		"update_fork"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
+		"update_iina"
 		"update_jdownloader"
 		"update_joal_desktop"
 		"update_keepingyouawake"
-		"update_kubernetes"
+		"update_keka"
 		"update_miniforge"
-		"update_mpv"
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
-		"update_obs"
-		"update_pearcleaner"
 		"update_postgresql"
 		"update_temurin"
-		"update_the_unarchiver"
 		"update_transmission"
 		"update_utm"
-		"update_vesktop"
 		"update_youtube_music"
 		"update_android_devtools"
 		"update_angular_devtools"
 		"update_ionic_devtools"
 		"update_ios_devtools"
-		"update_nest_devtools"
 		"update_spring_devtools"
 		"update_appearance"
 	)

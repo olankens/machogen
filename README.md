@@ -1,64 +1,69 @@
 # <samp>OVERVIEW</samp>
 
-MacOS automatic setup for developers.
-
 <img src="assets/img1.png" width="49.25%"/><img src="assets/img0.png" width="1.5%"/><img src="assets/img2.png" width="49.25%"/>
+
+Post-installation script to set up a whole developer-friendly environment on MacOS.
+It installs, updates, and configures every single software on your machine automatically.
+This is highly opinionated with harsh defaults and shouldn't be executed blindly.
+
+It intentionally uses Ungoogled Chromium as the main browser and has advanced mechanisms to install official and unofficial extensions.
+Yeah, the best extensions are not on the store and the best features are not available on official Chrome or shit-tier forks.
+Ungoogled Chromium is also used for development purposes with a specific Developer profile.
+This profile has to be used when debugging with your code editors and IDEs.
+
+Some advanced configurations require full system access, so that's why the script begins by changing those semi-manually.
+
+This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
+Machogen is part of the Homhogen project, which regroups some (the legal ones) of my setup scripts.
 
 # <samp>FEATURES</samp>
 
 - Update System
 - Update Android Studio
-- Update AWS CLI
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Claude Code
+- Update Conductor
 - Update Docker
 - Update Figma
+- Update Fork
 - Update Git
 - Update GitHub CLI
+- Update IINA
 - Update IntelliJ IDEA Ultimate
 - Update JDownloader
 - Update Joal Desktop
 - Update KeepingYouAwake
-- Update Kubernetes
+- Update Keka
 - Update Miniforge
-- Update Mpv
 - Update Nightlight
 - Update Node
 - Update Notion
-- Update OBS
-- Update Pearcleaner
 - Update PostgreSQL
 - Update Temurin
-- Update The Unarchiver
 - Update Transmission
 - Update UTM
-- Update Vesktop
-- Update Visual Studio Code
-- Update Whisky
 - Update Xcode
 - Update Youtube Music
 - Update Android DevTools
 - Update Angular DevTools
-- Update Ionic DevTools
 - Update iOS DevTools
-- Update Nest DevTools
 - Update Spring DevTools
 - Update Appearance
 
 # <samp>GUIDANCE</samp>
 
-### Launch the script
+### Launch Script
 
-Blindly executing this is strongly discouraged.
+You have to use ZSH to run this script.
 
 ```shell
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
 ```
 
-### Import the functions
+### Import Functions
 
-Invoke specific functions only.
+You can invoke specific functions.
 
 ```shell
 source <(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
