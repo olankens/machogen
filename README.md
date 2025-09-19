@@ -1,8 +1,8 @@
 # <samp>OVERVIEW</samp>
 
-<img src="assets/img1.png" width="49.25%"/><img src="assets/img0.png" width="1.5%"/><img src="assets/img2.png" width="49.25%"/>
+<img src=".assets/res1.png" width="49.25%"/><img src=".assets/res0.png" width="1.5%"/><img src=".assets/res2.png" width="49.25%"/>
 
-Post-installation script to set up a whole developer-friendly environment on MacOS.
+Post-installation script to set up a whole developer-friendly environment on macOS.
 It installs, updates, and configures every single software on your machine automatically.
 This is highly opinionated with harsh defaults and shouldn't be executed blindly.
 
@@ -20,6 +20,7 @@ This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Claude Code
+- Update Cursor
 - Update Docker
 - Update Figma
 - Update Fork
@@ -54,7 +55,7 @@ This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 You have to use ZSH to run this script.
 
 ```shell
-/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
+/bin/zsh -c "$(curl -fsL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)"
 ```
 
 ### Import Functions
@@ -62,7 +63,7 @@ You have to use ZSH to run this script.
 You can invoke specific functions.
 
 ```shell
-source <(curl -fsSL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
+source <(curl -fsL https://raw.githubusercontent.com/olankens/machogen/HEAD/src/machogen.sh)
 update_android_devtools
 update_angular_devtools
 ```

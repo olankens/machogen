@@ -131,9 +131,31 @@ assert_macos_version() {
 
 }
 
+# @define Change application icon
+# @params The distant icon name from repository
+# @params The application full path
+change_appicon() {
+
+	# Handle dependencies
+	update_brew curl fileicon
+
+	# Handle parameters
+	local distant=${1}
+	local apppath=${2}
+
+	# Change icon
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/$distant.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "$apppath" "$picture" || sudo !!
+
+}
+
 # @define Change chromium download folder
 # @params The download location full path
 change_chromium_download() {
+
+	# Handle parameters
 
 	# Handle parameters
 	local deposit=${1:-$HOME/Downloads/DDL}
@@ -937,7 +959,7 @@ update_appearance() {
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/Conductor.app"
+	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
@@ -954,20 +976,15 @@ update_appearance() {
 # @define Update calibre
 update_calibre() {
 
-	# Handle dependencies
-	update_brew curl fileicon
-
 	# Update package
 	update_cask calibre
 
 	# Finish install
 	invoke_once "calibre"
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/calibre.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/calibre.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "calibre" "/Applications/calibre.app"
+
 }
 
 # @define Update chromium
@@ -1079,6 +1096,14 @@ update_claude_code() {
 
 }
 
+# @define Update cursor
+update_cursor() {
+
+	# Update package
+	update_cask cursor cursor-cli
+
+}
+
 # @define Update docker
 update_docker() {
 
@@ -1110,11 +1135,8 @@ update_figma() {
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/figma.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Figma.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "figma" "/Applications/Figma.app"
 
 }
 
@@ -1160,8 +1182,7 @@ update_github_cli() {
 update_iina() {
 
 	# Update dependencies
-	brew install curl fileicon
-	brew upgrade curl fileicon
+	update_brew curl jq
 
 	# Update package
 	local present=$([[ -d "/Applications/IINA.app" ]] && echo "true" || echo "false")
@@ -1205,11 +1226,8 @@ update_iina() {
 	expand_archive "$archive" "$deposit"
 	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/iina.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/IINA.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "iina" "/Applications/IINA.app"
 
 }
 
@@ -1288,7 +1306,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1303,8 +1321,8 @@ update_jdownloader() {
 update_joal_desktop() {
 
 	# Handle dependencies
-	brew install curl fileicon grep jq
-	brew upgrade curl fileicon grep jq
+	brew install curl grep jq
+	brew upgrade curl grep jq
 
 	# Update package
 	local address="https://api.github.com/repos/anthonyraymond/joal-desktop/releases/latest"
@@ -1333,11 +1351,8 @@ update_joal_desktop() {
 	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs" 
 	jq '."uploadRatioTarget" = -1' "$configs" | sponge "$configs"
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/joal-desktop.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/JoalDesktop.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "joal-desktop" "/Applications/JoalDesktop.app"
 
 }
 
@@ -1351,10 +1366,6 @@ update_keepingyouawake() {
 
 # @define Update keka
 update_keka() {
-
-	# TODO: Add curl and fileicon as dependencies
-	# TODO: Add custom dock icon
-	# TODO: Chnage some default settings
 
 	# Update package
 	update_cask keka kekaexternalhelper
@@ -1420,7 +1431,7 @@ update_nodejs() {
 update_notion() {
 
 	# Handle dependencies
-	update_brew curl fileicon
+	update_brew coreutils jq
 
 	# Update package
 	update_cask notion
@@ -1432,11 +1443,8 @@ update_notion() {
 	jq '.appState.preferences.isMenuBarIconEnabled = false' "$configs" | sponge "$configs"
 	jq '.appState.preferences.isAutoUpdaterDisabled = true' "$configs" | sponge "$configs"
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/notion.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Notion.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "notion" "/Applications/Notion.app"
 
 }
 
@@ -1500,7 +1508,7 @@ update_system() {
 update_temurin() {
 
 	# Handle dependencies
-	update_brew curl jq
+	# update_brew curl jq
 
 	# Update package
 	# local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
@@ -1515,9 +1523,6 @@ update_transmission() {
 	local deposit=${1:-$HOME/Downloads/P2P}
 	local seeding=${2:-0.1}
 
-	# Handle dependencies
-	update_brew curl fileicon
-
 	# Update package
 	update_cask transmission
 
@@ -1531,28 +1536,19 @@ update_transmission() {
 	defaults write org.m0k.transmission WarningDonate -bool false
 	defaults write org.m0k.transmission WarningLegal -bool false
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/transmission.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/Transmission.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "transmission" "/Applications/Transmission.app"
 
 }
 
 # @define Update utm
 update_utm() {
 
-	# Handle dependencies
-	update_brew curl fileicon
-
 	# Update package
 	update_cask utm
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/utm.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "/Applications/UTM.app" "$picture" || sudo !!
+	# Change icon
+	change_appicon "utm" "/Applications/UTM.app"
 }
 
 # @define Update xcode
@@ -1560,7 +1556,7 @@ update_xcode() {
 
 	# Handle dependencies
 	assert_apple_id || return 1
-	update_brew cocoapods curl fileicon grep xcodesorg/made/xcodes
+	update_brew cocoapods grep xcodesorg/made/xcodes
 
 	# Update package
 	local starter="/Applications/Xcode.app"
@@ -1576,11 +1572,8 @@ update_xcode() {
 		sudo xcodebuild -license accept
 	fi
 
-	# Change icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/assets/xcode.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "$starter" "$picture" || sudo !!
+	# Change icon
+	change_appicon "xcode" "/Applications/Xcode.app"
 
 }
 
@@ -1678,6 +1671,7 @@ update_spring_devtools() {
 	
 	# Handle dependencies
 	update_intellij_idea
+	update_postgresql
 	update_temurin
 	update_brew gradle maven
 
@@ -1710,6 +1704,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 		"update_calibre"
 		"update_claude_code"
+		"update_cursor"
 		"update_docker"
 		"update_figma"
 		"update_fork"
