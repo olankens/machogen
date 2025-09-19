@@ -1226,7 +1226,8 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# TODO: Change settings
+	# Update plugins
+	idea installPlugins pro.bashsupport # bashsupport-pro
 
 }
 
