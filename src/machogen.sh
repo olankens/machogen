@@ -1457,8 +1457,6 @@ update_postgresql() {
 	# Handle parameters
 	local version=${1:-17}
 
-	# TODO: Remove previous
-
 	# Update package
 	update_brew postgresql@"$version"
 
@@ -1514,8 +1512,6 @@ update_temurin() {
 
 	# Handle dependencies
 	update_brew curl jq
-
-	# TODO: Remove previous
 
 	# Update package
 	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
