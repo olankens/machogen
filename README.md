@@ -12,7 +12,6 @@ Ungoogled Chromium is also used for development purposes with a specific Develop
 This profile has to be used when debugging with your code editors and IDEs.
 
 This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
-Machogen is part of the Homhogen project, which regroups some (the legal ones) of my setup scripts.
 
 # <samp>FEATURES</samp>
 
@@ -21,7 +20,6 @@ Machogen is part of the Homhogen project, which regroups some (the legal ones) o
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Claude Code
-- Update Conductor
 - Update Docker
 - Update Figma
 - Update Fork
@@ -45,7 +43,7 @@ Machogen is part of the Homhogen project, which regroups some (the legal ones) o
 - Update Youtube Music
 - Update Android DevTools
 - Update Angular DevTools
-- Update iOS DevTools
+- Update Apple DevTools
 - Update Spring DevTools
 - Update Appearance
 

@@ -1055,14 +1055,13 @@ update_chromium() {
 		# update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
 		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
 		# update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-		# update_chromium_extension "lkahpjghmdhpiojknppmlenngmpkkfma" # skip-ad-ad-block-auto-ad
 		# update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
 
 	fi
 
 	# Update bypass-paywalls-chrome-clean
-	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
+	update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
 
 }
 
@@ -1077,17 +1076,6 @@ update_claude_code() {
 
 	# Change settings
 	claude config set -g autoUpdates false
-
-}
-
-# @define Update conductor
-update_conductor() {
-
-	# Handle dependencies
-	update_claude_code
-
-	# Update package
-	update_cask conductor
 
 }
 
@@ -1514,8 +1502,8 @@ update_temurin() {
 	update_brew curl jq
 
 	# Update package
-	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
-	update_cask temurin@"$version"
+	# local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
+	update_cask temurin
 
 }
 
@@ -1673,8 +1661,8 @@ update_angular_devtools() {
 
 }
 
-# @define Update ios devtools
-update_ios_devtools() {
+# @define Update apple devtools
+update_apple_devtools() {
 	
 	# Handle dependencies
 	update_xcode
@@ -1717,12 +1705,10 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_android_studio"
 		"update_chromium"
 		"update_intellij_idea"
-		"update_webstorm"
 		"update_xcode"
 
 		"update_calibre"
 		"update_claude_code"
-		"update_conductor"
 		"update_docker"
 		"update_figma"
 		"update_fork"
@@ -1744,8 +1730,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_youtube_music"
 		"update_android_devtools"
 		"update_angular_devtools"
-		"update_ionic_devtools"
-		"update_ios_devtools"
+		"update_apple_devtools"
 		"update_spring_devtools"
 		"update_appearance"
 	)
