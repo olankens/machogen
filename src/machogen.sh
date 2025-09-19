@@ -1102,6 +1102,9 @@ update_cursor() {
 	# Update package
 	update_cask cursor cursor-cli
 
+	# Change icon
+	change_appicon "cursor" "/Applications/Cursor.app"
+
 }
 
 # @define Update docker
