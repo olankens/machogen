@@ -156,17 +156,19 @@ change_appicon() {
 change_chromium_download() {
 
 	# Handle parameters
-
-	# Handle parameters
 	local deposit=${1:-$HOME/Downloads/DDL}
+	local datadir=${2}
+
+	# Ensure presence
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
 	# Change deposit
 	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
 	mkdir -p "$deposit" && killall "Chromium" 2>/dev/null && sleep 4
 	osascript <<-EOD
-		set starter to "/Applications/Chromium.app"
-		tell application starter
+		do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+		delay 4
+		tell application "Chromium"
 			activate
 			reopen
 			delay 4
@@ -210,35 +212,36 @@ change_chromium_engine() {
 
 	# Handle parameters
 	local pattern=${1:-duckduckgo}
+	local datadir=${2}
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
-	# Change search engine
-	killall "Chromium" 2>/dev/null && sleep 4
-	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
-	osascript <<-EOD
-		set starter to "/Applications/Chromium.app"
-		tell application starter
-			activate
-			reopen
-			delay 4
-			open location "chrome://settings/search"
-			delay 2
-			tell application "System Events"
-				repeat 2 times
-					key code 48
-				end repeat
-				delay 2
-				key code 49
-				delay 2
-				keystroke "${pattern}"
-				delay 2
-				key code 49
-			end tell
-			delay 2
-			quit
-			delay 2
-		end tell
-	EOD
+	# # Change search engine
+	# killall "Chromium" 2>/dev/null && sleep 4
+	# defaults write org.chromium.Chromium AppleLanguages "(en-US)"
+	# osascript <<-EOD
+	# 	set starter to "/Applications/Chromium.app"
+	# 	tell application starter
+	# 		activate
+	# 		reopen
+	# 		delay 4
+	# 		open location "chrome://settings/search"
+	# 		delay 2
+	# 		tell application "System Events"
+	# 			repeat 2 times
+	# 				key code 48
+	# 			end repeat
+	# 			delay 2
+	# 			key code 49
+	# 			delay 2
+	# 			keystroke "${pattern}"
+	# 			delay 2
+	# 			key code 49
+	# 		end tell
+	# 		delay 2
+	# 		quit
+	# 		delay 2
+	# 	end tell
+	# EOD
 
 }
 
@@ -250,6 +253,9 @@ change_chromium_flag() {
 	# Handle parameters
 	local element=${1}
 	local payload=${2}
+	local datadir=${3}
+
+	# Ensure presence
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
 	# Change flag
@@ -257,8 +263,9 @@ change_chromium_flag() {
 	killall "Chromium" 2>/dev/null && sleep 4
 	if [[ "$element" == "custom-ntp" ]]; then
 		osascript <<-EOD
-			set starter to "/Applications/Chromium.app"
-			tell application starter
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
 				activate
 				reopen
 				delay 4
@@ -291,8 +298,9 @@ change_chromium_flag() {
 		EOD
 	elif [[ "$element" == "extension-mime-request-handling" ]]; then
 		osascript <<-EOD
-			set starter to "/Applications/Chromium.app"
-			tell application starter
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
 				activate
 				reopen
 				delay 4
@@ -318,8 +326,9 @@ change_chromium_flag() {
 		EOD
 	elif [[ "$element" == "remove-tabsearch-button" ]]; then
 		osascript <<-EOD
-			set checkup to "/Applications/Chromium.app"
-			tell application checkup
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
 				activate
 				reopen
 				delay 4
@@ -345,8 +354,9 @@ change_chromium_flag() {
 		EOD
 	elif [[ "$element" == "show-avatar-button" ]]; then
 		osascript <<-EOD
-			set checkup to "/Applications/Chromium.app"
-			tell application checkup
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
 				activate
 				reopen
 				delay 4
@@ -371,6 +381,43 @@ change_chromium_flag() {
 			end tell
 		EOD
 	fi
+
+}
+
+# @define Change chromium default profile theme
+# @params The number of times to press the right arrow key
+change_chromium_theme() {
+
+	# Handle parameters
+	local repeats=${1:-0}
+	local datadir=${2}
+
+	# # Change theme
+	killall "Chromium" 2>/dev/null && sleep 4
+	osascript <<-EOD
+		do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+		delay 4
+		tell application "Chromium"
+			activate
+			reopen
+			delay 4
+			open location "chrome://settings/manageProfile"
+			delay 2
+			tell application "System Events"
+				repeat 2 times
+					key code 48
+				end repeat
+				repeat $repeats times
+					key code 124
+				end repeat
+				delay 2
+				key code 49
+			end tell
+			delay 2
+			quit
+			delay 2
+		end tell
+	EOD
 
 }
 
@@ -557,8 +604,7 @@ invoke_once() {
 
 	# Invoke application
 	osascript <<-EOD
-		set starter to "/Applications/${appname}.app"
-		tell application starter
+		tell application "/Applications/${appname}.app"
 			activate
 			reopen
 			tell application "System Events"
@@ -701,7 +747,8 @@ update_chromium_extension() {
 
 	# Handle parameters
 	local payload=${1}
-
+	local datadir=${2}
+	
 	# Update extension
 	if [[ -d "/Applications/Chromium.app" ]]; then
 		if [[ ${payload:0:4} == "http" ]]; then
@@ -721,8 +768,9 @@ update_chromium_extension() {
 			expand_archive "$package" "$storage" 1
 			if [[ "$present" == "false" ]]; then
 				osascript <<-EOD
-					set checkup to "/Applications/Chromium.app"
-					tell application checkup
+					do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+					delay 4
+					tell application "Chromium"
 						activate
 						reopen
 						delay 4
@@ -749,7 +797,7 @@ update_chromium_extension() {
 						quit
 						delay 2
 					end tell
-					tell application checkup
+					tell application "Chromium"
 						activate
 						reopen
 						delay 4
@@ -768,8 +816,9 @@ update_chromium_extension() {
 			fi
 		else
 			osascript <<-EOD
-				set checkup to "/Applications/Chromium.app"
-				tell application checkup
+				do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+				delay 4
+				tell application "Chromium"
 					activate
 					reopen
 					delay 4
@@ -929,8 +978,6 @@ update_android_studio() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
 
-	# TODO: Change settings
-
 }
 
 # @define Update appearance
@@ -987,26 +1034,93 @@ update_calibre() {
 
 }
 
-# @define Update chromium
-update_chromium() {
-	
-	# Handle parameters
-	local deposit=${1:-$HOME/Downloads/DDL}
-	local pattern=${2:-duckduckgo}
-	local tabpage=${3:-about:blank}
-
-	# Handle dependencies
-	update_brew curl jq
+# @define Update chrome
+update_chrome() {
 
 	# Update package
-	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
+	local present="$([[ -d "/Applications/Google Chrome.app" ]] && echo "true" || echo "false")"
+	update_cask google-chrome
+	killall Chrome || true
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "Google Chrome"; fi
+
+	# Change settings
+	# INFO: https://github.com/yashgorana/chrome-debloat
+	# local configs="/Library/Managed Preferences/com.google.Chrome.plist"
+	local configs="$HOME/Library/Preferences/com.google.Chrome.plist"
+	local program="/usr/libexec/PlistBuddy"
+	sudo rm "$configs" && sleep 5
+	sudo "$program" -c "Save" "$configs"
+	sudo "$program" -c "Add :DefaultGeolocationSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultNotificationsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultLocalFontsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultSensorsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultSerialGuardSetting integer 2" "$configs"
+	sudo "$program" -c "Add :CloudReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DriveDisabled bool true" "$configs"
+	sudo "$program" -c "Add :PasswordManagerEnabled bool false" "$configs"
+	sudo "$program" -c "Add :PasswordSharingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :PasswordLeakDetectionEnabled bool false" "$configs"
+	sudo "$program" -c "Add :QuickAnswersEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingExtendedReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingSurveysEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingDeepScanningEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DeviceActivityHeartbeatEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DeviceMetricsReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :HeartbeatEnabled bool false" "$configs"
+	sudo "$program" -c "Add :LogUploadEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceActivityTimes bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceAppInfo bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceSystemInfo bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceUsers bool false" "$configs"
+	sudo "$program" -c "Add :AlternateErrorPagesEnabled bool false" "$configs"
+	sudo "$program" -c "Add :AutofillCreditCardEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BackgroundModeEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BrowserGuestModeEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BrowserSignin integer 0" "$configs"
+	sudo "$program" -c "Add :BuiltInDnsClientEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DefaultBrowserSettingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :MetricsReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ParcelTrackingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :RelatedWebsiteSetsEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ShoppingListEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SyncDisabled bool true" "$configs"
+	sudo "$program" -c "Add :ExtensionManifestV2Availability integer 2" "$configs"
+	sudo "$program" -c "Add :ReportAppInventory array" "$configs"
+	sudo "$program" -c "Add :ReportWebsiteTelemetry array" "$configs"
+
+	# Change extensions
+	sudo "$program" -c "Delete :ExtensionInstallForcelist" "$configs"
+	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
+	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
+
+}
+
+# @define Update chromium
+update_chromium() {
+
+	# Handle parameters
+	local deposit=${1:-$HOME/Downloads/DDL}
+	local tabpage=${2:-about:blank}
+	local pattern=${3:-duckduckgo}
+	local datadir=${4}
+
+	# Handle dependencies
+	update_brew coreutils curl jq
+
+	# Update package
+	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
 	update_cask eloston-chromium
 	killall Chromium || true
 
-	# Change default browser
+	# Change default
 	change_default_browser "chromium"
 
-	# Finish installation
+	# Create user-data-dir
+	[[ -n "$datadir" ]] && mkdir -p "$datadir"
+
+	# Finish install
 	if [[ "$present" == "false" ]]; then
 
 		# Handle notifications
@@ -1030,21 +1144,18 @@ update_chromium() {
 		killall "Chromium" && sleep 4
 
 		# Change settings
-		change_chromium_download "$deposit"
-
-		# Change engine
-		change_chromium_engine "$pattern"
-
-		# Change flags
-		change_chromium_flag "custom-ntp" "about:blank"
-		change_chromium_flag "extension-mime-request-handling" "always"
-		change_chromium_flag "remove-tabsearch-button" "enabled"
-		change_chromium_flag "show-avatar-button" "never"
+		change_chromium_download "$deposit" "$datadir"
+		change_chromium_engine "$pattern" "$datadir"
+		change_chromium_flag "custom-ntp" "about:blank" "$datadir"
+		change_chromium_flag "extension-mime-request-handling" "always" "$datadir"
+		change_chromium_flag "remove-tabsearch-button" "enabled" "$datadir"
+		change_chromium_flag "show-avatar-button" "never" "$datadir"
 
 		# Toggle bookmarks
 		osascript <<-EOD
-			set starter to "/Applications/Chromium.app"
-			tell application starter
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
 				activate
 				reopen
 				delay 4
@@ -1066,19 +1177,40 @@ update_chromium() {
 		local website="https://api.github.com/repos/NeverDecaf/chromium-web-store/releases"
 		local version=$(curl -s "$website" | jq -r ".[0].tag_name" | tr -d "v")
 		local address="https://github.com/NeverDecaf/chromium-web-store/releases/download/v$version/Chromium.Web.Store.crx"
-		update_chromium_extension "$address"
-
-		# Update extensions
-		# update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
-		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
-		# update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-		# update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
-		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
+		update_chromium_extension "$address" "$datadir"
 
 	fi
 
-	# Update bypass-paywalls-chrome-clean
-	update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+	# Update extensions
+	if [[ -z "$datadir" ]]; then
+		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
+		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
+		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+	fi
+	
+}
+
+# @define Update chromium-developer
+update_chromium_developer() {
+
+	# Handle parameters
+	local deposit=${1:-$HOME/Downloads/DDL}
+	local tabpage=${2:-about:blank}
+	local pattern=${3:-duckduckgo}
+	local datadir=${4:-$HOME/Library/Application Support/Chromium/Developer}
+	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
+
+	# Update package
+	update_chromium "$deposit" "$tabpage" "$pattern" "$datadir"
+
+	# Change theme
+	[[ "$present" == "true" ]] && change_chromium_theme 8 "$datadir"
+
+	# Update extensions
+	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" "$datadir" # json-formatter
 
 }
 
@@ -1502,20 +1634,19 @@ update_system() {
 	/usr/sbin/softwareupdate --install-rosetta --agree-to-license &>/dev/null
 
 	# Update system
-	# INFO: Takes ages
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
 
 }
 
-# @define Update temurin (lts)
+# @define Update temurin
 update_temurin() {
 
-	# Handle dependencies
-	# update_brew curl jq
+	# Handle parameters
+	local version=${1:-21}
 
 	# Update package
-	# local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
-	update_cask temurin
+	brew uninstall temurin
+	update_cask temurin@"$version"
 
 }
 
@@ -1623,23 +1754,30 @@ update_android_devtools() {
 	# Create emulators
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
-	# Update plugins
+	# Update android-studio plugins
 	"/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.airsaid.androidlocalize
 
 }
 
 # @define Update angular devtools
 update_angular_devtools() {
+
+	# Handle parameters
+	local datadir=${1:-$HOME/Library/Application Support/Chromium/Developer}
 	
 	# Handle dependencies
-	update_chromium
+	update_chromium_developer
+	update_cursor
 	update_intellij_idea
 	update_nodejs
 
 	# Update chromium
-	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
+	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
+	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
 
-	# Update intellij
+	# TODO: Update cursor extensions
+
+	# Update intellij plugins
 	idea installPlugins AngularJS # angular
 
 	# Update angular
@@ -1673,10 +1811,14 @@ update_apple_devtools() {
 update_spring_devtools() {
 	
 	# Handle dependencies
+	update_cursor
+	update_docker
 	update_intellij_idea
 	update_postgresql
 	update_temurin
 	update_brew gradle maven
+
+	# TODO: Update cursor extensions
 
 	# Update intellij plugins
 	idea installPlugins com.haulmont.jpab # jpa-buddy
@@ -1701,7 +1843,9 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local members=(
 		"update_system"
 		"update_android_studio"
+		"update_chrome"
 		"update_chromium"
+		"update_chromium_developer"
 		"update_intellij_idea"
 		"update_xcode"
 
