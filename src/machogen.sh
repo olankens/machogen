@@ -1,4 +1,3 @@
-# !/bin/zsh
 # shellcheck shell=bash
 
 # region services
@@ -213,8 +212,8 @@ change_chromium_engine() {
 	return 1
 
 	# Handle parameters
-	local pattern=${1:-duckduckgo}
-	local datadir=${2}
+	# local pattern=${1:-duckduckgo}
+	# local datadir=${2}
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
 	# # Change search engine
@@ -563,7 +562,7 @@ gather_password() {
 }
 
 # @define Gather path using find command
-# @params The search pattern or directory
+# @params The search pattern or directory path
 # @params The maximum depth for search
 # @return The gathered full path
 gather_pattern() {
@@ -1012,7 +1011,6 @@ update_appearance() {
 	append_dock_application "/Applications/Transmission.app"
 	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/Discord.app"
-	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Notion.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
@@ -1023,6 +1021,8 @@ update_appearance() {
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/YouTube Music.app"
 	append_dock_application "/Applications/IINA.app"
+	append_dock_application "/Applications/calibre.app"
+	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
 
@@ -1154,7 +1154,7 @@ update_chromium() {
 		# Change settings
 		change_chromium_download "$deposit" "$datadir"
 		change_chromium_engine "$pattern" "$datadir"
-		change_chromium_flag "custom-ntp" "about:blank" "$datadir"
+		change_chromium_flag "custom-ntp" "$tabpage" "$datadir"
 		change_chromium_flag "extension-mime-request-handling" "always" "$datadir"
 		change_chromium_flag "remove-tabsearch-button" "enabled" "$datadir"
 		change_chromium_flag "show-avatar-button" "never" "$datadir"
@@ -1568,7 +1568,7 @@ update_nodejs() {
 		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
 		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
 		echo "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
-		source "$configs"
+		source "$HOME/.zshrc"
 	else
 		sed -i "" -e "s#/opt/homebrew/opt/node.*/bin#/opt/homebrew/opt/node@$version/bin#" "$HOME/.zshrc"
 		source "$HOME/.zshrc"
@@ -1594,6 +1594,14 @@ update_notion() {
 
 	# Change icon
 	change_appicon "notion" "/Applications/Notion.app"
+
+}
+
+# @define Update pearcleaner
+update_pearcleaner() {
+
+	# Update package
+	update_cask pearcleaner
 
 }
 
@@ -1787,13 +1795,12 @@ update_angular_devtools() {
 	ng analytics off
 
 	# Change environment
-	local configs="$HOME/.zshrc"
-	if ! grep -q "ng completion script" "$configs" 2>/dev/null; then
-		[[ -s "$configs" ]] || touch "$configs"
-		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
-		echo 'autoload -Uz compinit && compinit' >>"$configs"
-		echo 'source <(ng completion script)' >>"$configs"
-		source "$configs"
+	if ! grep -q "ng completion script" "$HOME/.zshrc" 2>/dev/null; then
+		[[ -s "$configs" ]] || touch "$HOME/.zshrc"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$HOME/.zshrc"
+		echo 'autoload -Uz compinit && compinit' >>"$HOME/.zshrc"
+		echo 'source <(ng completion script)' >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
 	fi
 
 	# Update chromium
@@ -1822,7 +1829,7 @@ update_apple_devtools() {
 	
 	# Handle dependencies
 	update_xcode
-	update_cask swiftformat-for-xcode
+	# update_cask swiftformat-for-xcode
 
 }
 
@@ -1831,10 +1838,11 @@ update_shell_devtools() {
 	
 	# Handle dependencies
 	update_cursor
+	update_brew shfmt
 
 	# Update cursor
 	if command -v cursor &>/dev/null; then
-		cursor --install-extension "foxundermoon.shell-format" --force
+		# cursor --install-extension "foxundermoon.shell-format" --force
 		cursor --install-extension "timonwong.shellcheck" --force
 	fi
 
@@ -1884,7 +1892,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local members=(
 		"update_system"
 		"update_android_studio"
-		# "update_chrome"
+		"update_chrome"
 		"update_chromium"
 		"update_chromium_developer"
 		"update_intellij_idea"
@@ -1907,6 +1915,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
+		"update_pearcleaner"
 		"update_postgresql"
 		"update_temurin"
 		"update_transmission"
