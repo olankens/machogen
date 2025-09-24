@@ -1245,8 +1245,10 @@ update_cursor() {
 	# Change icon
 	change_appicon "cursor" "/Applications/Cursor.app"
 
-	# Update intellij plugin
+	# Update idea
 	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
+
+	# Update studio
 	command -v studio &>/dev/null && studio installPlugins com.github.blingyshs.openincursor
 
 }
@@ -1391,7 +1393,7 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Update cursor extension
+	# Update cursor
 	command -v cursor &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
 
 }
@@ -1766,9 +1768,6 @@ update_android_devtools() {
 	# Create emulators
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
-	# Update android-studio plugins
-	"/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.airsaid.androidlocalize
-
 }
 
 # @define Update angular devtools
@@ -1782,15 +1781,6 @@ update_angular_devtools() {
 	update_cursor
 	update_intellij_idea
 	update_nodejs
-
-	# Update chromium
-	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
-	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
-
-	# TODO: Update cursor extensions
-
-	# Update intellij plugins
-	idea installPlugins AngularJS # angular
 
 	# Update angular
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
@@ -1806,6 +1796,25 @@ update_angular_devtools() {
 		source "$configs"
 	fi
 
+	# Update chromium
+	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
+	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
+
+	# Update cursor
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "angular.ng-template" --force
+		cursor --install-extension "bradlc.vscode-tailwindcss" --force
+		cursor --install-extension "dbaeumer.vscode-eslint" --force
+		cursor --install-extension "mikestead.dotenv" --force
+		cursor --install-extension "usernamehw.errorlens" --force
+		cursor --install-extension "yoavbls.pretty-ts-errors" --force
+	fi
+
+	# Update idea
+	if command -v idea &>/dev/null; then
+		idea installPlugins AngularJS
+	fi
+
 }
 
 # @define Update apple devtools
@@ -1813,8 +1822,6 @@ update_apple_devtools() {
 	
 	# Handle dependencies
 	update_xcode
-
-	# Update xcode extensions
 	update_cask swiftformat-for-xcode
 
 }
@@ -1830,10 +1837,18 @@ update_spring_devtools() {
 	update_temurin
 	update_brew gradle maven
 
-	# TODO: Update cursor extensions
+	# Update cursor
+	if command -v idea &>/dev/null; then
+		cursor --install-extension "fwcd.kotlin" --force	
+		cursor --install-extension "vmware.vscode-boot-dev-pack" --force
+		cursor --install-extension "vscjava.vscode-gradle" --force
+		cursor --install-extension "vscjava.vscode-java-pack" --force
+	fi
 
-	# Update intellij plugins
-	idea installPlugins com.haulmont.jpab # jpa-buddy
+	# Update idea
+	if command -v idea &>/dev/null; then
+		idea installPlugins com.haulmont.jpab
+	fi
 
 }
 
@@ -1855,7 +1870,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	local members=(
 		"update_system"
 		"update_android_studio"
-		"update_chrome"
+		# "update_chrome"
 		"update_chromium"
 		"update_chromium_developer"
 		"update_intellij_idea"
