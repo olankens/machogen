@@ -153,6 +153,7 @@ change_appicon() {
 
 # @define Change chromium download folder
 # @params The download location full path
+# @params The user-data-dir full path, empty for default one
 change_chromium_download() {
 
 	# Handle parameters
@@ -204,10 +205,11 @@ change_chromium_download() {
 
 # @define Change chromium search engine
 # @params The pattern used to identify the engine in the list
+# @params The user-data-dir full path, empty for default one
 change_chromium_engine() {
 
 	# INFO: Google intentionally randomized and restricted access to search engine list
-	# TODO: Use keystrokes and OCR to achieve
+	# IDEA: Use keystrokes with OCR to achieve it
 	return 1
 
 	# Handle parameters
@@ -248,6 +250,7 @@ change_chromium_engine() {
 # @define Change chromium flag
 # @params The chromium flag to change
 # @params The payload value to set for the specified flag
+# @params The user-data-dir full path, empty for default one
 change_chromium_flag() {
 
 	# Handle parameters
@@ -386,6 +389,7 @@ change_chromium_flag() {
 
 # @define Change chromium default profile theme
 # @params The number of times to press the right arrow key
+# @params The user-data-dir full path, empty for default one
 change_chromium_theme() {
 
 	# Handle parameters
@@ -743,6 +747,7 @@ update_cask() {
 
 # @define Update chromium extension
 # @params The payload (crx url, zip url or extension uuid)
+# @params The user-data-dir full path, empty for default one
 update_chromium_extension() {
 
 	# Handle parameters
@@ -977,6 +982,9 @@ update_android_studio() {
 
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
+
+	# Update cursor extension
+	command -v cursor &>/dev/null && studio installPlugins com.github.blingyshs.openincursor
 
 }
 
@@ -1237,6 +1245,10 @@ update_cursor() {
 	# Change icon
 	change_appicon "cursor" "/Applications/Cursor.app"
 
+	# Update intellij plugin
+	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
+	command -v studio &>/dev/null && studio installPlugins com.github.blingyshs.openincursor
+
 }
 
 # @define Update docker
@@ -1379,8 +1391,8 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Update plugins
-	idea installPlugins pro.bashsupport # bashsupport-pro
+	# Update cursor extension
+	command -v cursor &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
 
 }
 
