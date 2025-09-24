@@ -562,7 +562,7 @@ gather_password() {
 
 }
 
-# @define Gather path
+# @define Gather path using find command
 # @params The search pattern or directory
 # @params The maximum depth for search
 # @return The gathered full path
