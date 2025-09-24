@@ -984,7 +984,7 @@ update_android_studio() {
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
 
 	# Update cursor extension
-	command -v cursor &>/dev/null && studio installPlugins com.github.blingyshs.openincursor
+	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
 }
 
@@ -1249,7 +1249,7 @@ update_cursor() {
 	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
 
 	# Update studio
-	command -v studio &>/dev/null && studio installPlugins com.github.blingyshs.openincursor
+	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
 }
 
@@ -1826,6 +1826,20 @@ update_apple_devtools() {
 
 }
 
+# @define Update shell devtools
+update_shell_devtools() {
+	
+	# Handle dependencies
+	update_cursor
+
+	# Update cursor
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "foxundermoon.shell-format" --force
+		cursor --install-extension "timonwong.shellcheck" --force
+	fi
+
+}
+
 # @define Update spring devtools
 update_spring_devtools() {
 	
@@ -1901,6 +1915,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_android_devtools"
 		"update_angular_devtools"
 		"update_apple_devtools"
+		"update_shell_devtools"
 		"update_spring_devtools"
 		"update_appearance"
 	)
