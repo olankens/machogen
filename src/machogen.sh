@@ -1125,7 +1125,7 @@ update_chromium() {
 	# Change default
 	change_default_browser "chromium"
 
-	# Create user-data-dir
+	# Create datadir
 	[[ -n "$datadir" ]] && mkdir -p "$datadir"
 
 	# Finish install
@@ -1209,13 +1209,13 @@ update_chromium_developer() {
 	local tabpage=${2:-about:blank}
 	local pattern=${3:-duckduckgo}
 	local datadir=${4:-$HOME/Library/Application Support/Chromium/Developer}
-	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
 
 	# Update package
+	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
 	update_chromium "$deposit" "$tabpage" "$pattern" "$datadir"
 
 	# Change theme
-	[[ "$present" == "true" ]] && change_chromium_theme 8 "$datadir"
+	[[ "$present" == "false" ]] && change_chromium_theme 8 "$datadir" # citron
 
 	# Update extensions
 	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" "$datadir" # json-formatter
