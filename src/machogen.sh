@@ -1204,7 +1204,7 @@ update_chromium() {
 		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
 		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip" # bypass-paywalls-chrome-clean
 	fi
 	
 }
