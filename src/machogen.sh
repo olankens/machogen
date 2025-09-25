@@ -1037,6 +1037,14 @@ update_calibre() {
 	# Finish install
 	invoke_once "calibre"
 
+	# Update goodreads
+	# TODO: Always get the latest version
+	local program="/Applications/calibre.app/Contents/MacOS/calibre-customize"
+	local address="https://github.com/kiwidude68/calibre_plugins/releases/download/goodreads-v1.8.3/goodreads-v1.8.3.zip"
+	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
+	"$program" --add-plugin "$archive"
+	"$program" --enable-plugin "Goodreads"
+
 	# Change icon
 	change_appicon "calibre" "/Applications/calibre.app"
 
@@ -1219,6 +1227,8 @@ update_chromium_developer() {
 
 	# Update extensions
 	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" "$datadir" # json-formatter
+	update_chromium_extension "blipmdconlkpinefehnmjammfjpmpbjk" "$datadir" # lighthouse
+	update_chromium_extension "bjogjfinolnhfhkbipphpdlldadpnmhc" "$datadir" # seo-meta-in-1-click
 
 }
 
@@ -1707,6 +1717,32 @@ update_utm() {
 	change_appicon "utm" "/Applications/UTM.app"
 }
 
+# @define Update vscode
+update_vscode() {
+
+	# Handle dependencies
+	update_brew jq sponge
+
+	# Update package
+	update_cask visual-studio-code
+
+	# Update extensions
+	code --install-extension "github.github-vscode-theme" --force
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/Code/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.fontSize" = 13' "$configs" | sponge "$configs"
+	jq '."editor.guides.bracketPairs" = "active"' "$configs" | sponge "$configs"
+	jq '."editor.lineHeight" = 36' "$configs" | sponge "$configs"
+	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
+	jq '."telemetry.telemetryLevel" = "crash"' "$configs" | sponge "$configs"
+	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
+	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
+	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
+
+}
+
 # @define Update xcode
 update_xcode() {
 
@@ -1803,11 +1839,21 @@ update_angular_devtools() {
 		source "$HOME/.zshrc"
 	fi
 
-	# Update chromium
+	# Update chromium extensions
 	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
 	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
 
-	# Update cursor
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "angular.ng-template" --force
+		code --install-extension "bradlc.vscode-tailwindcss" --force
+		code --install-extension "dbaeumer.vscode-eslint" --force
+		code --install-extension "mikestead.dotenv" --force
+		code --install-extension "usernamehw.errorlens" --force
+		code --install-extension "yoavbls.pretty-ts-errors" --force
+	fi
+
+	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
 		cursor --install-extension "angular.ng-template" --force
 		cursor --install-extension "bradlc.vscode-tailwindcss" --force
@@ -1817,7 +1863,7 @@ update_angular_devtools() {
 		cursor --install-extension "yoavbls.pretty-ts-errors" --force
 	fi
 
-	# Update idea
+	# Update idea plugins
 	if command -v idea &>/dev/null; then
 		idea installPlugins AngularJS
 	fi
@@ -1840,9 +1886,15 @@ update_shell_devtools() {
 	update_cursor
 	update_brew shfmt
 
-	# Update cursor
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension foxundermoon.shell-format@7.2.5 --force
+		code --install-extension "timonwong.shellcheck" --force
+	fi
+
+	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
-		# cursor --install-extension "foxundermoon.shell-format" --force
+		# cursor --install-extension foxundermoon.shell-format@7.2.5 --force
 		cursor --install-extension "timonwong.shellcheck" --force
 	fi
 
@@ -1859,15 +1911,23 @@ update_spring_devtools() {
 	update_temurin
 	update_brew gradle maven
 
-	# Update cursor
-	if command -v idea &>/dev/null; then
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "fwcd.kotlin" --force	
+		code --install-extension "vmware.vscode-boot-dev-pack" --force
+		code --install-extension "vscjava.vscode-gradle" --force
+		code --install-extension "vscjava.vscode-java-pack" --force
+	fi
+
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
 		cursor --install-extension "fwcd.kotlin" --force	
 		cursor --install-extension "vmware.vscode-boot-dev-pack" --force
 		cursor --install-extension "vscjava.vscode-gradle" --force
 		cursor --install-extension "vscjava.vscode-java-pack" --force
 	fi
 
-	# Update idea
+	# Update idea plugins
 	if command -v idea &>/dev/null; then
 		idea installPlugins com.haulmont.jpab
 	fi
@@ -1896,6 +1956,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_chromium"
 		"update_chromium_developer"
 		"update_intellij_idea"
+		"update_vscode"
 		"update_xcode"
 
 		"update_calibre"
