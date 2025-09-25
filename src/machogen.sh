@@ -1,4 +1,7 @@
+#!/bin/zsh
+
 # shellcheck shell=bash
+# shellcheck disable=SC1091,SC2005,SC2015,SC2016,SC2059,SC2128,SC2129,SC2155,SC2178
 
 # region services
 
@@ -899,9 +902,9 @@ verify_security() {
 
 	printf "\r\033[K"
 	printf "\r\033[93m%s\033[00m" "VERIFYING TERMINAL SECURITY, FOLLOW DIALOGS"
-	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null }
-	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null }
-	granted() { ls "$HOME/Library/Messages" &>/dev/null }
+	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null; }
+	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null; }
+	granted() { ls "$HOME/Library/Messages" &>/dev/null; }
 	display() {
 		heading=$(basename "$ZSH_ARGZERO" | cut -d . -f 1)
 		osascript <<-EOD &>/dev/null
@@ -1422,7 +1425,7 @@ update_jdownloader() {
 	update_cask jdownloader
 
 	# Finish install
-	if [[ "$present" == "false" || true ]]; then
+	if [[ "$present" == "false" ]]; then
 		local appdata="/Applications/JDownloader 2/cfg"
 		local config1="$appdata/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
 		local config2="$appdata/org.jdownloader.settings.GeneralSettings.json"
@@ -1501,7 +1504,7 @@ update_joal_desktop() {
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/JoalDesktop/joal-core/config.json"
-	mkdir -p "$(dirname $configs)"
+	mkdir -p "$(dirname "$configs")"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '."minUploadRate" = 300' "$configs" | sponge "$configs"
 	jq '."maxUploadRate" = 450' "$configs" | sponge "$configs"
@@ -1597,7 +1600,7 @@ update_notion() {
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/Notion/state.json"
-	mkdir -p "$(dirname $configs)"
+	mkdir -p "$(dirname "$configs")"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '.appState.preferences.isMenuBarIconEnabled = false' "$configs" | sponge "$configs"
 	jq '.appState.preferences.isAutoUpdaterDisabled = true' "$configs" | sponge "$configs"
@@ -2010,9 +2013,9 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
 	EOD
 
-	local country="Europe/Brussels"
-	local machine="macintosh"
-	local members=(
+	country="Europe/Brussels"
+	machine="macintosh"
+	members=(
 		"update_system"
 		"update_android_studio"
 		"update_chrome"
