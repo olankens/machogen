@@ -1255,10 +1255,10 @@ update_cursor() {
 	# Change icon
 	change_appicon "cursor" "/Applications/Cursor.app"
 
-	# Update idea
+	# Update idea plugin
 	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
 
-	# Update studio
+	# Update android-studio plugin
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
 }
@@ -1825,6 +1825,7 @@ update_angular_devtools() {
 	update_cursor
 	update_intellij_idea
 	update_nodejs
+	update_vscode
 
 	# Update angular
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
@@ -1875,7 +1876,69 @@ update_apple_devtools() {
 	
 	# Handle dependencies
 	update_xcode
-	# update_cask swiftformat-for-xcode
+
+}
+
+# @define Update react devtools
+update_react_devtools() {
+
+	# Handle parameters
+	local datadir=${1:-$HOME/Library/Application Support/Chromium/Developer}
+
+	# Update dependencies
+	update_chromium_developer
+	update_cursor
+	update_intellij_idea
+	update_nodejs
+	update_vscode
+
+	# Update chromium extensions
+	update_chromium_extension "fmkadmapgofadopljbjfkapdkoienihi" "$datadir" # react-developer-tools
+	update_chromium_extension "lmhkpmbekcpmknklioeibfkpmmfibljd" "$datadir" # redux-devtools
+
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "bradlc.vscode-tailwindcss" --force
+		code --install-extension "dbaeumer.vscode-eslint" --force
+		code --install-extension "deerawan.vscode-modern-react-typescript-snippets" --force
+		code --install-extension "esbenp.prettier-vscode" --force
+		code --install-extension "usernamehw.errorlens" --force
+		code --install-extension "yoavbls.pretty-ts-errors" --force
+	fi
+
+	# Update idea plugins
+	if command -v idea &>/dev/null; then
+		idea installPlugins com.haulmont.rcb # react-buddy
+	fi
+
+	# Change code settings
+	local configs="$HOME/Library/Application Support/Code/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.codeActionsOnSave"."source.fixAll" = "explicit"' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.defaultFormatter" = "esbenp.prettier-vscode"' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.tabSize" = 2' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."prettier.printWidth" = 120' "$configs" | sponge "$configs"
+
+}
+
+# @define Update react-native devtools
+update_react_native_devtools() {
+
+	# Handle dependencies
+	update_android_devtools
+	update_apple_devtools
+	update_react_devtools
+
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "msjsdiag.vscode-react-native" --force
+	fi
+
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "msjsdiag.vscode-react-native" --force
+	fi
 
 }
 
@@ -1985,6 +2048,8 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_android_devtools"
 		"update_angular_devtools"
 		"update_apple_devtools"
+		"update_react_devtools"
+		"update_react_native_devtools"
 		"update_shell_devtools"
 		"update_spring_devtools"
 		"update_appearance"
