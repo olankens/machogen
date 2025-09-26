@@ -23,6 +23,7 @@ This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 - Update Cursor
 - Update Docker
 - Update Figma
+- Update Flutter
 - Update Fork
 - Update Git
 - Update GitHub CLI
@@ -36,6 +37,7 @@ This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 - Update Nightlight
 - Update Node
 - Update Notion
+- Update Pearcleaner
 - Update PostgreSQL
 - Update Temurin
 - Update Transmission
@@ -45,6 +47,10 @@ This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
 - Update Android DevTools
 - Update Angular DevTools
 - Update Apple DevTools
+- Update Flutter DevTools
+- Update Ionic DevTools
+- Update React DevTools
+- Update React Native DevTools
 - Update Spring DevTools
 - Update Appearance
 

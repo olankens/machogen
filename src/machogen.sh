@@ -1378,7 +1378,7 @@ update_git() {
 
 }
 
-# @define Update git
+# @define Update github-cli
 update_github_cli() {
 
 	# Update package
