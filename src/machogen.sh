@@ -301,6 +301,34 @@ change_chromium_flag() {
 				delay 2
 			end tell
 		EOD
+	elif [[ "$element" = "extension-disable-unsupported-developer-mode-extensions" ]]; then
+		osascript <<-EOD
+			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+			delay 4
+			tell application "Chromium"
+				activate
+				reopen
+				delay 4
+				open location "chrome://flags/"
+				delay 2
+				tell application "System Events"
+					keystroke "extension-disable-unsupported-developer-mode-extensions"
+					delay 2
+					repeat 5 times
+						key code 48
+					end repeat
+					delay 2
+					key code 125
+					delay 2
+					keystroke "${payload}"
+					delay 2
+					key code 49
+				end tell
+				delay 2
+				quit
+				delay 2
+			end tell
+		EOD
 	elif [[ "$element" == "extension-mime-request-handling" ]]; then
 		osascript <<-EOD
 			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
@@ -1186,6 +1214,7 @@ update_chromium() {
 		change_chromium_download "$deposit" "$datadir"
 		change_chromium_engine "$pattern" "$datadir"
 		change_chromium_flag "custom-ntp" "$tabpage" "$datadir"
+		change_chromium_flag "extension-disable-unsupported-developer-mode-extensions" "disabled" "$datadir"
 		change_chromium_flag "extension-mime-request-handling" "always" "$datadir"
 		change_chromium_flag "remove-tabsearch-button" "enabled" "$datadir"
 		change_chromium_flag "show-avatar-button" "never" "$datadir"
