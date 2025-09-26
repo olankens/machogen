@@ -1016,6 +1016,7 @@ update_appearance() {
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
 	append_dock_application "/Applications/Cursor.app"
+	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
@@ -1028,6 +1029,26 @@ update_appearance() {
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
+
+}
+
+# @define Update anydesk
+update_anydesk() {
+
+	# Update package
+	local present="$([[ -d "/Applications/AnyDesk.app" ]] && echo "true" || echo "false")"
+	update_cask
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "AnyDesk"; fi
+	
+	# Remove menu bar icon
+	local configs="$HOME/.anydesk/user.conf"
+	if ! grep -q "ad.ui.cfg_show_tray_icon" "$configs" 2>/dev/null; then
+		echo "ad.ui.cfg_show_tray_icon=false" >>"$configs"
+	else
+		sed -i "" -e 's/^ad.ui.cfg_show_tray_icon=.*/ad.ui.cfg_show_tray_icon=false/' "$configs"
+	fi
 
 }
 
@@ -1066,7 +1087,6 @@ update_chrome() {
 
 	# Change settings
 	# INFO: https://github.com/yashgorana/chrome-debloat
-	# local configs="/Library/Managed Preferences/com.google.Chrome.plist"
 	local configs="$HOME/Library/Preferences/com.google.Chrome.plist"
 	local program="/usr/libexec/PlistBuddy"
 	sudo rm "$configs" && sleep 5
@@ -1302,6 +1322,32 @@ update_figma() {
 
 }
 
+update_flutter() {
+
+	# Update dependencies
+	update_brew dart
+
+	# Update package
+	update_cask flutter
+
+	# Finish install
+	flutter precache && flutter upgrade
+	dart --disable-analytics
+	flutter config --no-analytics
+	yes | flutter doctor --android-licenses
+
+	# Change environment
+	local altered="$(grep -q "CHROME_EXECUTABLE" "$HOME/.zshrc" >/dev/null 2>&1 && echo "true" || echo "false")"
+	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
+	if [[ "$altered" == "false" && "$present" == "true" ]]; then
+		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
+		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
+		echo 'export CHROME_EXECUTABLE="/Applications/Chromium.app/Contents/MacOS/Chromium"' >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
+	fi
+
+}
+
 # @define Update fork
 update_fork() {
 
@@ -1350,7 +1396,7 @@ update_iina() {
 	local present=$([[ -d "/Applications/IINA.app" ]] && echo "true" || echo "false")
 	update_cask iina
 
-	# Finish installation
+	# Finish install
 	if [[ "$present" == "false" ]]; then
 		osascript <<-EOD
 			set checkup to "/Applications/IINA.app"
@@ -1565,7 +1611,7 @@ update_nightlight() {
 
 }
 
-# @define Update nodejs (lts)
+# @define Update nodejs
 update_nodejs() {
 
 	# Handle dependencies
@@ -1718,6 +1764,7 @@ update_utm() {
 
 	# Change icon
 	change_appicon "utm" "/Applications/UTM.app"
+
 }
 
 # @define Update vscode
@@ -1882,6 +1929,70 @@ update_apple_devtools() {
 
 }
 
+# @define Update flutter devtools
+update_flutter_devtools() {
+	
+	# Handle dependencies
+	update_android_devtools
+	update_apple_devtools
+	update_cursor
+	update_flutter
+	update_vscode
+
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "alexisvt.flutter-snippets" --force
+		code --install-extension "dart-code.flutter" --force
+		code --install-extension "pflannery.vscode-versionlens" --force
+		# code --install-extension "RichardCoutts.mvvm-plus" --force
+		# code --install-extension "robert-brunhage.flutter-riverpod-snippets" --force
+		code --install-extension "usernamehw.errorlens" --force
+	fi
+
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "alexisvt.flutter-snippets" --force
+		cursor --install-extension "dart-code.flutter" --force
+		cursor --install-extension "pflannery.vscode-versionlens" --force
+		# cursor --install-extension "RichardCoutts.mvvm-plus" --force
+		# cursor --install-extension "robert-brunhage.flutter-riverpod-snippets" --force
+		cursor --install-extension "usernamehw.errorlens" --force
+	fi
+
+	# Update studio plugins
+	if command -v studio &>/dev/null; then
+		local program="/Applications/Android Studio.app/Contents/MacOS/studio"
+		"$program" installPlugins Dart
+		"$program" installPlugins io.flutter
+		# "$program" installPlugins com.localizely.flutter-intl
+		# "$program" installPlugins org.tbm98.flutter-riverpod-snippets
+	fi
+
+	# TODO: Add `readlink -f $(which flutter)` to studio
+	# NOTE: /usr/local/Caskroom/flutter/*/flutter
+
+}
+
+# @define Update ionic devtools
+update_ionic_devtools() {
+	
+	# Handle dependencies
+	update_android_devtools
+	update_angular_devtools
+	update_apple_devtools
+
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "WebNative.webnative" --force
+	fi
+
+	# Update code extensions
+	if command -v code &>/dev/null; then
+		code --install-extension "WebNative.webnative" --force
+	fi
+
+}
+
 # @define Update react devtools
 update_react_devtools() {
 
@@ -1950,6 +2061,7 @@ update_shell_devtools() {
 	
 	# Handle dependencies
 	update_cursor
+	update_vscode
 	update_brew shfmt
 
 	# Update code extensions
@@ -1960,7 +2072,11 @@ update_shell_devtools() {
 
 	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
-		# cursor --install-extension foxundermoon.shell-format@7.2.5 --force
+		# INFO: Cursor as foss vscode fork has very limited extensions support
+		local address="https://marketplace.visualstudio.com/_apis/public/gallery/publishers"
+		local address="$address/foxundermoon/vsextensions/shell-format/7.2.5/vspackage"
+		local package="$(mktemp -d)/foxundermoon.shell-format-7.2.5.vsix" && curl -LA "mozilla/5.0" "$address" -o "$package"
+		cursor --install-extension "$package" --force
 		cursor --install-extension "timonwong.shellcheck" --force
 	fi
 
@@ -1975,6 +2091,7 @@ update_spring_devtools() {
 	update_intellij_idea
 	update_postgresql
 	update_temurin
+	update_vscode
 	update_brew gradle maven
 
 	# Update code extensions
@@ -2018,18 +2135,19 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	members=(
 		"update_system"
 		"update_android_studio"
-		"update_chrome"
 		"update_chromium"
 		"update_chromium_developer"
+		"update_cursor"
 		"update_intellij_idea"
 		"update_vscode"
 		"update_xcode"
 
 		"update_calibre"
+		"update_chrome"
 		"update_claude_code"
-		"update_cursor"
 		"update_docker"
 		"update_figma"
+		"update_flutter"
 		"update_fork"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
@@ -2051,6 +2169,8 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_android_devtools"
 		"update_angular_devtools"
 		"update_apple_devtools"
+		"update_flutter_devtools"
+		"update_ionic_devtools"
 		"update_react_devtools"
 		"update_react_native_devtools"
 		"update_shell_devtools"
