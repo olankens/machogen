@@ -1324,8 +1324,8 @@ update_docker() {
 	# Update package
 	update_brew docker
 
-	# Launch service
-	# colima start
+	# Finish install
+	colima start && colima stop
 
 	# Change settings
 	local configs="$HOME/.docker/config.json"
@@ -1562,9 +1562,10 @@ update_joal_desktop() {
 	brew upgrade curl grep jq
 
 	# Update package
+	local present="$([[ -d "/Applications/Joal Desktop.app" ]] && echo "true" || echo "false")"
 	local address="https://api.github.com/repos/anthonyraymond/joal-desktop/releases/latest"
 	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
-	local current=$(expand_version "/*ppl*/*oal*esk*")
+	local current=$(gather_version "/*ppl*/*oal*esk*")
 	autoload is-at-least
 	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
 	if [[ "$updated" == "false" ]]; then
@@ -1831,7 +1832,7 @@ update_xcode() {
 
 	# Update package
 	local starter="/Applications/Xcode.app"
-	local current=$(expand_version "$starter")
+	local current=$(gather_version "$starter")
 	local version=$(xcodes list | tail -5 | grep -v Beta | tail -1 | ggrep -oP "[\d.]+" | head -1)
 	autoload is-at-least
 	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
@@ -1855,7 +1856,11 @@ update_youtube_music() {
 	update_brew jq sponge
 
 	# Update package
+	local present="$([[ -d "/Applications/YouTube Music.app" ]] && echo "true" || echo "false")"
 	update_cask th-ch/youtube-music/youtube-music
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "YouTube Music"; fi
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/YouTube Music/config.json"
