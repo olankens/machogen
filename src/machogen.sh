@@ -146,7 +146,7 @@ change_appicon() {
 	local apppath=${2}
 
 	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -552,7 +552,7 @@ change_wallpaper() {
 	local distant=${1}
 
 	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/$distant.heic"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/walls/$distant.heic"
 	local picture="$HOME/Pictures/Wallpapers/$(basename "$address")"
 	mkdir -p "$(dirname "$picture")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
@@ -1067,7 +1067,7 @@ update_appearance() {
 	killall Dock
 
 	# Change wallpaper
-	change_wallpaper "anime"
+	change_wallpaper "factory"
 
 }
 
@@ -1554,7 +1554,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -2178,48 +2178,48 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		"update_system"
-		"update_android_studio"
-		"update_chromium"
-		"update_chromium_developer"
-		"update_cursor"
-		"update_intellij_idea"
-		"update_vscode"
-		"update_xcode"
+		# "update_system"
+		# "update_android_studio"
+		# "update_chromium"
+		# "update_chromium_developer"
+		# "update_cursor"
+		# "update_intellij_idea"
+		# "update_vscode"
+		# "update_xcode"
 
-		"update_calibre"
-		"update_chrome"
-		"update_claude_code"
-		"update_docker"
-		"update_figma"
-		"update_flutter"
-		"update_fork"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_iina"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_keka"
-		"update_miniforge"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_pearcleaner"
-		"update_postgresql"
-		"update_temurin"
-		"update_transmission"
-		"update_utm"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_apple_devtools"
-		"update_flutter_devtools"
-		"update_ionic_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_shell_devtools"
-		"update_spring_devtools"
+		# "update_calibre"
+		# "update_chrome"
+		# "update_claude_code"
+		# "update_docker"
+		# "update_figma"
+		# "update_flutter"
+		# "update_fork"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_iina"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_keka"
+		# "update_miniforge"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_pearcleaner"
+		# "update_postgresql"
+		# "update_temurin"
+		# "update_transmission"
+		# "update_utm"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_apple_devtools"
+		# "update_flutter_devtools"
+		# "update_ionic_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_shell_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
