@@ -791,7 +791,7 @@ update_chromium_extension() {
 	# Handle parameters
 	local payload=${1}
 	local datadir=${2}
-	
+
 	# Update extension
 	if [[ -d "/Applications/Chromium.app" ]]; then
 		if [[ ${payload:0:4} == "http" ]]; then
@@ -932,7 +932,7 @@ verify_homebrew() {
 
 }
 
-# @define Handle current shell privileges, requires user interaction 
+# @define Handle current shell privileges, requires user interaction
 # @return 0 for success, 1 for failure
 verify_security() {
 
@@ -1080,7 +1080,7 @@ update_anydesk() {
 
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "AnyDesk"; fi
-	
+
 	# Remove menu bar icon
 	local configs="$HOME/.anydesk/user.conf"
 	if ! grep -q "ad.ui.cfg_show_tray_icon" "$configs" 2>/dev/null; then
@@ -1188,7 +1188,7 @@ update_chromium() {
 	update_brew coreutils curl jq
 
 	# Update package
-	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
+	local present=$([[ (-n "$datadir" && -d "$datadir") || (-z "$datadir" && -d "/Applications/Chromium.app") ]] && echo true || echo false)
 	update_cask eloston-chromium
 	killall Chromium || true
 
@@ -1267,9 +1267,9 @@ update_chromium() {
 		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
 		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip" # bypass-paywalls-chrome-clean
+		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
 	fi
-	
+
 }
 
 # @define Update chromium-developer
@@ -1282,7 +1282,7 @@ update_chromium_developer() {
 	local datadir=${4:-$HOME/Library/Application Support/Chromium/Developer}
 
 	# Update package
-	local present=$([[ ( -n "$datadir" && -d "$datadir" ) || ( -z "$datadir" && -d "/Applications/Chromium.app" ) ]] && echo true || echo false)
+	local present=$([[ (-n "$datadir" && -d "$datadir") || (-z "$datadir" && -d "/Applications/Chromium.app") ]] && echo true || echo false)
 	update_chromium "$deposit" "$tabpage" "$pattern" "$datadir"
 
 	# Change theme
@@ -1597,7 +1597,7 @@ update_joal_desktop() {
 	jq '."maxUploadRate" = 450' "$configs" | sponge "$configs"
 	jq '."simultaneousSeed" = 200' "$configs" | sponge "$configs"
 	jq '."client" = "transmission-3.00.client"' "$configs" | sponge "$configs"
-	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs" 
+	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs"
 	jq '."uploadRatioTarget" = -1' "$configs" | sponge "$configs"
 
 	# Change icon
@@ -1914,7 +1914,7 @@ update_angular_devtools() {
 
 	# Handle parameters
 	local datadir=${1:-$HOME/Library/Application Support/Chromium/Developer}
-	
+
 	# Handle dependencies
 	update_chromium_developer
 	update_cursor
@@ -1968,7 +1968,7 @@ update_angular_devtools() {
 
 # @define Update apple devtools
 update_apple_devtools() {
-	
+
 	# Handle dependencies
 	update_xcode
 
@@ -1976,7 +1976,7 @@ update_apple_devtools() {
 
 # @define Update flutter devtools
 update_flutter_devtools() {
-	
+
 	# Handle dependencies
 	update_android_devtools
 	update_apple_devtools
@@ -2020,7 +2020,7 @@ update_flutter_devtools() {
 
 # @define Update ionic devtools
 update_ionic_devtools() {
-	
+
 	# Handle dependencies
 	update_android_devtools
 	update_angular_devtools
@@ -2103,11 +2103,11 @@ update_react_native_devtools() {
 
 # @define Update shell devtools
 update_shell_devtools() {
-	
+
 	# Handle dependencies
 	update_cursor
 	update_vscode
-	update_brew shfmt
+	update_brew hongkongkiwi/vsix-cli/vsix-cli shfmt
 
 	# Update code extensions
 	if command -v code &>/dev/null; then
@@ -2118,10 +2118,7 @@ update_shell_devtools() {
 	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
 		# INFO: Cursor as foss vscode fork has very limited extensions support
-		local address="https://marketplace.visualstudio.com/_apis/public/gallery/publishers"
-		local address="$address/foxundermoon/vsextensions/shell-format/7.2.5/vspackage"
-		local package="$(mktemp -d)/foxundermoon.shell-format-7.2.5.vsix" && curl -LA "mozilla/5.0" "$address" -o "$package"
-		cursor --install-extension "$package" --force
+		vsix-cli install -e cursor -y foxundermoon.shell-format@7.2.5
 		cursor --install-extension "timonwong.shellcheck" --force
 	fi
 
@@ -2129,7 +2126,7 @@ update_shell_devtools() {
 
 # @define Update spring devtools
 update_spring_devtools() {
-	
+
 	# Handle dependencies
 	update_cursor
 	update_docker
@@ -2141,7 +2138,7 @@ update_spring_devtools() {
 
 	# Update code extensions
 	if command -v code &>/dev/null; then
-		code --install-extension "fwcd.kotlin" --force	
+		code --install-extension "fwcd.kotlin" --force
 		code --install-extension "vmware.vscode-boot-dev-pack" --force
 		code --install-extension "vscjava.vscode-gradle" --force
 		code --install-extension "vscjava.vscode-java-pack" --force
@@ -2149,7 +2146,7 @@ update_spring_devtools() {
 
 	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
-		cursor --install-extension "fwcd.kotlin" --force	
+		cursor --install-extension "fwcd.kotlin" --force
 		cursor --install-extension "vmware.vscode-boot-dev-pack" --force
 		cursor --install-extension "vscjava.vscode-gradle" --force
 		cursor --install-extension "vscjava.vscode-java-pack" --force
@@ -2167,12 +2164,12 @@ update_spring_devtools() {
 if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 	read -r -d "" welcome <<-EOD
-	███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
-	████╗░████║██╔══██╗██╔══██╗██║░░██║██╔══██╗██╔════╝░██╔════╝████╗░██║
-	██╔████╔██║███████║██║░░╚═╝███████║██║░░██║██║░░██╗░█████╗░░██╔██╗██║
-	██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║██║░░██║██║░░╚██╗██╔══╝░░██║╚████║
-	██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║╚█████╔╝╚██████╔╝███████╗██║░╚███║
-	╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
+		███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
+		████╗░████║██╔══██╗██╔══██╗██║░░██║██╔══██╗██╔════╝░██╔════╝████╗░██║
+		██╔████╔██║███████║██║░░╚═╝███████║██║░░██║██║░░██╗░█████╗░░██╔██╗██║
+		██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║██║░░██║██║░░╚██╗██╔══╝░░██║╚████║
+		██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║╚█████╔╝╚██████╔╝███████╗██║░╚███║
+		╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
 	EOD
 
 	country="Europe/Brussels"
