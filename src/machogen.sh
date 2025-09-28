@@ -480,18 +480,6 @@ change_default_browser() {
 
 }
 
-# @define Change desktop wallpaper
-# @params The picture full path
-change_desktop_wallpaper() {
-
-	# Handle parameters
-	local picture=${1}
-
-	# Change wallpaper
-	osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$picture\""
-
-}
-
 # @define Change system hostname
 # @params The new hostname
 change_hostname() {
@@ -549,6 +537,26 @@ change_timezone() {
 
 	# Change timezone
 	sudo systemsetup -settimezone "$payload" &>/dev/null
+
+}
+
+# @define Change default wallpaper
+# @params The distant wallpaper name from repository
+# @params The wallpaper full path
+change_wallpaper() {
+
+	# Handle dependencies
+	update_brew curl
+
+	# Handle parameters
+	local distant=${1}
+
+	# Change icon
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/$distant.heic"
+	local picture="$HOME/Pictures/Wallpapers/$(basename "$address")"
+	mkdir -p "$(dirname "$picture")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$picture\""
 
 }
 
@@ -1057,6 +1065,9 @@ update_appearance() {
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
+
+	# Change wallpaper
+	change_wallpaper "anime"
 
 }
 
