@@ -1052,7 +1052,6 @@ update_appearance() {
 	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/MEGAsync.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
@@ -1307,8 +1306,12 @@ update_claude_code() {
 	# Update package
 	update_cask claude-code
 
-	# Change settings
-	claude config set -g autoUpdates false
+	# Change environment
+	if ! grep -q "DISABLE_AUTOUPDATER" "$HOME/.zshrc" 2>/dev/null; then
+		[[ -s "$configs" ]] || touch "$HOME/.zshrc"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
+	fi
 
 }
 
@@ -1630,17 +1633,6 @@ update_keka() {
 
 }
 
-# @define Update megasync
-update_megasync() {
-
-	# Update package
-	update_cask megasync
-
-	# Change icon
-	change_appicon "megasync" "/Applications/MEGAsync.app"
-
-}
-
 # @define Update miniforge
 update_miniforge() {
 
@@ -1719,6 +1711,9 @@ update_pearcleaner() {
 
 	# Update package
 	update_cask pearcleaner
+
+	# Change icon
+	change_appicon "pearcleaner" "/Applications/Pearcleaner.app"
 
 }
 
@@ -1896,6 +1891,9 @@ update_youtube_music() {
 	jq '.plugins."sponsorblock".enabled = true' "$configs" | sponge "$configs"
 	jq '.plugins."synced-lyrics".enabled = true' "$configs" | sponge "$configs"
 	# jq '.plugins."no-google-login".enabled = true' "$configs" | sponge "$configs"
+
+	# Change icon
+	change_appicon "youtube-music" "/Applications/YouTube Music.app"
 
 }
 
@@ -2203,7 +2201,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 		# "update_calibre"
 		# "update_chrome"
-		# "update_claude_code"
+		"update_claude_code"
 		# "update_docker"
 		# "update_figma"
 		# "update_flutter"
@@ -2215,12 +2213,11 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_joal_desktop"
 		# "update_keepingyouawake"
 		# "update_keka"
-		"update_megasync"
 		# "update_miniforge"
 		# "update_nightlight"
 		# "update_nodejs"
 		# "update_notion"
-		# "update_pearcleaner"
+		"update_pearcleaner"
 		# "update_postgresql"
 		# "update_temurin"
 		# "update_transmission"
