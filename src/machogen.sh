@@ -1332,6 +1332,17 @@ update_cursor() {
 
 }
 
+# @define Update discord
+update_discord() {
+
+	# Update package
+	update_cask discord
+
+	# Change icon
+	# change_appicon "discord" "/Applications/Discord.app"
+
+}
+
 # @define Update docker
 update_docker() {
 
@@ -2199,6 +2210,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_calibre"
 		"update_chrome"
 		"update_claude_code"
+		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_flutter"
