@@ -1,5 +1,7 @@
 # <samp>OVERVIEW</samp>
 
+<img src=".assets/res1.png" width="49.25%"/><img src=".assets/res0.png" width="1.5%"/><img src=".assets/res2.png" width="49.25%"/>
+
 Post-installation script to set up a whole developer-friendly environment on macOS.
 It installs, updates, and configures every single software on your machine automatically.
 This is highly opinionated with harsh defaults and shouldn't be executed blindly.
@@ -10,8 +12,6 @@ Ungoogled Chromium is also used for development purposes with a specific Develop
 This profile has to be used when debugging with your code editors and IDEs.
 
 This script was tested on macOS Sonoma (14), Sequoia (15), and Tahoe (26).
-
-<img src=".assets/res1.png" width="49.25%"/><img src=".assets/res0.png" width="1.5%"/><img src=".assets/res2.png" width="49.25%"/>
 
 # <samp>FEATURES</samp>
 
