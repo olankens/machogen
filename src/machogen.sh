@@ -146,7 +146,8 @@ change_appicon() {
 	local apppath=${2}
 
 	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
+	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -1051,6 +1052,7 @@ update_appearance() {
 	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
+	append_dock_application "/Applications/MEGAsync.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
@@ -1063,6 +1065,7 @@ update_appearance() {
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/calibre.app"
 	append_dock_application "/Applications/Pearcleaner.app"
+	append_dock_application "/Applications/Keka.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	killall Dock
 
@@ -1554,7 +1557,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1622,6 +1625,20 @@ update_keka() {
 	# Finish install
 	/Applications/KekaExternalHelper.app/Contents/MacOS/KekaExternalHelper --set-as-default
 
+	# Change icon
+	change_appicon "keka" "/Applications/Keka.app"
+
+}
+
+# @define Update megasync
+update_megasync() {
+
+	# Update package
+	update_cask megasync
+
+	# Change icon
+	change_appicon "megasync" "/Applications/MEGAsync.app"
+
 }
 
 # @define Update miniforge
@@ -1640,7 +1657,7 @@ update_miniforge() {
 update_nightlight() {
 
 	# Handle parameters
-	local percent=${1:-75}
+	local percent=${1:-60}
 	local forever=${2:-true}
 
 	# Update package
@@ -2175,48 +2192,49 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		"update_system"
-		"update_android_studio"
-		"update_chromium"
-		"update_chromium_developer"
-		"update_cursor"
-		"update_intellij_idea"
-		"update_vscode"
-		"update_xcode"
+		# "update_system"
+		# "update_android_studio"
+		# "update_chromium"
+		# "update_chromium_developer"
+		# "update_cursor"
+		# "update_intellij_idea"
+		# "update_vscode"
+		# "update_xcode"
 
-		"update_calibre"
-		"update_chrome"
-		"update_claude_code"
-		"update_docker"
-		"update_figma"
-		"update_flutter"
-		"update_fork"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_iina"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_keka"
-		"update_miniforge"
-		"update_nightlight"
-		"update_nodejs"
-		"update_notion"
-		"update_pearcleaner"
-		"update_postgresql"
-		"update_temurin"
-		"update_transmission"
-		"update_utm"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_apple_devtools"
-		"update_flutter_devtools"
-		"update_ionic_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_shell_devtools"
-		"update_spring_devtools"
+		# "update_calibre"
+		# "update_chrome"
+		# "update_claude_code"
+		# "update_docker"
+		# "update_figma"
+		# "update_flutter"
+		# "update_fork"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_iina"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_keka"
+		"update_megasync"
+		# "update_miniforge"
+		# "update_nightlight"
+		# "update_nodejs"
+		# "update_notion"
+		# "update_pearcleaner"
+		# "update_postgresql"
+		# "update_temurin"
+		# "update_transmission"
+		# "update_utm"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_apple_devtools"
+		# "update_flutter_devtools"
+		# "update_ionic_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_shell_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
