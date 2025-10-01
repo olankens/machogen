@@ -1,7 +1,5 @@
 # <samp>OVERVIEW</samp>
 
-<img src=".assets/before.png" width="49%"/><img src=".assets/1x1.png" width="2%"/><img src=".assets/after.png" width="49%"/>
-
 Post-installation script to set up a whole developer-friendly environment on macOS.
 It installs, updates, and configures every single software on your machine automatically.
 This is highly opinionated with harsh defaults and shouldn't be executed blindly.
@@ -10,6 +8,11 @@ It intentionally uses Ungoogled Chromium as the main browser and has advanced me
 Yeah, the best extensions are not on the store and the best features are not available on official Chrome or shit-tier forks.
 Ungoogled Chromium is also used for development purposes with a specific Developer profile.
 This profile has to be used when debugging with your code editors and IDEs.
+
+### Before and After
+
+<img src=".assets/before.png" width="49%"/><img src=".assets/1x1.png" width="2%"/><img src=".assets/after.png" width="49%"/>
+
 
 # <samp>FEATURES</samp>
 
