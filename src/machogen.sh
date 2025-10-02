@@ -1052,6 +1052,7 @@ update_appearance() {
 	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
+	append_dock_application "/Applications/TradingView.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/Android Studio.app"
@@ -1060,6 +1061,8 @@ update_appearance() {
 	append_dock_application "/Applications/Fork.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Figma.app"
+	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/Final Cut Pro.app"
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/YouTube Music.app"
 	append_dock_application "/Applications/calibre.app"
@@ -1379,6 +1382,7 @@ update_figma() {
 
 }
 
+# @define Update flutter
 update_flutter() {
 
 	# Update dependencies
@@ -1703,7 +1707,11 @@ update_notion() {
 	update_brew coreutils jq
 
 	# Update package
+	local present="$([[ -d "/Applications/Notion.app" ]] && echo "true" || echo "false")"
 	update_cask notion
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "Notion"; fi
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/Notion/state.json"
@@ -2198,49 +2206,49 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		# "update_system"
-		# "update_android_studio"
-		# "update_chromium"
-		# "update_chromium_developer"
-		# "update_cursor"
-		# "update_intellij_idea"
-		# "update_vscode"
-		# "update_xcode"
+		"update_system"
+		"update_android_studio"
+		"update_chromium"
+		"update_chromium_developer"
+		"update_cursor"
+		"update_intellij_idea"
+		"update_vscode"
+		"update_xcode"
 
-		# "update_calibre"
-		# "update_chrome"
-		# "update_claude_code"
-		# "update_discord"
-		# "update_docker"
-		# "update_figma"
-		# "update_flutter"
-		# "update_fork"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_github_cli"
-		# "update_iina"
-		# "update_jdownloader"
-		# "update_joal_desktop"
-		# "update_keepingyouawake"
-		# "update_keka"
-		# "update_miniforge"
-		# "update_nightlight"
-		# "update_nodejs"
-		# "update_notion"
-		# "update_pearcleaner"
-		# "update_postgresql"
-		# "update_temurin"
-		# "update_transmission"
-		# "update_utm"
-		# "update_youtube_music"
-		# "update_android_devtools"
-		# "update_angular_devtools"
-		# "update_apple_devtools"
-		# "update_flutter_devtools"
-		# "update_ionic_devtools"
-		# "update_react_devtools"
-		# "update_react_native_devtools"
-		# "update_shell_devtools"
-		# "update_spring_devtools"
+		"update_calibre"
+		"update_chrome"
+		"update_claude_code"
+		"update_discord"
+		"update_docker"
+		"update_figma"
+		"update_flutter"
+		"update_fork"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_github_cli"
+		"update_iina"
+		"update_jdownloader"
+		"update_joal_desktop"
+		"update_keepingyouawake"
+		"update_keka"
+		"update_miniforge"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_pearcleaner"
+		"update_postgresql"
+		"update_temurin"
+		"update_transmission"
+		"update_utm"
+		"update_youtube_music"
+		"update_android_devtools"
+		"update_angular_devtools"
+		"update_apple_devtools"
+		"update_flutter_devtools"
+		"update_ionic_devtools"
+		"update_react_devtools"
+		"update_react_native_devtools"
+		"update_shell_devtools"
+		"update_spring_devtools"
 		"update_appearance"
 	)
 
