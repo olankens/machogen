@@ -1047,18 +1047,18 @@ update_appearance() {
 	defaults delete com.apple.dock persistent-others
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	append_dock_application "/Applications/Transmission.app"
-	append_dock_application "/Applications/Joal Desktop.app"
-	append_dock_application "/Applications/Discord.app"
+	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	# append_dock_application "/Applications/Transmission.app"
+	# append_dock_application "/Applications/Joal Desktop.app"
+	# append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/TradingView.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
-	append_dock_application "/Applications/Fork.app"
+	# append_dock_application "/Applications/Fork.app"
+	append_dock_application "/Applications/TradingView.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/OBS.app"
@@ -1341,9 +1341,6 @@ update_discord() {
 	# Update package
 	update_cask discord
 
-	# Change icon
-	# change_appicon "discord" "/Applications/Discord.app"
-
 }
 
 # @define Update docker
@@ -1376,9 +1373,6 @@ update_figma() {
 	# Change settings
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
-
-	# Change icon
-	change_appicon "figma" "/Applications/Figma.app"
 
 }
 
@@ -1782,6 +1776,10 @@ update_system() {
 
 	# Update rosetta
 	/usr/sbin/softwareupdate --install-rosetta --agree-to-license &>/dev/null
+
+	# Update terminal
+	# TODO: Create specific function
+	change_appicon "terminal" "/System/Applications/Utilities/Terminal.app"
 
 	# Update system
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
