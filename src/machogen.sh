@@ -146,8 +146,8 @@ change_appicon() {
 	local apppath=${2}
 
 	# Change icon
-	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
+	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -1030,7 +1030,7 @@ update_android_studio() {
 # @define Update appearance
 update_appearance() {
 
-	# Change dock
+	# Change dock settings
 	defaults write com.apple.dock autohide -bool true
 	defaults write com.apple.dock autohide-delay -float 0
 	defaults write com.apple.dock autohide-time-modifier -float 0.25
@@ -1038,40 +1038,66 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.Dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 36
+	defaults write com.apple.dock tilesize -int 32
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
 	defaults write com.apple.dock wvous-tr-corner -int 0
+
+	# Remove dock elements
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
-	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+
+	# Append internet elements
 	append_dock_application "/Applications/Chromium.app"
-	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	# append_dock_application "/Applications/Transmission.app"
-	# append_dock_application "/Applications/Joal Desktop.app"
-	# append_dock_application "/Applications/Discord.app"
+	append_dock_application "/Applications/Google Chrome.app"
+	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	append_dock_application "/Applications/JoalDesktop.app"
+	append_dock_application "/Applications/NetNewsWire.app"
+	append_dock_application "/Applications/Transmission.app"
+	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+
+	# Append services elements
+	append_dock_application "/Applications/Discord.app"
 	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/Cursor.app"
-	append_dock_application "/Applications/Visual Studio Code.app"
-	append_dock_application "/Applications/Android Studio.app"
-	append_dock_application "/Applications/Xcode.app"
-	append_dock_application "/Applications/IntelliJ IDEA.app"
-	# append_dock_application "/Applications/Fork.app"
 	append_dock_application "/Applications/TradingView.app"
-	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/Applications/YouTube Music.app"
+
+	# Append office elements
+	append_dock_application "/Applications/calibre.app"
+
+	# Append developer elements
+	append_dock_application "/Applications/Android Studio.app"
+	append_dock_application "/Applications/Cursor.app"
+	append_dock_application "/Applications/Fork.app"
+	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Visual Studio Code.app"
+	append_dock_application "/Applications/Xcode.app"
+
+	# Append graphics elements
 	append_dock_application "/Applications/Figma.app"
-	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/Frame0.app"
+
+	# Append multimedia elements
 	append_dock_application "/Applications/Final Cut Pro.app"
 	append_dock_application "/Applications/IINA.app"
-	append_dock_application "/Applications/YouTube Music.app"
-	append_dock_application "/Applications/calibre.app"
+	append_dock_application "/Applications/Mpv.app"
+	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/QuickRecorder.app"
+
+	# Append hobbies elements
+	append_dock_application "/Applications/CrossOver.app"
+
+	# Append utilities elements
 	append_dock_application "/Applications/Pearcleaner.app"
+	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
-	killall Dock
 
 	# Change wallpaper
 	change_wallpaper "tokyo"
+
+	# Escape screen
+	killall Dock
 
 }
 
@@ -1324,14 +1350,14 @@ update_cursor() {
 	# Update package
 	update_cask cursor cursor-cli
 
-	# Change icon
-	change_appicon "cursor" "/Applications/Cursor.app"
-
 	# Update idea plugin
 	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
 
 	# Update android-studio plugin
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
+
+	# Change icon
+	change_appicon "cursor" "/Applications/Cursor.app"
 
 }
 
@@ -1374,6 +1400,9 @@ update_figma() {
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
 
+	# Change icon
+	change_appicon "figma" "/Applications/Figma.app"
+
 }
 
 # @define Update flutter
@@ -1408,6 +1437,17 @@ update_fork() {
 
 	# Update package
 	update_cask fork
+
+}
+
+# @define Update frame0
+update_frame0() {
+
+	# Update package
+	update_cask frame0
+
+	# Change icon
+	change_appicon "frame0" "/Applications/Frame0.app"
 
 }
 
@@ -1488,9 +1528,6 @@ update_iina() {
 	local deposit=$(mktemp -d)
 	expand_archive "$archive" "$deposit"
 	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
-
-	# Change icon
-	change_appicon "iina" "/Applications/IINA.app"
 
 }
 
@@ -1654,6 +1691,14 @@ update_miniforge() {
 
 }
 
+# @define Update netnewswire
+update_netnewswire() {
+
+	# Update package
+	update_cask netnewswire
+
+}
+
 # @define Update nightlight
 update_nightlight() {
 
@@ -1719,6 +1764,17 @@ update_notion() {
 
 }
 
+# @define Update obs
+update_obs() {
+
+	# Update package
+	update_cask obs
+
+	# Change icon
+	change_appicon "obs" "/Applications/OBS.app"
+
+}
+
 # @define Update pearcleaner
 update_pearcleaner() {
 
@@ -1739,6 +1795,14 @@ update_postgresql() {
 	# Launch service
 	# INFO: Default credentials are $USER with empty password
 	brew services restart postgresql@"$version"
+
+}
+
+# @define Update quickrecorder
+update_quickrecorder() {
+
+	# Update package
+	update_cask lihaoyun6/tap/quickrecorder
 
 }
 
@@ -1776,10 +1840,6 @@ update_system() {
 
 	# Update rosetta
 	/usr/sbin/softwareupdate --install-rosetta --agree-to-license &>/dev/null
-
-	# Update terminal
-	# TODO: Create specific function
-	change_appicon "terminal" "/System/Applications/Utilities/Terminal.app"
 
 	# Update system
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
@@ -1828,9 +1888,6 @@ update_utm() {
 
 	# Update package
 	update_cask utm
-
-	# Change icon
-	change_appicon "utm" "/Applications/UTM.app"
 
 }
 
@@ -2208,7 +2265,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_android_studio"
 		# "update_chromium"
 		# "update_chromium_developer"
-		# "update_cursor"
+		"update_cursor"
 		# "update_intellij_idea"
 		# "update_vscode"
 		# "update_xcode"
@@ -2221,6 +2278,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_figma"
 		# "update_flutter"
 		# "update_fork"
+		# "update_frame0"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
 		# "update_iina"
@@ -2229,14 +2287,17 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_keepingyouawake"
 		# "update_keka"
 		# "update_miniforge"
+		# "update_netnewswire"
 		# "update_nightlight"
 		# "update_nodejs"
 		# "update_notion"
+		"update_obs"
 		# "update_pearcleaner"
 		# "update_postgresql"
+		"update_quickrecorder"
 		# "update_temurin"
 		# "update_transmission"
-		"update_utm"
+		# "update_utm"
 		# "update_youtube_music"
 		# "update_android_devtools"
 		# "update_angular_devtools"

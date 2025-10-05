@@ -26,6 +26,7 @@ This profile has to be used when debugging with your code editors and IDEs.
 - Update Figma
 - Update Flutter
 - Update Fork
+- Update Frame0
 - Update Git
 - Update GitHub CLI
 - Update IINA
@@ -36,10 +37,13 @@ This profile has to be used when debugging with your code editors and IDEs.
 - Update Keka
 - Update Miniforge
 - Update Nightlight
+- Update NetNewsWire
 - Update Node
 - Update Notion
+- Update OBS
 - Update Pearcleaner
 - Update PostgreSQL
+- Update QuickRecorder
 - Update Temurin
 - Update Transmission
 - Update UTM
