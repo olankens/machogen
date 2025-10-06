@@ -1296,6 +1296,7 @@ update_chromium() {
 		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
 		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
 		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
 		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
 		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
@@ -1890,8 +1891,7 @@ update_temurin() {
 	update_brew curl jq
 
 	# Update package
-	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
-	update_cask temurin@"$version"
+	update_cask temurin
 
 }
 
