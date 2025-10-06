@@ -21,12 +21,12 @@ This profile has to be used when debugging with your code editors and IDEs.
 - Update Calibre
 - Update Chromium (Ungoogled)
 - Update Claude Code
+- Update CrossOver
 - Update Cursor
 - Update Docker
 - Update Figma
 - Update Flutter
 - Update Fork
-- Update Frame0
 - Update Git
 - Update GitHub CLI
 - Update IINA

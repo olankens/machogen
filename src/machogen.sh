@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # shellcheck shell=bash
-# shellcheck disable=SC1091,SC2005,SC2015,SC2016,SC2059,SC2128,SC2129,SC2155,SC2178
+# shellcheck disable=SC1091,SC2005,SC2015,SC2016,SC2059,SC2125,SC2128,SC2129,SC2155,SC2178
 
 # region services
 
@@ -922,9 +922,10 @@ verify_homebrew() {
 	CI=1 /bin/bash -c "$command" &>/dev/null
 	local configs="$HOME/.zprofile"
 	if ! grep -q "/opt/homebrew/bin/brew shellenv" "$configs" 2>/dev/null; then
-		[[ -s "$configs" ]] || touch "$configs"
-		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
-		echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Invoke homebrew environment" >>"$configs"
+		printf "\n%s" 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
 	fi
 	brew analytics off
@@ -995,12 +996,13 @@ update_android_cmdline() {
 	# Change environment
 	local configs="$HOME/.zshrc"
 	if ! grep -q "ANDROID_HOME" "$configs" 2>/dev/null; then
-		[[ -s "$configs" ]] || touch "$configs"
-		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
-		echo 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$configs"
-		echo 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$configs"
-		echo 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$configs"
-		echo 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$configs"
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$configs"
+		printf "\n%s" "# Append android sdk tools to path" >>"$configs"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$configs"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$configs"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$configs"
 		export ANDROID_HOME="$HOME/.android/sdk"
 		export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
 		export PATH="$PATH:$ANDROID_HOME/emulator"
@@ -1076,7 +1078,6 @@ update_appearance() {
 
 	# Append graphics elements
 	append_dock_application "/Applications/Figma.app"
-	append_dock_application "/Applications/Frame0.app"
 
 	# Append multimedia elements
 	append_dock_application "/Applications/Final Cut Pro.app"
@@ -1336,11 +1337,53 @@ update_claude_code() {
 
 	# Change environment
 	if ! grep -q "DISABLE_AUTOUPDATER" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$configs" ]] || touch "$HOME/.zshrc"
-		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$HOME/.zshrc"
-		echo 'export DISABLE_AUTOUPDATER=1' >>"$HOME/.zshrc"
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Remove autoupdater for claude-code" >>"$HOME/.zshrc"
+		printf "\n%s" "export DISABLE_AUTOUPDATER=1" >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
+
+}
+
+# @define Update crossover
+update_crossover() {
+
+	# Update package
+	update_cask crossover
+
+	# Change settings
+	defaults write com.codeweavers.CrossOver AskForRatings -bool false
+	defaults write com.codeweavers.CrossOver SUAutomaticallyUpdate -bool false
+	defaults write com.codeweavers.CrossOver SUEnableAutomaticChecks -bool false
+	defaults write com.codeweavers.CrossOver SUHasLaunchedBefore -bool true
+
+	# Finish install
+	invoke_once "CrossOver"
+	local bottles="$HOME/Library/Application Support/CrossOver/Bottles"/*
+	while true; do
+		pids=$(pgrep -f "CrossOver")
+		[ -z "$pids" ] && break
+		kill -9 "$pids" >/dev/null 2>&1
+		sleep 4
+	done
+	local configs="$HOME/Library/Preferences/com.codeweavers.CrossOver.plist"
+	while /usr/libexec/PlistBuddy -c "Print :FirstRunDate" "$configs" &>/dev/null; do
+		defaults delete com.codeweavers.CrossOver FirstRunDate
+		plutil -remove FirstRunDate "$configs" &>/dev/null
+		sleep 2
+	done
+	IFS=$'\n'
+	find "$bottles" -type d -maxdepth 0 -print0 | while IFS= read -r -d '' i; do
+		[ -d "$i" ] || continue
+		while grep -q '\[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice\]' "$i/system.reg"; do
+			sed -i '' '/\[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice\].*/,+5d' "$i/system.reg"
+			sleep 1
+		done
+	done
+
+	# Change icon
+	change_appicon "crossover" "/Applications/crossover.app"
 
 }
 
@@ -1424,9 +1467,10 @@ update_flutter() {
 	local altered="$(grep -q "CHROME_EXECUTABLE" "$HOME/.zshrc" >/dev/null 2>&1 && echo "true" || echo "false")"
 	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
 	if [[ "$altered" == "false" && "$present" == "true" ]]; then
-		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
-		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
-		echo 'export CHROME_EXECUTABLE="/Applications/Chromium.app/Contents/MacOS/Chromium"' >>"$HOME/.zshrc"
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Assign chromium as chrome executable for flutter" >>"$HOME/.zshrc"
+		printf "\n%s" 'export CHROME_EXECUTABLE="/Applications/Chromium.app/Contents/MacOS/Chromium"' >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
 
@@ -1437,17 +1481,6 @@ update_fork() {
 
 	# Update package
 	update_cask fork
-
-}
-
-# @define Update frame0
-update_frame0() {
-
-	# Update package
-	update_cask frame0
-
-	# Change icon
-	change_appicon "frame0" "/Applications/Frame0.app"
 
 }
 
@@ -1609,7 +1642,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1731,9 +1764,10 @@ update_nodejs() {
 
 	# Change environment
 	if ! grep -q "/opt/homebrew/opt/node" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
-		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
-		echo "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Append node bin directory to path" >>"$HOME/.zshrc"
+		printf "\n%s" "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	else
 		sed -i "" -e "s#/opt/homebrew/opt/node.*/bin#/opt/homebrew/opt/node@$version/bin#" "$HOME/.zshrc"
@@ -1852,11 +1886,11 @@ update_system() {
 # @define Update temurin
 update_temurin() {
 
-	# Handle parameters
-	local version=${1:-21}
+	# Handle dependencies
+	update_brew curl jq
 
 	# Update package
-	brew uninstall temurin
+	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
 	update_cask temurin@"$version"
 
 }
@@ -1874,6 +1908,7 @@ update_transmission() {
 	# Change settings
 	mkdir -p "$deposit/Incompleted"
 	defaults write org.m0k.transmission DownloadFolder -string "$deposit"
+	defaults write org.m0k.transmission DownloadLocationConstant -int "1"
 	defaults write org.m0k.transmission IncompleteDownloadFolder -string "$deposit/Incompleted"
 	defaults write org.m0k.transmission RatioCheck -bool true
 	defaults write org.m0k.transmission RatioLimit -int "$seeding"
@@ -2014,15 +2049,6 @@ update_angular_devtools() {
 	# Update angular
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
 	ng analytics off
-
-	# Change environment
-	if ! grep -q "ng completion script" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$configs" ]] || touch "$HOME/.zshrc"
-		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$HOME/.zshrc"
-		echo 'autoload -Uz compinit && compinit' >>"$HOME/.zshrc"
-		echo 'source <(ng completion script)' >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
-	fi
 
 	# Update chromium extensions
 	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
@@ -2276,12 +2302,12 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_calibre"
 		"update_chrome"
 		"update_claude_code"
+		"update_crossover"
 		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_flutter"
 		"update_fork"
-		"update_frame0"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
 		"update_iina"
