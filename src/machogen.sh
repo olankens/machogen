@@ -994,19 +994,15 @@ update_android_cmdline() {
 	fi
 
 	# Change environment
-	local configs="$HOME/.zshrc"
-	if ! grep -q "ANDROID_HOME" "$configs" 2>/dev/null; then
+	if ! grep -q "ANDROID_HOME" "$HOME/.zshrc" 2>/dev/null; then
 		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
 		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$configs"
-		printf "\n%s" "# Append android sdk tools to path" >>"$configs"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$configs"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$configs"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$configs"
-		export ANDROID_HOME="$HOME/.android/sdk"
-		export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
-		export PATH="$PATH:$ANDROID_HOME/emulator"
-		export PATH="$PATH:$ANDROID_HOME/platform-tools"
+		printf "\n%s" "# Append android sdk tools to path" >>"$HOME/.zshrc"
+		printf "\n%s" 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$HOME/.zshrc"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$HOME/.zshrc"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$HOME/.zshrc"
+		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
 	fi
 
 }
@@ -1080,7 +1076,7 @@ update_appearance() {
 	append_dock_application "/Applications/Figma.app"
 
 	# Append multimedia elements
-	append_dock_application "/Applications/Final Cut Pro.app"
+	append_dock_application "/Applications/CapCut.app"
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/Mpv.app"
 	append_dock_application "/Applications/OBS.app"
@@ -1393,6 +1389,7 @@ update_cursor() {
 
 	# Update package
 	update_cask cursor cursor-cli
+	update_brew hongkongkiwi/vsix-cli/vsix-cli
 
 	# Update idea plugin
 	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
@@ -2050,6 +2047,15 @@ update_angular_devtools() {
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
 	ng analytics off
 
+	# Change environment
+	if ! grep -q "ng completion script" "$HOME/.zshrc" 2>/dev/null; then
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Enable angular cli completion" >>"$HOME/.zshrc"
+		printf "\n%s" "source <(ng completion script)" >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
+	fi
+
 	# Update chromium extensions
 	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
 	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
@@ -2141,14 +2147,14 @@ update_ionic_devtools() {
 	update_angular_devtools
 	update_apple_devtools
 
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "WebNative.webnative" --force
-	fi
-
 	# Update code extensions
 	if command -v code &>/dev/null; then
 		code --install-extension "WebNative.webnative" --force
+	fi
+
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
+		vsix-cli install -e cursor -y "WebNative.webnative"
 	fi
 
 }
@@ -2180,6 +2186,16 @@ update_react_devtools() {
 		code --install-extension "yoavbls.pretty-ts-errors" --force
 	fi
 
+	# Update cursor extensions
+	if command -v cursor &>/dev/null; then
+		cursor --install-extension "bradlc.vscode-tailwindcss" --force
+		cursor --install-extension "dbaeumer.vscode-eslint" --force
+		cursor --install-extension "deerawan.vscode-modern-react-typescript-snippets" --force
+		cursor --install-extension "esbenp.prettier-vscode" --force
+		cursor --install-extension "usernamehw.errorlens" --force
+		cursor --install-extension "yoavbls.pretty-ts-errors" --force
+	fi
+
 	# Update idea plugins
 	if command -v idea &>/dev/null; then
 		idea installPlugins com.haulmont.rcb # react-buddy
@@ -2206,11 +2222,13 @@ update_react_native_devtools() {
 
 	# Update code extensions
 	if command -v code &>/dev/null; then
+		code --install-extension "expo.vscode-expo-tools" --force
 		code --install-extension "msjsdiag.vscode-react-native" --force
 	fi
 
 	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
+		cursor --install-extension "expo.vscode-expo-tools" --force
 		cursor --install-extension "msjsdiag.vscode-react-native" --force
 	fi
 
@@ -2226,14 +2244,13 @@ update_shell_devtools() {
 
 	# Update code extensions
 	if command -v code &>/dev/null; then
-		code --install-extension foxundermoon.shell-format@7.2.5 --force
+		code --install-extension "foxundermoon.shell-format@7.2.5" --force
 		code --install-extension "timonwong.shellcheck" --force
 	fi
 
 	# Update cursor extensions
 	if command -v cursor &>/dev/null; then
-		# INFO: Cursor as foss vscode fork has very limited extensions support
-		vsix-cli install -e cursor -y foxundermoon.shell-format@7.2.5
+		vsix-cli install -e cursor -y "foxundermoon.shell-format@7.2.5"
 		cursor --install-extension "timonwong.shellcheck" --force
 	fi
 
