@@ -1,7 +1,5 @@
-#!/bin/zsh
-
+# !/bin/zsh
 # shellcheck shell=bash
-# shellcheck disable=SC1091,SC2005,SC2015,SC2016,SC2059,SC2125,SC2128,SC2129,SC2155,SC2178
 
 # region services
 
@@ -133,46 +131,20 @@ assert_macos_version() {
 
 }
 
-# @define Change application icon
-# @params The distant icon name from repository
-# @params The application full path
-change_appicon() {
-
-	# Handle dependencies
-	update_brew curl fileicon
-
-	# Handle parameters
-	local distant=${1}
-	local apppath=${2}
-
-	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
-	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
-	local picture="$(mktemp -d)/$(basename "$address")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	fileicon set "$apppath" "$picture" || sudo !!
-
-}
-
 # @define Change chromium download folder
 # @params The download location full path
-# @params The user-data-dir full path, empty for default one
 change_chromium_download() {
 
 	# Handle parameters
 	local deposit=${1:-$HOME/Downloads/DDL}
-	local datadir=${2}
-
-	# Ensure presence
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
 	# Change deposit
 	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
 	mkdir -p "$deposit" && killall "Chromium" 2>/dev/null && sleep 4
 	osascript <<-EOD
-		do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-		delay 4
-		tell application "Chromium"
+		set starter to "/Applications/Chromium.app"
+		tell application starter
 			activate
 			reopen
 			delay 4
@@ -208,60 +180,54 @@ change_chromium_download() {
 
 # @define Change chromium search engine
 # @params The pattern used to identify the engine in the list
-# @params The user-data-dir full path, empty for default one
 change_chromium_engine() {
 
 	# INFO: Google intentionally randomized and restricted access to search engine list
-	# IDEA: Use keystrokes with OCR to achieve it
+	# TODO: Use keystrokes and OCR to achieve
 	return 1
 
 	# Handle parameters
-	# local pattern=${1:-duckduckgo}
-	# local datadir=${2}
+	local pattern=${1:-duckduckgo}
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
-	# # Change search engine
-	# killall "Chromium" 2>/dev/null && sleep 4
-	# defaults write org.chromium.Chromium AppleLanguages "(en-US)"
-	# osascript <<-EOD
-	# 	set starter to "/Applications/Chromium.app"
-	# 	tell application starter
-	# 		activate
-	# 		reopen
-	# 		delay 4
-	# 		open location "chrome://settings/search"
-	# 		delay 2
-	# 		tell application "System Events"
-	# 			repeat 2 times
-	# 				key code 48
-	# 			end repeat
-	# 			delay 2
-	# 			key code 49
-	# 			delay 2
-	# 			keystroke "${pattern}"
-	# 			delay 2
-	# 			key code 49
-	# 		end tell
-	# 		delay 2
-	# 		quit
-	# 		delay 2
-	# 	end tell
-	# EOD
+	# Change search engine
+	killall "Chromium" 2>/dev/null && sleep 4
+	defaults write org.chromium.Chromium AppleLanguages "(en-US)"
+	osascript <<-EOD
+		set starter to "/Applications/Chromium.app"
+		tell application starter
+			activate
+			reopen
+			delay 4
+			open location "chrome://settings/search"
+			delay 2
+			tell application "System Events"
+				repeat 2 times
+					key code 48
+				end repeat
+				delay 2
+				key code 49
+				delay 2
+				keystroke "${pattern}"
+				delay 2
+				key code 49
+			end tell
+			delay 2
+			quit
+			delay 2
+		end tell
+	EOD
 
 }
 
 # @define Change chromium flag
 # @params The chromium flag to change
 # @params The payload value to set for the specified flag
-# @params The user-data-dir full path, empty for default one
 change_chromium_flag() {
 
 	# Handle parameters
 	local element=${1}
 	local payload=${2}
-	local datadir=${3}
-
-	# Ensure presence
 	[[ -d "/Applications/Chromium.app" ]] || return 1
 
 	# Change flag
@@ -269,9 +235,8 @@ change_chromium_flag() {
 	killall "Chromium" 2>/dev/null && sleep 4
 	if [[ "$element" == "custom-ntp" ]]; then
 		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
+			set starter to "/Applications/Chromium.app"
+			tell application starter
 				activate
 				reopen
 				delay 4
@@ -302,39 +267,10 @@ change_chromium_flag() {
 				delay 2
 			end tell
 		EOD
-	elif [[ "$element" = "extension-disable-unsupported-developer-mode-extensions" ]]; then
-		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
-				activate
-				reopen
-				delay 4
-				open location "chrome://flags/"
-				delay 2
-				tell application "System Events"
-					keystroke "extension-disable-unsupported-developer-mode-extensions"
-					delay 2
-					repeat 5 times
-						key code 48
-					end repeat
-					delay 2
-					key code 125
-					delay 2
-					keystroke "${payload}"
-					delay 2
-					key code 49
-				end tell
-				delay 2
-				quit
-				delay 2
-			end tell
-		EOD
 	elif [[ "$element" == "extension-mime-request-handling" ]]; then
 		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
+			set starter to "/Applications/Chromium.app"
+			tell application starter
 				activate
 				reopen
 				delay 4
@@ -360,9 +296,8 @@ change_chromium_flag() {
 		EOD
 	elif [[ "$element" == "remove-tabsearch-button" ]]; then
 		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
+			set checkup to "/Applications/Chromium.app"
+			tell application checkup
 				activate
 				reopen
 				delay 4
@@ -388,9 +323,8 @@ change_chromium_flag() {
 		EOD
 	elif [[ "$element" == "show-avatar-button" ]]; then
 		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
+			set checkup to "/Applications/Chromium.app"
+			tell application checkup
 				activate
 				reopen
 				delay 4
@@ -418,44 +352,6 @@ change_chromium_flag() {
 
 }
 
-# @define Change chromium default profile theme
-# @params The number of times to press the right arrow key
-# @params The user-data-dir full path, empty for default one
-change_chromium_theme() {
-
-	# Handle parameters
-	local repeats=${1:-0}
-	local datadir=${2}
-
-	# # Change theme
-	killall "Chromium" 2>/dev/null && sleep 4
-	osascript <<-EOD
-		do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-		delay 4
-		tell application "Chromium"
-			activate
-			reopen
-			delay 4
-			open location "chrome://settings/manageProfile"
-			delay 2
-			tell application "System Events"
-				repeat 2 times
-					key code 48
-				end repeat
-				repeat $repeats times
-					key code 124
-				end repeat
-				delay 2
-				key code 49
-			end tell
-			delay 2
-			quit
-			delay 2
-		end tell
-	EOD
-
-}
-
 # @define Change default web browser
 # @params The browser name (chrome, chromium, firefox, safari, vivaldi, ...)
 change_default_browser() {
@@ -478,6 +374,18 @@ change_default_browser() {
 			end try
 		end tell
 	EOD
+
+}
+
+# @define Change desktop wallpaper
+# @params The picture full path
+change_desktop_wallpaper() {
+
+	# Handle parameters
+	local picture=${1}
+
+	# Change wallpaper
+	osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$picture\""
 
 }
 
@@ -541,26 +449,6 @@ change_timezone() {
 
 }
 
-# @define Change default wallpaper
-# @params The distant wallpaper name from repository
-# @params The wallpaper full path
-change_wallpaper() {
-
-	# Handle dependencies
-	update_brew curl
-
-	# Handle parameters
-	local distant=${1}
-
-	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/walls/$distant.heic"
-	local picture="$HOME/Pictures/Wallpapers/$(basename "$address")"
-	mkdir -p "$(dirname "$picture")"
-	curl -LA "mozilla/5.0" "$address" -o "$picture"
-	osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$picture\""
-
-}
-
 # @define Expand archive
 # @params The archive path or direct http url
 # @params The deposit path for extraction
@@ -601,8 +489,8 @@ gather_password() {
 
 }
 
-# @define Gather path using find command
-# @params The search pattern or directory path
+# @define Gather path
+# @params The search pattern or directory
 # @params The maximum depth for search
 # @return The gathered full path
 gather_pattern() {
@@ -647,7 +535,8 @@ invoke_once() {
 
 	# Invoke application
 	osascript <<-EOD
-		tell application "/Applications/${appname}.app"
+		set starter to "/Applications/${appname}.app"
+		tell application starter
 			activate
 			reopen
 			tell application "System Events"
@@ -786,12 +675,10 @@ update_cask() {
 
 # @define Update chromium extension
 # @params The payload (crx url, zip url or extension uuid)
-# @params The user-data-dir full path, empty for default one
 update_chromium_extension() {
 
 	# Handle parameters
 	local payload=${1}
-	local datadir=${2}
 
 	# Update extension
 	if [[ -d "/Applications/Chromium.app" ]]; then
@@ -812,9 +699,8 @@ update_chromium_extension() {
 			expand_archive "$package" "$storage" 1
 			if [[ "$present" == "false" ]]; then
 				osascript <<-EOD
-					do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-					delay 4
-					tell application "Chromium"
+					set checkup to "/Applications/Chromium.app"
+					tell application checkup
 						activate
 						reopen
 						delay 4
@@ -841,7 +727,7 @@ update_chromium_extension() {
 						quit
 						delay 2
 					end tell
-					tell application "Chromium"
+					tell application checkup
 						activate
 						reopen
 						delay 4
@@ -860,9 +746,8 @@ update_chromium_extension() {
 			fi
 		else
 			osascript <<-EOD
-				do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-				delay 4
-				tell application "Chromium"
+				set checkup to "/Applications/Chromium.app"
+				tell application checkup
 					activate
 					reopen
 					delay 4
@@ -922,10 +807,9 @@ verify_homebrew() {
 	CI=1 /bin/bash -c "$command" &>/dev/null
 	local configs="$HOME/.zprofile"
 	if ! grep -q "/opt/homebrew/bin/brew shellenv" "$configs" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Invoke homebrew environment" >>"$configs"
-		printf "\n%s" 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
+		[[ -s "$configs" ]] || touch "$configs"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
+		echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
 	fi
 	brew analytics off
@@ -934,15 +818,15 @@ verify_homebrew() {
 
 }
 
-# @define Handle current shell privileges, requires user interaction
+# @define Handle current shell privileges, requires user interaction 
 # @return 0 for success, 1 for failure
 verify_security() {
 
 	printf "\r\033[K"
 	printf "\r\033[93m%s\033[00m" "VERIFYING TERMINAL SECURITY, FOLLOW DIALOGS"
-	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null; }
-	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null; }
-	granted() { ls "$HOME/Library/Messages" &>/dev/null; }
+	allowed() { osascript -e 'tell application "System Events" to log ""' &>/dev/null }
+	capable() { osascript -e 'tell application "System Events" to key code 60' &>/dev/null }
+	granted() { ls "$HOME/Library/Messages" &>/dev/null }
 	display() {
 		heading=$(basename "$ZSH_ARGZERO" | cut -d . -f 1)
 		osascript <<-EOD &>/dev/null
@@ -994,15 +878,18 @@ update_android_cmdline() {
 	fi
 
 	# Change environment
-	if ! grep -q "ANDROID_HOME" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Append android sdk tools to path" >>"$HOME/.zshrc"
-		printf "\n%s" 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$HOME/.zshrc"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$HOME/.zshrc"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$HOME/.zshrc"
-		printf "\n%s" 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
+	local configs="$HOME/.zshrc"
+	if ! grep -q "ANDROID_HOME" "$configs" 2>/dev/null; then
+		[[ -s "$configs" ]] || touch "$configs"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
+		echo 'export ANDROID_HOME="$HOME/Library/Android/sdk"' >>"$configs"
+		echo 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >>"$configs"
+		echo 'export PATH="$PATH:$ANDROID_HOME/emulator"' >>"$configs"
+		echo 'export PATH="$PATH:$ANDROID_HOME/platform-tools"' >>"$configs"
+		export ANDROID_HOME="$HOME/.android/sdk"
+		export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
+		export PATH="$PATH:$ANDROID_HOME/emulator"
+		export PATH="$PATH:$ANDROID_HOME/platform-tools"
 	fi
 
 }
@@ -1020,15 +907,14 @@ update_android_studio() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "Android Studio"; fi
 
-	# Update cursor extension
-	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
+	# TODO: Change settings
 
 }
 
 # @define Update appearance
 update_appearance() {
 
-	# Change dock settings
+	# Change dock
 	defaults write com.apple.dock autohide -bool true
 	defaults write com.apple.dock autohide-delay -float 0
 	defaults write com.apple.dock autohide-time-modifier -float 0.25
@@ -1036,90 +922,55 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.Dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 32
+	defaults write com.apple.dock tilesize -int 36
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
 	defaults write com.apple.dock wvous-tr-corner -int 0
-
-	# Remove dock elements
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
-
-	# Append internet elements
-	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/Google Chrome.app"
-	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	append_dock_application "/Applications/JoalDesktop.app"
-	append_dock_application "/Applications/NetNewsWire.app"
-	append_dock_application "/Applications/Transmission.app"
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
-
-	# Append services elements
+	append_dock_application "/Applications/Chromium.app"
+	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	append_dock_application "/Applications/Transmission.app"
+	append_dock_application "/Applications/Joal Desktop.app"
 	append_dock_application "/Applications/Discord.app"
-	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/TradingView.app"
-	append_dock_application "/Applications/YouTube Music.app"
-
-	# Append office elements
+	append_dock_application "/Applications/Vesktop.app"
 	append_dock_application "/Applications/calibre.app"
-
-	# Append developer elements
-	append_dock_application "/Applications/Android Studio.app"
-	append_dock_application "/Applications/Cursor.app"
-	append_dock_application "/Applications/Fork.app"
-	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Notion.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
+	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Xcode.app"
-
-	# Append graphics elements
-	append_dock_application "/Applications/Figma.app"
-
-	# Append multimedia elements
-	append_dock_application "/Applications/CapCut.app"
-	append_dock_application "/Applications/IINA.app"
-	append_dock_application "/Applications/Mpv.app"
-	append_dock_application "/Applications/OBS.app"
-	append_dock_application "/Applications/QuickRecorder.app"
-
-	# Append hobbies elements
-	append_dock_application "/Applications/CrossOver.app"
-
-	# Append utilities elements
-	append_dock_application "/Applications/Pearcleaner.app"
+	append_dock_application "/Applications/WebStorm.app"
+	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/Applications/Figma.app"
+	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/mpv.app"
+	append_dock_application "/Applications/YouTube Music.app"
+	append_dock_application "/Applications/CrossOver.app"
+	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
-
-	# Change wallpaper
-	change_wallpaper "tokyo"
-
-	# Escape screen
 	killall Dock
 
 }
 
-# @define Update anydesk
-update_anydesk() {
+# @define Update awscli
+update_awscli() {
 
 	# Update package
-	local present="$([[ -d "/Applications/AnyDesk.app" ]] && echo "true" || echo "false")"
-	update_cask
+	update_brew awscli
 
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "AnyDesk"; fi
-
-	# Remove menu bar icon
-	local configs="$HOME/.anydesk/user.conf"
-	if ! grep -q "ad.ui.cfg_show_tray_icon" "$configs" 2>/dev/null; then
-		echo "ad.ui.cfg_show_tray_icon=false" >>"$configs"
-	else
-		sed -i "" -e 's/^ad.ui.cfg_show_tray_icon=.*/ad.ui.cfg_show_tray_icon=false/' "$configs"
-	fi
+	# TODO: Change settings
 
 }
 
 # @define Update calibre
 update_calibre() {
+
+	# Handle dependencies
+	update_brew curl fileicon
 
 	# Update package
 	update_cask calibre
@@ -1127,105 +978,33 @@ update_calibre() {
 	# Finish install
 	invoke_once "calibre"
 
-	# Update goodreads
-	# TODO: Always get the latest version
-	local program="/Applications/calibre.app/Contents/MacOS/calibre-customize"
-	local address="https://github.com/kiwidude68/calibre_plugins/releases/download/goodreads-v1.8.3/goodreads-v1.8.3.zip"
-	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
-	"$program" --add-plugin "$archive"
-	"$program" --enable-plugin "Goodreads"
-
-	# Change icon
-	change_appicon "calibre" "/Applications/calibre.app"
-
-}
-
-# @define Update chrome
-update_chrome() {
-
-	# Update package
-	local present="$([[ -d "/Applications/Google Chrome.app" ]] && echo "true" || echo "false")"
-	update_cask google-chrome
-	killall Chrome || true
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "Google Chrome"; fi
-
-	# Change settings
-	# INFO: https://github.com/yashgorana/chrome-debloat
-	local configs="$HOME/Library/Preferences/com.google.Chrome.plist"
-	local program="/usr/libexec/PlistBuddy"
-	sudo rm "$configs" && sleep 5
-	sudo "$program" -c "Save" "$configs"
-	sudo "$program" -c "Add :AlternateErrorPagesEnabled bool false" "$configs"
-	sudo "$program" -c "Add :AutofillCreditCardEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BackgroundModeEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BrowserGuestModeEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BrowserSignin integer 0" "$configs"
-	sudo "$program" -c "Add :BuiltInDnsClientEnabled bool false" "$configs"
-	sudo "$program" -c "Add :CloudReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DefaultBrowserSettingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DefaultGeolocationSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultLocalFontsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultNotificationsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultSensorsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultSerialGuardSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DeviceActivityHeartbeatEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DeviceMetricsReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DriveDisabled bool true" "$configs"
-	sudo "$program" -c "Add :ExtensionManifestV2Availability integer 2" "$configs"
-	sudo "$program" -c "Add :HeartbeatEnabled bool false" "$configs"
-	sudo "$program" -c "Add :LogUploadEnabled bool false" "$configs"
-	sudo "$program" -c "Add :MetricsReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ParcelTrackingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordLeakDetectionEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordManagerEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordSharingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :QuickAnswersEnabled bool false" "$configs"
-	sudo "$program" -c "Add :RelatedWebsiteSetsEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ReportAppInventory array" "$configs"
-	sudo "$program" -c "Add :ReportDeviceActivityTimes bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceAppInfo bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceSystemInfo bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceUsers bool false" "$configs"
-	sudo "$program" -c "Add :ReportWebsiteTelemetry array" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingDeepScanningEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingExtendedReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingSurveysEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ShoppingListEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SyncDisabled bool true" "$configs"
-
-	# Change extensions
-	sudo "$program" -c "Delete :ExtensionInstallForcelist" "$configs"
-	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
-	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
-
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/calibre.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/calibre.app" "$picture" || sudo !!
 }
 
 # @define Update chromium
 update_chromium() {
-
+	
 	# Handle parameters
 	local deposit=${1:-$HOME/Downloads/DDL}
-	local tabpage=${2:-about:blank}
-	local pattern=${3:-duckduckgo}
-	local datadir=${4}
+	local pattern=${2:-duckduckgo}
+	local tabpage=${3:-about:blank}
 
 	# Handle dependencies
-	update_brew coreutils curl jq
+	update_brew curl jq
 
 	# Update package
-	local present=$([[ (-n "$datadir" && -d "$datadir") || (-z "$datadir" && -d "/Applications/Chromium.app") ]] && echo true || echo false)
+	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
 	update_cask eloston-chromium
 	killall Chromium || true
 
-	# Change default
+	# Change default browser
 	change_default_browser "chromium"
 
-	# Create datadir
-	[[ -n "$datadir" ]] && mkdir -p "$datadir"
-
-	# Finish install
+	# Finish installation
 	if [[ "$present" == "false" ]]; then
 
 		# Handle notifications
@@ -1249,19 +1028,21 @@ update_chromium() {
 		killall "Chromium" && sleep 4
 
 		# Change settings
-		change_chromium_download "$deposit" "$datadir"
-		change_chromium_engine "$pattern" "$datadir"
-		change_chromium_flag "custom-ntp" "$tabpage" "$datadir"
-		change_chromium_flag "extension-disable-unsupported-developer-mode-extensions" "disabled" "$datadir"
-		change_chromium_flag "extension-mime-request-handling" "always" "$datadir"
-		change_chromium_flag "remove-tabsearch-button" "enabled" "$datadir"
-		change_chromium_flag "show-avatar-button" "never" "$datadir"
+		change_chromium_download "$deposit"
+
+		# Change engine
+		change_chromium_engine "$pattern"
+
+		# Change flags
+		change_chromium_flag "custom-ntp" "about:blank"
+		change_chromium_flag "extension-mime-request-handling" "always"
+		change_chromium_flag "remove-tabsearch-button" "enabled"
+		change_chromium_flag "show-avatar-button" "never"
 
 		# Toggle bookmarks
 		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-			delay 4
-			tell application "Chromium"
+			set starter to "/Applications/Chromium.app"
+			tell application starter
 				activate
 				reopen
 				delay 4
@@ -1283,43 +1064,20 @@ update_chromium() {
 		local website="https://api.github.com/repos/NeverDecaf/chromium-web-store/releases"
 		local version=$(curl -s "$website" | jq -r ".[0].tag_name" | tr -d "v")
 		local address="https://github.com/NeverDecaf/chromium-web-store/releases/download/v$version/Chromium.Web.Store.crx"
-		update_chromium_extension "$address" "$datadir"
+		update_chromium_extension "$address"
 
-	fi
-
-	# Update extensions
-	if [[ -z "$datadir" ]]; then
-		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+		# Update extensions
+		# update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
 		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
-		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-		update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
-		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+		# update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		# update_chromium_extension "lkahpjghmdhpiojknppmlenngmpkkfma" # skip-ad-ad-block-auto-ad
+		# update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+
 	fi
 
-}
-
-# @define Update chromium-developer
-update_chromium_developer() {
-
-	# Handle parameters
-	local deposit=${1:-$HOME/Downloads/DDL}
-	local tabpage=${2:-about:blank}
-	local pattern=${3:-duckduckgo}
-	local datadir=${4:-$HOME/Library/Application Support/Chromium/Developer}
-
-	# Update package
-	local present=$([[ (-n "$datadir" && -d "$datadir") || (-z "$datadir" && -d "/Applications/Chromium.app") ]] && echo true || echo false)
-	update_chromium "$deposit" "$tabpage" "$pattern" "$datadir"
-
-	# Change theme
-	[[ "$present" == "false" ]] && change_chromium_theme 8 "$datadir" # citron
-
-	# Update extensions
-	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" "$datadir" # json-formatter
-	update_chromium_extension "blipmdconlkpinefehnmjammfjpmpbjk" "$datadir" # lighthouse
-	update_chromium_extension "bjogjfinolnhfhkbipphpdlldadpnmhc" "$datadir" # seo-meta-in-1-click
+	# Update bypass-paywalls-chrome-clean
+	# update_chromium_extension "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass-paywalls-chrome-clean-master.zip"
 
 }
 
@@ -1330,24 +1088,20 @@ update_claude_code() {
 	update_brew ccusage
 
 	# Update package
-	update_cask claude-code
+	# npm install -g @anthropic-ai/claude-code
+	curl -fsSL https://claude.ai/install.sh | bash
 
-	# Change environment
-	if ! grep -q "DISABLE_AUTOUPDATER" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Remove autoupdater for claude-code" >>"$HOME/.zshrc"
-		printf "\n%s" "export DISABLE_AUTOUPDATER=1" >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
-	fi
+	# Update vscode extensions
+	code --install-extension "anthropic.claude-code" --force
+
+	# Update intellij plugins
+	idea installPlugins com.anthropic.code.plugin
+	webstorm installPlugins com.anthropic.code.plugin
 
 }
 
 # @define Update crossover
 update_crossover() {
-
-	# Update package
-	update_cask crossover
 
 	# Change settings
 	defaults write com.codeweavers.CrossOver AskForRatings -bool false
@@ -1355,58 +1109,34 @@ update_crossover() {
 	defaults write com.codeweavers.CrossOver SUEnableAutomaticChecks -bool false
 	defaults write com.codeweavers.CrossOver SUHasLaunchedBefore -bool true
 
-	# Finish install
-	invoke_once "CrossOver"
-	local bottles="$HOME/Library/Application Support/CrossOver/Bottles"/*
-	while true; do
-		pids=$(pgrep -f "CrossOver")
-		[ -z "$pids" ] && break
-		kill -9 "$pids" >/dev/null 2>&1
-		sleep 4
-	done
-	local configs="$HOME/Library/Preferences/com.codeweavers.CrossOver.plist"
-	while /usr/libexec/PlistBuddy -c "Print :FirstRunDate" "$configs" &>/dev/null; do
-		defaults delete com.codeweavers.CrossOver FirstRunDate
-		plutil -remove FirstRunDate "$configs" &>/dev/null
-		sleep 2
-	done
-	IFS=$'\n'
-	find "$bottles" -type d -maxdepth 0 -print0 | while IFS= read -r -d '' i; do
-		[ -d "$i" ] || continue
-		while grep -q '\[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice\]' "$i/system.reg"; do
-			sed -i '' '/\[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice\].*/,+5d' "$i/system.reg"
-			sleep 1
-		done
-	done
-
-	# Change icon
-	change_appicon "crossover" "/Applications/crossover.app"
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/crossover.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/CrossOver.app" "$picture" || sudo !!
 
 }
 
 # @define Update cursor
 update_cursor() {
 
-	# Update package
-	update_cask cursor cursor-cli
-	update_brew hongkongkiwi/vsix-cli/vsix-cli
-
-	# Update idea plugin
-	command -v idea &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
-
-	# Update android-studio plugin
-	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
-
-	# Change icon
-	change_appicon "cursor" "/Applications/Cursor.app"
-
-}
-
-# @define Update discord
-update_discord() {
+	# Handle dependencies
+	update_brew jq sponge
 
 	# Update package
-	update_cask discord
+	update_cask cursor
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
+	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/cursor.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Cursor.app" "$picture" || sudo !!
 
 }
 
@@ -1419,8 +1149,8 @@ update_docker() {
 	# Update package
 	update_brew docker
 
-	# Finish install
-	colima start && colima stop
+	# Launch service
+	# colima start
 
 	# Change settings
 	local configs="$HOME/.docker/config.json"
@@ -1441,44 +1171,11 @@ update_figma() {
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
 
-	# Change icon
-	change_appicon "figma" "/Applications/Figma.app"
-
-}
-
-# @define Update flutter
-update_flutter() {
-
-	# Update dependencies
-	update_brew dart
-
-	# Update package
-	update_cask flutter
-
-	# Finish install
-	flutter precache && flutter upgrade
-	dart --disable-analytics
-	flutter config --no-analytics
-	yes | flutter doctor --android-licenses
-
-	# Change environment
-	local altered="$(grep -q "CHROME_EXECUTABLE" "$HOME/.zshrc" >/dev/null 2>&1 && echo "true" || echo "false")"
-	local present="$([[ -d "/Applications/Chromium.app" ]] && echo "true" || echo "false")"
-	if [[ "$altered" == "false" && "$present" == "true" ]]; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Assign chromium as chrome executable for flutter" >>"$HOME/.zshrc"
-		printf "\n%s" 'export CHROME_EXECUTABLE="/Applications/Chromium.app/Contents/MacOS/Chromium"' >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
-	fi
-
-}
-
-# @define Update fork
-update_fork() {
-
-	# Update package
-	update_cask fork
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/figma.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Figma.app" "$picture" || sudo !!
 
 }
 
@@ -1504,64 +1201,11 @@ update_git() {
 
 }
 
-# @define Update github-cli
+# @define Update git
 update_github_cli() {
 
 	# Update package
 	update_brew gh
-
-}
-
-# @define Update iina
-update_iina() {
-
-	# Update dependencies
-	update_brew curl jq
-
-	# Update package
-	local present=$([[ -d "/Applications/IINA.app" ]] && echo "true" || echo "false")
-	update_cask iina
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then
-		osascript <<-EOD
-			set checkup to "/Applications/IINA.app"
-			tell application checkup
-				activate
-				reopen
-				tell application "System Events"
-					with timeout of 10 seconds
-						repeat until (exists window 1 of application process "IINA")
-							delay 0.02
-						end repeat
-						tell application process "IINA" to set visible to false
-					end timeout
-				end tell
-				delay 4
-				quit
-				delay 4
-			end tell
-		EOD
-		update_chromium_extension "pdnojahnhpgmdhjdhgphgdcecehkbhfo"
-	fi
-
-	# Change settings
-	defaults write com.colliderli.iina recordPlaybackHistory -integer 0
-	defaults write com.colliderli.iina recordRecentFiles -integer 0
-	defaults write com.colliderli.iina SUEnableAutomaticChecks -integer 0
-	defaults write com.colliderli.iina ytdlSearchPath "/usr/local/bin"
-
-	# Change association
-	local address="https://api.github.com/repos/jdek/openwith/releases/latest"
-	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
-	local address="https://github.com/jdek/openwith/releases/download/v$version/openwith-v$version.tar.xz"
-	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
-	local deposit=$(mktemp -d)
-	expand_archive "$archive" "$deposit"
-	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
-
-	# Change icon
-	change_appicon "iina" "/Applications/IINA.app"
 
 }
 
@@ -1578,8 +1222,7 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Update cursor
-	command -v cursor &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
+	# TODO: Change settings
 
 }
 
@@ -1597,7 +1240,7 @@ update_jdownloader() {
 	update_cask jdownloader
 
 	# Finish install
-	if [[ "$present" == "false" ]]; then
+	if [[ "$present" == "false" || true ]]; then
 		local appdata="/Applications/JDownloader 2/cfg"
 		local config1="$appdata/org.jdownloader.settings.GraphicalUserInterfaceSettings.json"
 		local config2="$appdata/org.jdownloader.settings.GeneralSettings.json"
@@ -1640,7 +1283,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1655,14 +1298,13 @@ update_jdownloader() {
 update_joal_desktop() {
 
 	# Handle dependencies
-	brew install curl grep jq
-	brew upgrade curl grep jq
+	brew install curl fileicon grep jq
+	brew upgrade curl fileicon grep jq
 
 	# Update package
-	local present="$([[ -d "/Applications/Joal Desktop.app" ]] && echo "true" || echo "false")"
 	local address="https://api.github.com/repos/anthonyraymond/joal-desktop/releases/latest"
 	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
-	local current=$(gather_version "/*ppl*/*oal*esk*")
+	local current=$(expand_version "/*ppl*/*oal*esk*")
 	autoload is-at-least
 	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
 	if [[ "$updated" == "false" ]]; then
@@ -1677,17 +1319,20 @@ update_joal_desktop() {
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/JoalDesktop/joal-core/config.json"
-	mkdir -p "$(dirname "$configs")"
+	mkdir -p "$(dirname $configs)"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '."minUploadRate" = 300' "$configs" | sponge "$configs"
 	jq '."maxUploadRate" = 450' "$configs" | sponge "$configs"
 	jq '."simultaneousSeed" = 200' "$configs" | sponge "$configs"
 	jq '."client" = "transmission-3.00.client"' "$configs" | sponge "$configs"
-	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs"
+	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs" 
 	jq '."uploadRatioTarget" = -1' "$configs" | sponge "$configs"
 
-	# Change icon
-	change_appicon "joal-desktop" "/Applications/JoalDesktop.app"
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/joal-desktop.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/JoalDesktop.app" "$picture" || sudo !!
 
 }
 
@@ -1699,17 +1344,10 @@ update_keepingyouawake() {
 
 }
 
-# @define Update keka
-update_keka() {
+# @define Update kubernetes
+update_kubernetes() {
 
-	# Update package
-	update_cask keka kekaexternalhelper
-
-	# Finish install
-	/Applications/KekaExternalHelper.app/Contents/MacOS/KekaExternalHelper --set-as-default
-
-	# Change icon
-	change_appicon "keka" "/Applications/Keka.app"
+	# TODO: Implement function
 
 }
 
@@ -1725,11 +1363,38 @@ update_miniforge() {
 
 }
 
-# @define Update netnewswire
-update_netnewswire() {
+# @define Update mpv
+update_mpv() {
+
+	# Handle dependencies
+	update_brew curl fileicon yt-dlp
 
 	# Update package
-	update_cask netnewswire
+	update_cask mpv
+
+	# Change settings
+	local configs="$HOME/.config/mpv/mpv.conf"
+	mkdir -p "$(dirname "$configs")" && cat /dev/null >"$configs"
+	echo "profile=gpu-hq" >>"$configs"
+	echo "hwdec=auto" >>"$configs"
+	echo "keep-open=yes" >>"$configs"
+	echo "interpolation=yes" >>"$configs"
+	echo "blend-subtitles=yes" >>"$configs"
+	echo "tscale=oversample" >>"$configs"
+	echo "video-sync=display-resample" >>"$configs"
+	echo 'ytdl-format="bestvideo[height<=?2160][vcodec!=vp9]+bestaudio/best"' >>"$configs"
+	echo "[protocol.http]" >>"$configs"
+	echo "force-window=immediate" >>"$configs"
+	echo "[protocol.https]" >>"$configs"
+	echo "profile=protocol.http" >>"$configs"
+	echo "[protocol.ytdl]" >>"$configs"
+	echo "profile=protocol.http" >>"$configs"
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/mpv.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Mpv.app" "$picture" || sudo !!
 
 }
 
@@ -1737,7 +1402,7 @@ update_netnewswire() {
 update_nightlight() {
 
 	# Handle parameters
-	local percent=${1:-60}
+	local percent=${1:-75}
 	local forever=${2:-true}
 
 	# Update package
@@ -1749,7 +1414,7 @@ update_nightlight() {
 
 }
 
-# @define Update nodejs
+# @define Update nodejs (lts)
 update_nodejs() {
 
 	# Handle dependencies
@@ -1762,11 +1427,10 @@ update_nodejs() {
 
 	# Change environment
 	if ! grep -q "/opt/homebrew/opt/node" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Append node bin directory to path" >>"$HOME/.zshrc"
-		printf "\n%s" "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
+		[[ -s "$HOME/.zshrc" ]] || echo '#!/bin/zsh' >"$HOME/.zshrc"
+		[[ -z $(tail -1 "$HOME/.zshrc") ]] || echo "" >>"$HOME/.zshrc"
+		echo "export PATH=\"\$PATH:/opt/homebrew/opt/node@$version/bin\"" >>"$HOME/.zshrc"
+		source "$configs"
 	else
 		sed -i "" -e "s#/opt/homebrew/opt/node.*/bin#/opt/homebrew/opt/node@$version/bin#" "$HOME/.zshrc"
 		source "$HOME/.zshrc"
@@ -1778,36 +1442,40 @@ update_nodejs() {
 update_notion() {
 
 	# Handle dependencies
-	update_brew coreutils jq
+	update_brew curl fileicon
 
 	# Update package
-	local present="$([[ -d "/Applications/Notion.app" ]] && echo "true" || echo "false")"
 	update_cask notion
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "Notion"; fi
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/Notion/state.json"
-	mkdir -p "$(dirname "$configs")"
+	mkdir -p "$(dirname $configs)"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
 	jq '.appState.preferences.isMenuBarIconEnabled = false' "$configs" | sponge "$configs"
 	jq '.appState.preferences.isAutoUpdaterDisabled = true' "$configs" | sponge "$configs"
 
-	# Change icon
-	change_appicon "notion" "/Applications/Notion.app"
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/notion.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Notion.app" "$picture" || sudo !!
 
 }
 
 # @define Update obs
 update_obs() {
 
+	# Handle dependencies
+	update_brew curl fileicon
+
 	# Update package
 	update_cask obs
 
-	# Change icon
-	change_appicon "obs" "/Applications/OBS.app"
-
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/obs.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/OBS.app" "$picture" || sudo !!
 }
 
 # @define Update pearcleaner
@@ -1822,22 +1490,14 @@ update_pearcleaner() {
 update_postgresql() {
 
 	# Handle parameters
-	local version=${1:-17}
+	local version=${1:-14}
 
 	# Update package
+	# INFO: Default credentials are $USER with empty password
 	update_brew postgresql@"$version"
 
 	# Launch service
-	# INFO: Default credentials are $USER with empty password
 	brew services restart postgresql@"$version"
-
-}
-
-# @define Update quickrecorder
-update_quickrecorder() {
-
-	# Update package
-	update_cask lihaoyun6/tap/quickrecorder
 
 }
 
@@ -1877,18 +1537,67 @@ update_system() {
 	/usr/sbin/softwareupdate --install-rosetta --agree-to-license &>/dev/null
 
 	# Update system
+	# INFO: Takes ages
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
 
 }
 
-# @define Update temurin
+# @define Update temurin (lts)
 update_temurin() {
 
 	# Handle dependencies
 	update_brew curl jq
 
 	# Update package
-	update_cask temurin
+	local version=$(curl -s "https://api.adoptium.net/v3/info/available_releases" | jq -r ".most_recent_lts")
+	update_cask temurin@"$version"
+
+}
+
+# @define Update the-unarchiver
+update_the_unarchiver() {
+
+	# Update package
+	local present="$([[ -d "/Applications/The Unarchiver.app" ]] && echo "true" || echo "false")"
+	update_cask the-unarchiver
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then
+		osascript <<-EOD
+			set checkup to "/Applications/The Unarchiver.app"
+			tell application checkup
+				activate
+				reopen
+				tell application "System Events"
+					with timeout of 10 seconds
+						repeat until (exists window 1 of application process "The Unarchiver")
+							delay 1
+						end repeat
+					end timeout
+					tell process "The Unarchiver"
+						try
+							click button "Accept" of window 1
+							delay 2
+						end try
+						click button "Select All" of tab group 1 of window 1
+					end tell
+				end tell
+				delay 2
+				quit
+				delay 2
+			end tell
+		EOD
+	fi
+
+	# Change settings
+	defaults write com.macpaw.site.theunarchiver AdditionalAnalyticsEnabled -integer 0
+	defaults write com.macpaw.site.theunarchiver AnalyticsEnabled -integer 0
+	defaults write com.macpaw.site.theunarchiver extractionDestination -integer 3
+	defaults write com.macpaw.site.theunarchiver isFreshInstall -integer 1
+	defaults write com.macpaw.site.theunarchiver RotatingBannerLastClosedDate "2099-12-31 23:59:59 +0000"
+	defaults write com.macpaw.site.theunarchiver RotatingBannerLastShownDate "2099-12-31 23:59:59 +0000"
+	defaults write com.macpaw.site.theunarchiver userAgreedToNewTOSAndPrivacy -integer 1
+
 
 }
 
@@ -1899,13 +1608,15 @@ update_transmission() {
 	local deposit=${1:-$HOME/Downloads/P2P}
 	local seeding=${2:-0.1}
 
+	# Handle dependencies
+	update_brew curl fileicon
+
 	# Update package
 	update_cask transmission
 
 	# Change settings
 	mkdir -p "$deposit/Incompleted"
 	defaults write org.m0k.transmission DownloadFolder -string "$deposit"
-	defaults write org.m0k.transmission DownloadLocationConstant -int "1"
 	defaults write org.m0k.transmission IncompleteDownloadFolder -string "$deposit/Incompleted"
 	defaults write org.m0k.transmission RatioCheck -bool true
 	defaults write org.m0k.transmission RatioLimit -int "$seeding"
@@ -1913,16 +1624,48 @@ update_transmission() {
 	defaults write org.m0k.transmission WarningDonate -bool false
 	defaults write org.m0k.transmission WarningLegal -bool false
 
-	# Change icon
-	change_appicon "transmission" "/Applications/Transmission.app"
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/transmission.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/Transmission.app" "$picture" || sudo !!
 
 }
 
 # @define Update utm
 update_utm() {
 
+	# Handle dependencies
+	update_brew curl fileicon
+
 	# Update package
 	update_cask utm
+
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/utm.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "/Applications/UTM.app" "$picture" || sudo !!
+}
+
+# @define Update vesktop
+update_vesktop() {
+
+	# Update package
+	local address="https://api.github.com/repos/Vencord/Vesktop/releases/latest"
+	local version=$(scrape_website "$address" '"tag_name":\s*"\K([^"]+)' | tr -d -c '0-9.')
+	[[ -z "$version" ]] && return 1
+	local current=$(gather_version "/*ppl*/Vesktop*")
+	autoload is-at-least
+	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
+	if [[ "$updated" == "false" ]]; then
+		local address=$(scrape_website "$address" 'https://github\.com/[^"]+\.dmg')
+		local package=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$package"
+		hdiutil attach "$package" -noautoopen -nobrowse
+		cp -R /Volumes/Veskt*/Vesktop.app /Applications
+		sleep 4 && hdiutil detach /Volumes/Veskt*
+		sudo xattr -rd com.apple.quarantine /Applications/Vesktop.app
+	fi
 
 }
 
@@ -1952,16 +1695,33 @@ update_vscode() {
 
 }
 
+# @define Update webstorm
+update_webstorm() {
+
+	# Handle dependencies
+	update_brew grep xmlstarlet
+
+	# Update package
+	local present="$([[ -d "/Applications/WebStorm.app" ]] && echo "true" || echo "false")"
+	update_cask webstorm
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "WebStorm"; fi
+
+	# TODO: Change settings
+
+}
+
 # @define Update xcode
 update_xcode() {
 
 	# Handle dependencies
 	assert_apple_id || return 1
-	update_brew cocoapods grep xcodesorg/made/xcodes
+	update_brew cocoapods curl fileicon grep xcodesorg/made/xcodes
 
 	# Update package
 	local starter="/Applications/Xcode.app"
-	local current=$(gather_version "$starter")
+	local current=$(expand_version "$starter")
 	local version=$(xcodes list | tail -5 | grep -v Beta | tail -1 | ggrep -oP "[\d.]+" | head -1)
 	autoload is-at-least
 	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
@@ -1973,8 +1733,11 @@ update_xcode() {
 		sudo xcodebuild -license accept
 	fi
 
-	# Change icon
-	change_appicon "xcode" "/Applications/Xcode.app"
+	# Change icons
+	local address="https://github.com/olankens/machogen/raw/HEAD/assets/xcode.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	fileicon set "$starter" "$picture" || sudo !!
 
 }
 
@@ -1985,11 +1748,7 @@ update_youtube_music() {
 	update_brew jq sponge
 
 	# Update package
-	local present="$([[ -d "/Applications/YouTube Music.app" ]] && echo "true" || echo "false")"
 	update_cask th-ch/youtube-music/youtube-music
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "YouTube Music"; fi
 
 	# Change settings
 	local configs="$HOME/Library/Application Support/YouTube Music/config.json"
@@ -1997,9 +1756,6 @@ update_youtube_music() {
 	jq '.plugins."sponsorblock".enabled = true' "$configs" | sponge "$configs"
 	jq '.plugins."synced-lyrics".enabled = true' "$configs" | sponge "$configs"
 	# jq '.plugins."no-google-login".enabled = true' "$configs" | sponge "$configs"
-
-	# Change icon
-	change_appicon "youtube-music" "/Applications/YouTube Music.app"
 
 }
 
@@ -2028,267 +1784,166 @@ update_android_devtools() {
 	# Create emulators
 	avdmanager create avd -n "Pixel_3a_API_34" -d "pixel_3a" -k "system-images;android-34;google_apis;arm64-v8a" -f
 
+	# Update plugins
+	# studio installPlugins com.github.airsaid.androidlocalize
+	"/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.airsaid.androidlocalize
+
 }
 
 # @define Update angular devtools
 update_angular_devtools() {
-
-	# Handle parameters
-	local datadir=${1:-$HOME/Library/Application Support/Chromium/Developer}
-
+	
 	# Handle dependencies
-	update_chromium_developer
+	update_chromium
 	update_cursor
 	update_intellij_idea
 	update_nodejs
 	update_vscode
 
-	# Update angular
+	# Update chromium extensions
+	# update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" # angular-devtools
+
+	# Update cursor extensions
+	cursor --install-extension "angular.ng-template" --force
+	cursor --install-extension "bradlc.vscode-tailwindcss" --force
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
+
+	# Update vscode extensions
+	code --install-extension "angular.ng-template" --force
+	code --install-extension "bradlc.vscode-tailwindcss" --force
+	code --install-extension "dbaeumer.vscode-eslint" --force
+	code --install-extension "mikestead.dotenv" --force
+	code --install-extension "usernamehw.errorlens" --force
+	code --install-extension "yoavbls.pretty-ts-errors" --force
+
+	# Update intellij plugins
+	idea installPlugins AngularJS # angular
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
+
+	# Change vscode settings
+	local configs="$HOME/Library/Application Support/Code/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
+
+	# Update angular cli
 	export NG_CLI_ANALYTICS="ci" && npm i -g @angular/cli
 	ng analytics off
 
 	# Change environment
-	if ! grep -q "ng completion script" "$HOME/.zshrc" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
-		printf "\n%s" "# Enable angular cli completion" >>"$HOME/.zshrc"
-		printf "\n%s" "source <(ng completion script)" >>"$HOME/.zshrc"
-		source "$HOME/.zshrc"
+	local configs="$HOME/.zshrc"
+	if ! grep -q "ng completion script" "$configs" 2>/dev/null; then
+		[[ -s "$configs" ]] || touch "$configs"
+		[[ -z $(tail -1 "$configs") ]] || echo "" >>"$configs"
+		echo 'autoload -Uz compinit && compinit' >>"$configs"
+		echo 'source <(ng completion script)' >>"$configs"
+		source "$configs"
 	fi
-
-	# Update chromium extensions
-	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
-	update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "angular.ng-template" --force
-		code --install-extension "bradlc.vscode-tailwindcss" --force
-		code --install-extension "dbaeumer.vscode-eslint" --force
-		code --install-extension "mikestead.dotenv" --force
-		code --install-extension "usernamehw.errorlens" --force
-		code --install-extension "yoavbls.pretty-ts-errors" --force
-	fi
-
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "angular.ng-template" --force
-		cursor --install-extension "bradlc.vscode-tailwindcss" --force
-		cursor --install-extension "dbaeumer.vscode-eslint" --force
-		cursor --install-extension "mikestead.dotenv" --force
-		cursor --install-extension "usernamehw.errorlens" --force
-		cursor --install-extension "yoavbls.pretty-ts-errors" --force
-	fi
-
-	# Update idea plugins
-	if command -v idea &>/dev/null; then
-		idea installPlugins AngularJS
-	fi
-
-}
-
-# @define Update apple devtools
-update_apple_devtools() {
-
-	# Handle dependencies
-	update_xcode
-
-}
-
-# @define Update flutter devtools
-update_flutter_devtools() {
-
-	# Handle dependencies
-	update_android_devtools
-	update_apple_devtools
-	update_cursor
-	update_flutter
-	update_vscode
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "alexisvt.flutter-snippets" --force
-		code --install-extension "dart-code.flutter" --force
-		code --install-extension "pflannery.vscode-versionlens" --force
-		# code --install-extension "RichardCoutts.mvvm-plus" --force
-		# code --install-extension "robert-brunhage.flutter-riverpod-snippets" --force
-		code --install-extension "usernamehw.errorlens" --force
-	fi
-
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "alexisvt.flutter-snippets" --force
-		cursor --install-extension "dart-code.flutter" --force
-		cursor --install-extension "pflannery.vscode-versionlens" --force
-		# cursor --install-extension "RichardCoutts.mvvm-plus" --force
-		# cursor --install-extension "robert-brunhage.flutter-riverpod-snippets" --force
-		cursor --install-extension "usernamehw.errorlens" --force
-	fi
-
-	# Update studio plugins
-	if command -v studio &>/dev/null; then
-		local program="/Applications/Android Studio.app/Contents/MacOS/studio"
-		"$program" installPlugins Dart
-		"$program" installPlugins io.flutter
-		# "$program" installPlugins com.localizely.flutter-intl
-		# "$program" installPlugins org.tbm98.flutter-riverpod-snippets
-	fi
-
-	# TODO: Add `readlink -f $(which flutter)` to studio
-	# NOTE: /usr/local/Caskroom/flutter/*/flutter
 
 }
 
 # @define Update ionic devtools
 update_ionic_devtools() {
-
+	
 	# Handle dependencies
 	update_android_devtools
 	update_angular_devtools
-	update_apple_devtools
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "WebNative.webnative" --force
-	fi
+	update_ios_devtools
 
 	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		vsix-cli install -e cursor -y "WebNative.webnative"
-	fi
+	cursor --install-extension "WebNative.webnative" --force
+
+	# Update vscode extensions
+	code --install-extension "WebNative.webnative" --force
 
 }
 
-# @define Update react devtools
-update_react_devtools() {
+# @define Update ios devtools
+update_ios_devtools() {
+	
+	# Handle dependencies
+	update_xcode
 
-	# Handle parameters
-	local datadir=${1:-$HOME/Library/Application Support/Chromium/Developer}
+	# Update xcode extensions
+	update_cask swiftformat-for-xcode
 
-	# Update dependencies
-	update_chromium_developer
+}
+
+# @define Update nest devtools
+update_nest_devtools() {
+
+	# Handle dependencies
 	update_cursor
 	update_intellij_idea
 	update_nodejs
 	update_vscode
 
-	# Update chromium extensions
-	update_chromium_extension "fmkadmapgofadopljbjfkapdkoienihi" "$datadir" # react-developer-tools
-	update_chromium_extension "lmhkpmbekcpmknklioeibfkpmmfibljd" "$datadir" # redux-devtools
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "bradlc.vscode-tailwindcss" --force
-		code --install-extension "dbaeumer.vscode-eslint" --force
-		code --install-extension "deerawan.vscode-modern-react-typescript-snippets" --force
-		code --install-extension "esbenp.prettier-vscode" --force
-		code --install-extension "usernamehw.errorlens" --force
-		code --install-extension "yoavbls.pretty-ts-errors" --force
-	fi
-
 	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "bradlc.vscode-tailwindcss" --force
-		cursor --install-extension "dbaeumer.vscode-eslint" --force
-		cursor --install-extension "deerawan.vscode-modern-react-typescript-snippets" --force
-		cursor --install-extension "esbenp.prettier-vscode" --force
-		cursor --install-extension "usernamehw.errorlens" --force
-		cursor --install-extension "yoavbls.pretty-ts-errors" --force
-	fi
+	cursor --install-extension "dbaeumer.vscode-eslint" --force
+	cursor --install-extension "imgildev.vscode-nestjs-generator" --force
+	cursor --install-extension "imgildev.vscode-nestjs-snippets-extension" --force
+	cursor --install-extension "imgildev.vscode-nestjs-swagger-snippets" --force
+	cursor --install-extension "mikestead.dotenv" --force
+	cursor --install-extension "usernamehw.errorlens" --force
+	cursor --install-extension "yoavbls.pretty-ts-errors" --force
 
-	# Update idea plugins
-	if command -v idea &>/dev/null; then
-		idea installPlugins com.haulmont.rcb # react-buddy
-	fi
+	# Update vscode extensions
+	code --install-extension "dbaeumer.vscode-eslint" --force
+	code --install-extension "imgildev.vscode-nestjs-generator" --force
+	code --install-extension "imgildev.vscode-nestjs-snippets-extension" --force
+	code --install-extension "imgildev.vscode-nestjs-swagger-snippets" --force
+	code --install-extension "mikestead.dotenv" --force
+	code --install-extension "usernamehw.errorlens" --force
+	code --install-extension "yoavbls.pretty-ts-errors" --force
 
-	# Change code settings
+	# Update intellij plugins
+	idea installPlugins com.github.dinbtechit.jetbrainsnestjs # nestjs
+
+	# Change cursor settings
+	local configs="$HOME/Library/Application Support/Cursor/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
+
+	# Change vscode settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.codeActionsOnSave"."source.fixAll" = "explicit"' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.defaultFormatter" = "esbenp.prettier-vscode"' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.formatOnSave" = true' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.tabSize" = 2' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."prettier.printWidth" = 120' "$configs" | sponge "$configs"
-
-}
-
-# @define Update react-native devtools
-update_react_native_devtools() {
-
-	# Handle dependencies
-	update_android_devtools
-	update_apple_devtools
-	update_react_devtools
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "expo.vscode-expo-tools" --force
-		code --install-extension "msjsdiag.vscode-react-native" --force
-	fi
-
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "expo.vscode-expo-tools" --force
-		cursor --install-extension "msjsdiag.vscode-react-native" --force
-	fi
-
-}
-
-# @define Update shell devtools
-update_shell_devtools() {
-
-	# Handle dependencies
-	update_cursor
-	update_vscode
-	update_brew hongkongkiwi/vsix-cli/vsix-cli shfmt
-
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "foxundermoon.shell-format@7.2.5" --force
-		code --install-extension "timonwong.shellcheck" --force
-	fi
-
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		vsix-cli install -e cursor -y "foxundermoon.shell-format@7.2.5"
-		cursor --install-extension "timonwong.shellcheck" --force
-	fi
+	jq '."editor.codeActionsOnSave"."source.fixAll.eslint" = "explicit"' "$configs" | sponge "$configs"
+	jq '."editor.defaultFormatter" = "dbaeumer.vscode-eslint"' "$configs" | sponge "$configs"
+	jq '."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."eslint.format.enable" = true' "$configs" | sponge "$configs"
 
 }
 
 # @define Update spring devtools
 update_spring_devtools() {
-
+	
 	# Handle dependencies
-	update_cursor
-	update_docker
 	update_intellij_idea
-	update_postgresql
 	update_temurin
 	update_vscode
 	update_brew gradle maven
 
-	# Update code extensions
-	if command -v code &>/dev/null; then
-		code --install-extension "fwcd.kotlin" --force
-		code --install-extension "vmware.vscode-boot-dev-pack" --force
-		code --install-extension "vscjava.vscode-gradle" --force
-		code --install-extension "vscjava.vscode-java-pack" --force
-	fi
+	# Update intellij plugins
+	# idea installPlugins com.haulmont.jpab # jpa-buddy
 
-	# Update cursor extensions
-	if command -v cursor &>/dev/null; then
-		cursor --install-extension "fwcd.kotlin" --force
-		cursor --install-extension "vmware.vscode-boot-dev-pack" --force
-		cursor --install-extension "vscjava.vscode-gradle" --force
-		cursor --install-extension "vscjava.vscode-java-pack" --force
-	fi
-
-	# Update idea plugins
-	if command -v idea &>/dev/null; then
-		idea installPlugins com.haulmont.jpab # jpa-buddy
-		idea installPlugins com.intellij.spring.debugger # spring-debugger
-	fi
+	# Update vscode extensions
+	code --install-extension "vmware.vscode-boot-dev-pack" --force
+	code --install-extension "vscjava.vscode-java-pack" --force
 
 }
 
@@ -2297,63 +1952,57 @@ update_spring_devtools() {
 if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 
 	read -r -d "" welcome <<-EOD
-		███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
-		████╗░████║██╔══██╗██╔══██╗██║░░██║██╔══██╗██╔════╝░██╔════╝████╗░██║
-		██╔████╔██║███████║██║░░╚═╝███████║██║░░██║██║░░██╗░█████╗░░██╔██╗██║
-		██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║██║░░██║██║░░╚██╗██╔══╝░░██║╚████║
-		██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║╚█████╔╝╚██████╔╝███████╗██║░╚███║
-		╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
+	███╗░░░███╗░█████╗░░█████╗░██╗░░██╗░█████╗░░██████╗░███████╗███╗░░██╗
+	████╗░████║██╔══██╗██╔══██╗██║░░██║██╔══██╗██╔════╝░██╔════╝████╗░██║
+	██╔████╔██║███████║██║░░╚═╝███████║██║░░██║██║░░██╗░█████╗░░██╔██╗██║
+	██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║██║░░██║██║░░╚██╗██╔══╝░░██║╚████║
+	██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║╚█████╔╝╚██████╔╝███████╗██║░╚███║
+	╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝░╚════╝░░╚═════╝░╚══════╝╚═╝░░╚══╝
 	EOD
 
-	country="Europe/Brussels"
-	machine="macintosh"
-	members=(
+	local country="Europe/Brussels"
+	local machine="macintosh"
+	local members=(
 		"update_system"
 		"update_android_studio"
 		"update_chromium"
-		"update_chromium_developer"
 		"update_cursor"
 		"update_intellij_idea"
+		"update_webstorm"
 		"update_vscode"
 		"update_xcode"
 
+		"update_awscli"
 		"update_calibre"
-		"update_chrome"
-		"update_claude_code"
+		# "update_claude_code"
 		"update_crossover"
-		"update_discord"
 		"update_docker"
 		"update_figma"
-		"update_flutter"
-		"update_fork"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
-		"update_iina"
 		"update_jdownloader"
 		"update_joal_desktop"
 		"update_keepingyouawake"
-		"update_keka"
+		"update_kubernetes"
 		"update_miniforge"
-		"update_netnewswire"
+		"update_mpv"
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
 		"update_obs"
 		"update_pearcleaner"
 		"update_postgresql"
-		"update_quickrecorder"
 		"update_temurin"
+		"update_the_unarchiver"
 		"update_transmission"
 		"update_utm"
+		"update_vesktop"
 		"update_youtube_music"
 		"update_android_devtools"
 		"update_angular_devtools"
-		"update_apple_devtools"
-		"update_flutter_devtools"
 		"update_ionic_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_shell_devtools"
+		"update_ios_devtools"
+		"update_nest_devtools"
 		"update_spring_devtools"
 		"update_appearance"
 	)
