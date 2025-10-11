@@ -1028,6 +1028,9 @@ update_android_studio() {
 # @define Update appearance
 update_appearance() {
 
+	# Handle dependencies
+	update_brew dockutil
+
 	# Change dock settings
 	defaults write com.apple.dock autohide -bool true
 	defaults write com.apple.dock autohide-delay -float 0
@@ -1043,52 +1046,58 @@ update_appearance() {
 	defaults write com.apple.dock wvous-tr-corner -int 0
 
 	# Remove dock elements
-	defaults delete com.apple.dock persistent-apps
-	defaults delete com.apple.dock persistent-others
+	# defaults delete com.apple.dock persistent-apps
+	# defaults delete com.apple.dock persistent-others
+	dockutil --remove all
 
 	# Append internet elements
-	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/Google Chrome.app"
-	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	append_dock_application "/Applications/JoalDesktop.app"
-	append_dock_application "/Applications/NetNewsWire.app"
-	append_dock_application "/Applications/Transmission.app"
-	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
-
+	sleep 0.25 && dockutil --no-restart --add "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Chromium.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Google Chrome.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/JDownloader 2/JDownloader2.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/JoalDesktop.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/NetNewsWire.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Transmission.app"
+	
 	# Append services elements
-	append_dock_application "/Applications/Discord.app"
-	append_dock_application "/Applications/Notion.app"
-	append_dock_application "/Applications/TradingView.app"
-	append_dock_application "/Applications/YouTube Music.app"
-
-	# Append office elements
-	append_dock_application "/Applications/calibre.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Discord.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Notion.app"
+	# sleep 0.25 && dockutil --no-restart --add "/Applications/TradingView.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/YouTube Music.app"
 
 	# Append developer elements
-	append_dock_application "/Applications/Android Studio.app"
-	append_dock_application "/Applications/Cursor.app"
-	append_dock_application "/Applications/Fork.app"
-	append_dock_application "/Applications/IntelliJ IDEA.app"
-	append_dock_application "/Applications/Visual Studio Code.app"
-	append_dock_application "/Applications/Xcode.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Android Studio.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Cursor.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Fork.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/IntelliJ IDEA.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Visual Studio Code.app"
+	# sleep 0.25 && dockutil --no-restart --add "/Applications/Xcode.app"
 
 	# Append graphics elements
-	append_dock_application "/Applications/Figma.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Balsamiq Wireframes.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Figma.app"
 
 	# Append multimedia elements
-	append_dock_application "/Applications/CapCut.app"
-	append_dock_application "/Applications/IINA.app"
-	append_dock_application "/Applications/Mpv.app"
-	append_dock_application "/Applications/OBS.app"
-	append_dock_application "/Applications/QuickRecorder.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/CapCut.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/IINA.app"
+	# sleep 0.25 && dockutil --no-restart --add "/Applications/Mpv.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/OBS.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/QuickRecorder.app"
 
-	# Append hobbies elements
-	append_dock_application "/Applications/CrossOver.app"
+	# Append entertainment elements
+	sleep 0.25 && dockutil --no-restart --add "/Applications/calibre.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/CrossOver.app"
 
 	# Append utilities elements
-	append_dock_application "/Applications/Pearcleaner.app"
-	append_dock_application "/Applications/UTM.app"
-	append_dock_application "/System/Applications/Utilities/Terminal.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/Pearcleaner.app"
+	sleep 0.25 && dockutil --no-restart --add "/Applications/UTM.app"
+
+	# Append system elements
+	sleep 0.25 && dockutil --no-restart --add "/System/Applications/Utilities/Activity Monitor.app"
+	sleep 0.25 && dockutil --no-restart --add "/System/Applications/Utilities/Terminal.app"
+
+	# Append downloads folder
+	sleep 0.25 && dockutil --add "$HOME/Downloads" --view grid --display folder 
 
 	# Change wallpaper
 	change_wallpaper "tokyo"
@@ -1115,6 +1124,25 @@ update_anydesk() {
 	else
 		sed -i "" -e 's/^ad.ui.cfg_show_tray_icon=.*/ad.ui.cfg_show_tray_icon=false/' "$configs"
 	fi
+
+}
+
+# @define Update balsamiq
+update_balsamiq() {
+
+	# Update package
+	local present="$([[ -d "/Applications/Balsamiq Wireframes.app" ]] && echo "true" || echo "false")"
+	update_cask balsamiq-wireframes
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then
+		sudo date -f "%m%d%H%M%Y" "$(date -v+10y +"%m%d%H%M%Y")"
+		invoke_once "Balsamiq Wireframes"
+		sudo sntp -sS time.apple.com
+	fi
+
+	# Change icon
+	change_appicon "balsamiq" "/Applications/Balsamiq Wireframes.app"
 
 }
 
@@ -1578,8 +1606,8 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Update cursor
-	command -v cursor &>/dev/null && idea installPlugins com.github.blingyshs.openincursor
+	# Update plugins
+
 
 }
 
@@ -1852,6 +1880,7 @@ update_system() {
 	# Change globals
 	defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 	defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+	defaults -currentHost write -globalDomain NSStatusItemSpacing -int 5
 
 	# Change preview
 	defaults write com.apple.Preview NSRecentDocumentsLimit 0
@@ -2204,11 +2233,11 @@ update_react_devtools() {
 	# Change code settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.codeActionsOnSave"."source.fixAll" = "explicit"' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.defaultFormatter" = "esbenp.prettier-vscode"' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.formatOnSave" = true' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."editor.tabSize" = 2' "$configs" | sponge "$configs"
-	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact]"."prettier.printWidth" = 120' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact][vue]"."editor.codeActionsOnSave"."source.fixAll" = "explicit"' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact][vue]"."editor.defaultFormatter" = "esbenp.prettier-vscode"' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact][vue]"."editor.formatOnSave" = true' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact][vue]"."editor.tabSize" = 2' "$configs" | sponge "$configs"
+	jq '."[css][javascript][javascriptreact][json][html][typescript][typescriptreact][vue]"."prettier.printWidth" = 120' "$configs" | sponge "$configs"
 
 }
 
@@ -2317,6 +2346,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_vscode"
 		"update_xcode"
 
+		"update_balsamiq"
 		"update_calibre"
 		"update_chrome"
 		"update_claude_code"
