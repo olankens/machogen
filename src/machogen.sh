@@ -1023,9 +1023,6 @@ update_android_studio() {
 	# Update cursor extension
 	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
-	# Change icon
-	change_appicon "android-studio" "/Applications/Android Studio.app"
-
 }
 
 # @define Update appearance
@@ -1039,7 +1036,7 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.Dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 32
+	defaults write com.apple.dock tilesize -int 38
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
@@ -1058,6 +1055,7 @@ update_appearance() {
 	append_dock_application "/Applications/Transmission.app"
 
 	# Append finance elements
+	append_dock_application "/Applications/IBKR Desktop.app"
 	append_dock_application "/Applications/TradingView.app"
 
 	# Append social elements
@@ -1395,8 +1393,7 @@ update_cursor() {
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
 	# Change icon
-	# change_appicon "cursor" "/Applications/Cursor.app"
-	change_appicon "xcode" "/Applications/Cursor.app"
+	change_appicon "cursor" "/Applications/Cursor.app"
 
 }
 
@@ -1458,6 +1455,9 @@ update_figma() {
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
 
+	# Change icon
+	change_appicon "figma" "/Applications/Figma.app"
+
 }
 
 # @define Update flutter
@@ -1494,6 +1494,9 @@ update_fork() {
 	# Update package
 	update_cask fork
 
+	# Change icon
+	change_appicon "fork" "/Applications/Fork.app"
+
 }
 
 # @define Update git
@@ -1523,6 +1526,17 @@ update_github_cli() {
 
 	# Update package
 	update_brew gh
+
+}
+
+# @define Update ibkr
+update_ibkr_desktop() {
+
+	# Update package
+	update_cask ibkr
+
+	# Change icon
+	change_appicon "ibkr-desktop" "/Applications/IBKR Desktop.app"
 
 }
 
@@ -1662,7 +1676,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1824,6 +1838,17 @@ update_obs() {
 
 }
 
+# @define Update pearcleaner
+update_pearcleaner() {
+
+	# Update package
+	update_cask pearcleaner
+
+	# Change icon
+	change_appicon "pearcleaner" "/Applications/Pearcleaner.app"
+
+}
+
 # @define Update postgresql
 update_postgresql() {
 
@@ -1941,9 +1966,6 @@ update_utm() {
 
 	# Update package
 	update_cask utm
-
-	# Change icon
-	change_appicon "utm" "/Applications/UTM.app"
 
 }
 
@@ -2334,7 +2356,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	members=(
 		"update_system"
 		"update_android_studio"
-		# "update_chromium"
+		"update_chromium"
 		# "update_chromium_developer"
 		"update_cursor"
 		"update_intellij_idea"
@@ -2364,6 +2386,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_nodejs"
 		"update_notion"
 		"update_obs"
+		"update_pearcleaner"
 		"update_postgresql"
 		"update_telegram"
 		"update_temurin"
