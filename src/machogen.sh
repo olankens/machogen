@@ -1090,7 +1090,7 @@ update_appearance() {
 	# Append system elements
 	append_dock_application "/System/Applications/Utilities/Activity Monitor.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
-	append_dock_application "/System/Applications/Utilities/UTM.app"
+	append_dock_application "/Applications/UTM.app"
 
 	# Append downloads folder
 	append_dock_folder "$HOME/Downloads" 1 1 3
@@ -1391,9 +1391,6 @@ update_cursor() {
 	# Update android-studio plugin
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
-	# Change icon
-	change_appicon "cursor" "/Applications/Cursor.app"
-
 }
 
 # @define Update davinci-resolve
@@ -1409,9 +1406,6 @@ update_diffusionbee() {
 
 	# Update package
 	update_cask diffusionbee
-
-	# Change icon
-	change_appicon "diffusionbee" "/Applications/DiffusionBee.app"
 
 }
 
@@ -1456,9 +1450,6 @@ update_figma() {
 	# Change settings
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
-
-	# Change icon
-	change_appicon "figma" "/Applications/Figma.app"
 
 }
 
@@ -2320,8 +2311,8 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	members=(
 		"update_system"
 		"update_android_studio"
-		"update_chromium"
-		"update_chromium_developer"
+		# "update_chromium"
+		# "update_chromium_developer"
 		"update_cursor"
 		"update_intellij_idea"
 		"update_vscode"
@@ -2354,7 +2345,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_temurin"
 		"update_transmission"
 		"update_utm"
-		# "update_youtube_music"
+		"update_youtube_music"
 		# "update_android_devtools"
 		# "update_angular_devtools"
 		# "update_apple_devtools"
