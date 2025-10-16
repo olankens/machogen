@@ -1053,50 +1053,53 @@ update_appearance() {
 	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
 	append_dock_application "/Applications/Google Chrome.app"
-	append_dock_application "/Applications/Discord.app"
-	append_dock_application "/Applications/Telegram.app"
-	append_dock_application "/Applications/Notion.app"
-	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	# append_dock_application "/Applications/JoalDesktop.app"
-	# append_dock_application "/Applications/NetNewsWire.app"
-	# append_dock_application "/Applications/Transmission.app"
+	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	append_dock_application "/Applications/JoalDesktop.app"
+	append_dock_application "/Applications/Transmission.app"
 
 	# Append finance elements
 	append_dock_application "/Applications/TradingView.app"
+
+	# Append social elements
+	append_dock_application "/Applications/Discord.app"
+	append_dock_application "/Applications/Telegram.app"
+
+	# Append office elements
+	append_dock_application "/Applications/calibre.app"
+	append_dock_application "/Applications/Notion.app"
 
 	# Append developer elements
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
-	# append_dock_application "/Applications/Xcode.app"
-
-	# Append entertainment elements
-	append_dock_application "/Applications/calibre.app"
-	append_dock_application "/Applications/CrossOver.app"
-	append_dock_application "/Applications/IINA.app"
-	# append_dock_application "/Applications/Mpv.app"
-	append_dock_application "/Applications/YouTube Music.app"
-
-	# Append multimedia elements
-	append_dock_application "/Applications/DaVinci Resolve.app"
-	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/Xcode.app"
 
 	# Append graphics elements
 	append_dock_application "/Applications/Blender.app"
 	append_dock_application "/Applications/DiffusionBee.app"
+	append_dock_application "/Applications/Icon Composer.app"
 	append_dock_application "/Applications/Figma.app"
 
+	# Append multimedia elements
+	append_dock_application "/Applications/DaVinci Resolve.app"
+	append_dock_application "/Applications/IINA.app"
+	append_dock_application "/Applications/Mpv.app"
+	append_dock_application "/Applications/OBS.app"
+	append_dock_application "/Applications/YouTube Music.app"
+
+	# Append entertainment elements
+	append_dock_application "/Applications/CrossOver.app"
+
 	# Append system elements
-	append_dock_application "/System/Applications/Utilities/Activity Monitor.app"
-	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/System/Applications/Utilities/Terminal.app"
 
 	# Append downloads folder
-	append_dock_folder "$HOME/Downloads" 1 1 3
+	append_dock_folder "$HOME/Downloads" 1 0 2
 
 	# Append documents folder
-	append_dock_folder "$HOME/Documents" 1 1 3
+	append_dock_folder "$HOME/Documents" 1 0 2
 
 	# Change wallpaper
 	change_wallpaper "tokyo"
@@ -1391,6 +1394,10 @@ update_cursor() {
 	# Update android-studio plugin
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
+	# Change icon
+	# change_appicon "cursor" "/Applications/Cursor.app"
+	change_appicon "xcode" "/Applications/Cursor.app"
+
 }
 
 # @define Update davinci-resolve
@@ -1516,6 +1523,14 @@ update_github_cli() {
 
 	# Update package
 	update_brew gh
+
+}
+
+# @define Update icon-composer
+update_icon_composer() {
+
+	# Update package
+	update_cask icon-composer
 
 }
 
@@ -1884,6 +1899,14 @@ update_temurin() {
 
 	# Update package
 	update_cask temurin
+
+}
+
+# @define Update tradingview
+update_tradingview() {
+
+	# Change icon
+	change_appicon "tradingview" "/Applications/TradingView.app"
 
 }
 
@@ -2330,6 +2353,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_flutter"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
+		"update_icon_composer"
 		"update_iina"
 		"update_jdownloader"
 		"update_joal_desktop"
@@ -2343,6 +2367,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_postgresql"
 		"update_telegram"
 		"update_temurin"
+		"update_tradingview"
 		"update_transmission"
 		"update_utm"
 		"update_youtube_music"
