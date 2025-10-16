@@ -146,8 +146,8 @@ change_appicon() {
 	local apppath=${2}
 
 	# Change icon
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
-	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
+	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -1023,13 +1023,13 @@ update_android_studio() {
 	# Update cursor extension
 	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
+	# Change icon
+	change_appicon "android-studio" "/Applications/Android Studio.app"
+
 }
 
 # @define Update appearance
 update_appearance() {
-
-	# Handle dependencies
-	update_brew dockutil
 
 	# Change dock settings
 	defaults write com.apple.dock autohide -bool true
@@ -1046,103 +1046,63 @@ update_appearance() {
 	defaults write com.apple.dock wvous-tr-corner -int 0
 
 	# Remove dock elements
-	# defaults delete com.apple.dock persistent-apps
-	# defaults delete com.apple.dock persistent-others
-	dockutil --remove all
+	defaults delete com.apple.dock persistent-apps
+	defaults delete com.apple.dock persistent-others
 
 	# Append internet elements
-	sleep 0.25 && dockutil --no-restart --add "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Chromium.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Google Chrome.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/JDownloader 2/JDownloader2.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/JoalDesktop.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/NetNewsWire.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Transmission.app"
-	
-	# Append services elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Discord.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Notion.app"
-	# sleep 0.25 && dockutil --no-restart --add "/Applications/TradingView.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/YouTube Music.app"
+	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	append_dock_application "/Applications/Chromium.app"
+	append_dock_application "/Applications/Google Chrome.app"
+	append_dock_application "/Applications/Discord.app"
+	append_dock_application "/Applications/Telegram.app"
+	append_dock_application "/Applications/Notion.app"
+	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	# append_dock_application "/Applications/JoalDesktop.app"
+	# append_dock_application "/Applications/NetNewsWire.app"
+	# append_dock_application "/Applications/Transmission.app"
+
+	# Append finance elements
+	append_dock_application "/Applications/TradingView.app"
 
 	# Append developer elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Android Studio.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Cursor.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Fork.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/IntelliJ IDEA.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Visual Studio Code.app"
-	# sleep 0.25 && dockutil --no-restart --add "/Applications/Xcode.app"
-
-	# Append graphics elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Balsamiq Wireframes.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Figma.app"
-
-	# Append multimedia elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/CapCut.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/IINA.app"
-	# sleep 0.25 && dockutil --no-restart --add "/Applications/Mpv.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/OBS.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/QuickRecorder.app"
+	append_dock_application "/Applications/Android Studio.app"
+	append_dock_application "/Applications/Cursor.app"
+	append_dock_application "/Applications/IntelliJ IDEA.app"
+	append_dock_application "/Applications/Visual Studio Code.app"
+	# append_dock_application "/Applications/Xcode.app"
 
 	# Append entertainment elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/calibre.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/CrossOver.app"
+	append_dock_application "/Applications/calibre.app"
+	append_dock_application "/Applications/CrossOver.app"
+	append_dock_application "/Applications/IINA.app"
+	# append_dock_application "/Applications/Mpv.app"
+	append_dock_application "/Applications/YouTube Music.app"
 
-	# Append utilities elements
-	sleep 0.25 && dockutil --no-restart --add "/Applications/Pearcleaner.app"
-	sleep 0.25 && dockutil --no-restart --add "/Applications/UTM.app"
+	# Append multimedia elements
+	append_dock_application "/Applications/DaVinci Resolve.app"
+	append_dock_application "/Applications/OBS.app"
+
+	# Append graphics elements
+	append_dock_application "/Applications/Blender.app"
+	append_dock_application "/Applications/DiffusionBee.app"
+	append_dock_application "/Applications/Figma.app"
 
 	# Append system elements
-	sleep 0.25 && dockutil --no-restart --add "/System/Applications/Utilities/Activity Monitor.app"
-	sleep 0.25 && dockutil --no-restart --add "/System/Applications/Utilities/Terminal.app"
+	append_dock_application "/System/Applications/Utilities/Activity Monitor.app"
+	append_dock_application "/System/Applications/Utilities/Terminal.app"
+	append_dock_application "/System/Applications/Utilities/UTM.app"
 
 	# Append downloads folder
-	sleep 0.25 && dockutil --add "$HOME/Downloads" --view grid --display folder 
+	append_dock_folder "$HOME/Downloads" 1 1 3
+
+	# Append documents folder
+	append_dock_folder "$HOME/Documents" 1 1 3
 
 	# Change wallpaper
 	change_wallpaper "tokyo"
 
 	# Escape screen
 	killall Dock
-
-}
-
-# @define Update anydesk
-update_anydesk() {
-
-	# Update package
-	local present="$([[ -d "/Applications/AnyDesk.app" ]] && echo "true" || echo "false")"
-	update_cask
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "AnyDesk"; fi
-
-	# Remove menu bar icon
-	local configs="$HOME/.anydesk/user.conf"
-	if ! grep -q "ad.ui.cfg_show_tray_icon" "$configs" 2>/dev/null; then
-		echo "ad.ui.cfg_show_tray_icon=false" >>"$configs"
-	else
-		sed -i "" -e 's/^ad.ui.cfg_show_tray_icon=.*/ad.ui.cfg_show_tray_icon=false/' "$configs"
-	fi
-
-}
-
-# @define Update balsamiq
-update_balsamiq() {
-
-	# Update package
-	local present="$([[ -d "/Applications/Balsamiq Wireframes.app" ]] && echo "true" || echo "false")"
-	update_cask balsamiq-wireframes
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then
-		sudo date -f "%m%d%H%M%Y" "$(date -v+10y +"%m%d%H%M%Y")"
-		invoke_once "Balsamiq Wireframes"
-		sudo sntp -sS time.apple.com
-	fi
-
-	# Change icon
-	change_appicon "balsamiq" "/Applications/Balsamiq Wireframes.app"
 
 }
 
@@ -1227,6 +1187,9 @@ update_chrome() {
 	sudo "$program" -c "Delete :ExtensionInstallForcelist" "$configs"
 	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
 	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
+
+	# Change icon
+	change_appicon "chrome" "/Applications/Google Chrome.app"
 
 }
 
@@ -1325,6 +1288,9 @@ update_chromium() {
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
 		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
 	fi
+
+	# Change icon
+	change_appicon "chromium" "/Applications/Chromium.app"
 
 }
 
@@ -1430,11 +1396,33 @@ update_cursor() {
 
 }
 
+# @define Update davinci-resolve
+update_davinci_resolve() {
+
+	# Change icon
+	change_appicon "davinci-resolve" "/Applications/DaVinci Resolve.app"
+
+}
+
+# @define Update diffusionbee
+update_diffusionbee() {
+
+	# Update package
+	update_cask diffusionbee
+
+	# Change icon
+	change_appicon "diffusionbee" "/Applications/DiffusionBee.app"
+
+}
+
 # @define Update discord
 update_discord() {
 
 	# Update package
 	update_cask discord
+
+	# Change icon
+	change_appicon "discord" "/Applications/Discord.app"
 
 }
 
@@ -1606,8 +1594,8 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Update plugins
-
+	# Change icon
+	change_appicon "intellij-idea" "/Applications/IntelliJ IDEA.app"
 
 }
 
@@ -1753,14 +1741,6 @@ update_miniforge() {
 
 }
 
-# @define Update netnewswire
-update_netnewswire() {
-
-	# Update package
-	update_cask netnewswire
-
-}
-
 # @define Update nightlight
 update_nightlight() {
 
@@ -1838,14 +1818,6 @@ update_obs() {
 
 }
 
-# @define Update pearcleaner
-update_pearcleaner() {
-
-	# Update package
-	update_cask pearcleaner
-
-}
-
 # @define Update postgresql
 update_postgresql() {
 
@@ -1858,14 +1830,6 @@ update_postgresql() {
 	# Launch service
 	# INFO: Default credentials are $USER with empty password
 	brew services restart postgresql@"$version"
-
-}
-
-# @define Update quickrecorder
-update_quickrecorder() {
-
-	# Update package
-	update_cask lihaoyun6/tap/quickrecorder
 
 }
 
@@ -1907,6 +1871,17 @@ update_system() {
 
 	# Update system
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
+
+}
+
+# @define Update telegram
+update_telegram() {
+
+	# Update package
+	update_cask telegram
+
+	# Change icon
+	change_appicon "telegram" "/Applications/Telegram.app"
 
 }
 
@@ -1953,6 +1928,9 @@ update_utm() {
 	# Update package
 	update_cask utm
 
+	# Change icon
+	change_appicon "utm" "/Applications/UTM.app"
+
 }
 
 # @define Update vscode
@@ -1978,6 +1956,9 @@ update_vscode() {
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
 	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
 	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
+
+	# Change icon
+	change_appicon "vscode" "/Applications/Visual Studio Code.app"
 
 }
 
@@ -2346,16 +2327,16 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_vscode"
 		"update_xcode"
 
-		"update_balsamiq"
 		"update_calibre"
 		"update_chrome"
 		"update_claude_code"
 		"update_crossover"
+		"update_davinci_resolve"
+		"update_diffusionbee"
 		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_flutter"
-		"update_fork"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
 		"update_iina"
@@ -2364,27 +2345,25 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_keepingyouawake"
 		"update_keka"
 		"update_miniforge"
-		"update_netnewswire"
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
 		"update_obs"
-		"update_pearcleaner"
 		"update_postgresql"
-		"update_quickrecorder"
+		"update_telegram"
 		"update_temurin"
 		"update_transmission"
 		"update_utm"
-		"update_youtube_music"
-		"update_android_devtools"
-		"update_angular_devtools"
-		"update_apple_devtools"
-		"update_flutter_devtools"
-		"update_ionic_devtools"
-		"update_react_devtools"
-		"update_react_native_devtools"
-		"update_shell_devtools"
-		"update_spring_devtools"
+		# "update_youtube_music"
+		# "update_android_devtools"
+		# "update_angular_devtools"
+		# "update_apple_devtools"
+		# "update_flutter_devtools"
+		# "update_ionic_devtools"
+		# "update_react_devtools"
+		# "update_react_native_devtools"
+		# "update_shell_devtools"
+		# "update_spring_devtools"
 		"update_appearance"
 	)
 
