@@ -6,12 +6,15 @@ Post-installation script to set up a whole developer-friendly environment on mac
 
 It intentionally uses Ungoogled Chromium as the main browser and has advanced mechanisms to install official and unofficial extensions Yeah, the best extensions are not on the store and the best features are not available on official Chrome or shit-tier forks. Ungoogled Chromium is also used for development purposes with a specific Developer profile. This profile has to be used when debugging with your code editors and IDEs.
 
-### Script Running
+---
 
-<img src="https://lipsum.app/632x640/f7df1e/000" width="49.375%"/><img src=".assets/1x1.png" width="1.25%"/><img src="https://lipsum.app/632x640/f7df1e/000" width="49.375%"/>
+# <samp>PREVIEWS</samp>
+
+<img src="https://lipsum.app/632x640/fafafa/000" width="49.375%"/><img src=".assets/1x1.png" width="1.25%"/><img src="https://lipsum.app/632x640/fafafa/000" width="49.375%"/>
+
+---
 
 # <samp>FEATURES</samp>
-
 
 ### Update System
 
@@ -268,6 +271,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 ### Update Appearance
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
+
+---
 
 # <samp>GUIDANCE</samp>
 
