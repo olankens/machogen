@@ -1075,7 +1075,7 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 34
+	defaults write com.apple.dock tilesize -int 38
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
@@ -1088,9 +1088,9 @@ update_appearance() {
 	# Append network elements
 	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/Google Chrome.app"
+	# append_dock_application "/Applications/Google Chrome.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	append_dock_application "/Applications/JoalDesktop.app"
+	# append_dock_application "/Applications/JoalDesktop.app"
 	append_dock_application "/Applications/NetNewsWire.app"
 	append_dock_application "/Applications/Transmission.app"
 
@@ -1100,7 +1100,7 @@ update_appearance() {
 
 	# Append social elements
 	append_dock_application "/Applications/Discord.app"
-	append_dock_application "/Applications/Telegram.app"
+	# append_dock_application "/Applications/Telegram.app"
 
 	# Append office elements
 	append_dock_application "/Applications/Calibre.app"
@@ -1126,7 +1126,7 @@ update_appearance() {
 
 	# Append multimedia elements
 	append_dock_application "/Applications/IINA.app"
-	append_dock_application "/Applications/Mpv.app"
+	# append_dock_application "/Applications/Mpv.app"
 	append_dock_application "/Applications/YouTube Music.app"
 
 	# Append gaming elements
@@ -1286,15 +1286,15 @@ update_chromium() {
 	fi
 
 	# Update extensions
-	# if [[ -z "$datadir" ]]; then
-	# 	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
-	# 	update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
-	# 	update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-	# 	update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
-	# 	update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
-	# 	update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-	# 	update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
-	# fi
+	if [[ -z "$datadir" ]]; then
+		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
+		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+		# update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
+		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
+		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+	fi
 
 	# Change appearance
 	change_appicon "chromium" "/Applications/Chromium.app"
@@ -2445,57 +2445,57 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		# "update_system"
-		# "update_android_studio"
-		# "update_chromium"
-		# "update_chromium_developer"
-		# "update_cursor"
-		# "update_intellij_idea"
-		# "update_vscode"
-		# "update_xcode"
+		"update_system"
+		"update_android_studio"
+		"update_chromium"
+		"update_chromium_developer"
+		"update_cursor"
+		"update_intellij_idea"
+		"update_vscode"
+		"update_xcode"
 
-		# "update_calibre"
-		# "update_capcut"
-		# "update_claude_code"
-		# "update_comfyui"
-		# "update_crossover"
-		# "update_davinci_resolve"
-		# "update_discord"
-		# "update_docker"
-		# "update_figma"
-		# "update_flutter"
-		# "update_frame0"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_google_chrome"
-		# "update_icon_composer"
-		# "update_iina"
+		"update_calibre"
+		"update_capcut"
+		"update_claude_code"
+		"update_comfyui"
+		"update_crossover"
+		"update_davinci_resolve"
+		"update_discord"
+		"update_docker"
+		"update_figma"
+		"update_flutter"
+		"update_frame0"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_google_chrome"
+		"update_icon_composer"
+		"update_iina"
 		"update_jdownloader"
-		# "update_joal_desktop"
-		# "update_keepingyouawake"
-		# "update_keka"
-		# "update_miniforge"
+		"update_joal_desktop"
+		"update_keepingyouawake"
+		"update_keka"
+		"update_miniforge"
 		"update_netnewswire"
-		# "update_nightlight"
-		# "update_nodejs"
-		# "update_notion"
-		# "update_obs"
-		# "update_pearcleaner"
-		# "update_postgresql"
-		# "update_telegram"
-		# "update_temurin"
-		# "update_tradingview"
-		# "update_transmission"
-		# "update_utm"
-		# "update_youtube_music"
-		# "update_android_devtools"
-		# "update_angular_devtools"
-		# "update_apple_devtools"
-		# "update_flutter_devtools"
-		# "update_ionic_devtools"
-		# "update_react_devtools"
-		# "update_react_native_devtools"
-		# "update_shell_devtools"
-		# "update_spring_devtools"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_obs"
+		"update_pearcleaner"
+		"update_postgresql"
+		"update_telegram"
+		"update_temurin"
+		"update_tradingview"
+		"update_transmission"
+		"update_utm"
+		"update_youtube_music"
+		"update_android_devtools"
+		"update_angular_devtools"
+		"update_apple_devtools"
+		"update_flutter_devtools"
+		"update_ionic_devtools"
+		"update_react_devtools"
+		"update_react_native_devtools"
+		"update_shell_devtools"
+		"update_spring_devtools"
 		"update_appearance"
 	)
 
