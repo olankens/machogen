@@ -1058,7 +1058,7 @@ update_appearance() {
 	# Append internet elements
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	# append_dock_application "/Applications/Google Chrome.app"
+	append_dock_application "/Applications/Google Chrome.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	append_dock_application "/Applications/JoalDesktop.app"
 	append_dock_application "/Applications/Transmission.app"
@@ -1096,13 +1096,13 @@ update_appearance() {
 	append_dock_application "/Applications/YouTube Music.app"
 
 	# Append entertainment elements
-	append_dock_application "/Applications/BlueStacks.app"
+	# append_dock_application "/Applications/BlueStacks.app"
 	append_dock_application "/Applications/CrossOver.app"
 
 	# Append system elements
 	append_dock_application "/Applications/Pearcleaner.app"
-	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/System/Applications/Utilities/Terminal.app"
 
 	# Append downloads folder
 	append_dock_folder "$HOME/Downloads" 1 0 2
@@ -1144,71 +1144,6 @@ update_calibre() {
 	sudo mv /Applications/calibre.app /Applications/Calibre.app
 	change_appicon "calibre" "/Applications/Calibre.app"
 	
-
-}
-
-# @define Update chrome
-update_chrome() {
-
-	# Update package
-	local present="$([[ -d "/Applications/Google Chrome.app" ]] && echo "true" || echo "false")"
-	update_cask google-chrome
-	killall Chrome || true
-
-	# Finish install
-	if [[ "$present" == "false" ]]; then invoke_once "Google Chrome"; fi
-
-	# Change settings
-	# INFO: https://github.com/yashgorana/chrome-debloat
-	local configs="$HOME/Library/Preferences/com.google.Chrome.plist"
-	local program="/usr/libexec/PlistBuddy"
-	sudo rm "$configs" && sleep 5
-	sudo "$program" -c "Save" "$configs"
-	sudo "$program" -c "Add :AlternateErrorPagesEnabled bool false" "$configs"
-	sudo "$program" -c "Add :AutofillCreditCardEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BackgroundModeEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BrowserGuestModeEnabled bool false" "$configs"
-	sudo "$program" -c "Add :BrowserSignin integer 0" "$configs"
-	sudo "$program" -c "Add :BuiltInDnsClientEnabled bool false" "$configs"
-	sudo "$program" -c "Add :CloudReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DefaultBrowserSettingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DefaultGeolocationSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultLocalFontsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultNotificationsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultSensorsSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DefaultSerialGuardSetting integer 2" "$configs"
-	sudo "$program" -c "Add :DeviceActivityHeartbeatEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DeviceMetricsReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :DriveDisabled bool true" "$configs"
-	sudo "$program" -c "Add :ExtensionManifestV2Availability integer 2" "$configs"
-	sudo "$program" -c "Add :HeartbeatEnabled bool false" "$configs"
-	sudo "$program" -c "Add :LogUploadEnabled bool false" "$configs"
-	sudo "$program" -c "Add :MetricsReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ParcelTrackingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordLeakDetectionEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordManagerEnabled bool false" "$configs"
-	sudo "$program" -c "Add :PasswordSharingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :QuickAnswersEnabled bool false" "$configs"
-	sudo "$program" -c "Add :RelatedWebsiteSetsEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ReportAppInventory array" "$configs"
-	sudo "$program" -c "Add :ReportDeviceActivityTimes bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceAppInfo bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceSystemInfo bool false" "$configs"
-	sudo "$program" -c "Add :ReportDeviceUsers bool false" "$configs"
-	sudo "$program" -c "Add :ReportWebsiteTelemetry array" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingDeepScanningEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingExtendedReportingEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SafeBrowsingSurveysEnabled bool false" "$configs"
-	sudo "$program" -c "Add :ShoppingListEnabled bool false" "$configs"
-	sudo "$program" -c "Add :SyncDisabled bool true" "$configs"
-
-	# Change extensions
-	sudo "$program" -c "Delete :ExtensionInstallForcelist" "$configs"
-	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
-	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
-
-	# Change icon
-	change_appicon "google-chrome" "/Applications/Google Chrome.app"
 
 }
 
@@ -1440,9 +1375,6 @@ update_discord() {
 	# Update package
 	update_cask discord
 
-	# Change icon
-	change_appicon "discord" "/Applications/Discord.app"
-
 }
 
 # @define Update docker
@@ -1558,6 +1490,71 @@ update_github_cli() {
 
 	# Update package
 	update_brew gh
+
+}
+
+# @define Update google-chrome
+update_google_chrome() {
+
+	# Update package
+	local present="$([[ -d "/Applications/Google Chrome.app" ]] && echo "true" || echo "false")"
+	update_cask google-chrome
+	killall Chrome || true
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then invoke_once "Google Chrome"; fi
+
+	# Change settings
+	# INFO: https://github.com/yashgorana/chrome-debloat
+	local configs="$HOME/Library/Preferences/com.google.Chrome.plist"
+	local program="/usr/libexec/PlistBuddy"
+	sudo rm "$configs" && sleep 5
+	sudo "$program" -c "Save" "$configs"
+	sudo "$program" -c "Add :AlternateErrorPagesEnabled bool false" "$configs"
+	sudo "$program" -c "Add :AutofillCreditCardEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BackgroundModeEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BrowserGuestModeEnabled bool false" "$configs"
+	sudo "$program" -c "Add :BrowserSignin integer 0" "$configs"
+	sudo "$program" -c "Add :BuiltInDnsClientEnabled bool false" "$configs"
+	sudo "$program" -c "Add :CloudReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DefaultBrowserSettingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DefaultGeolocationSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultLocalFontsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultNotificationsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultSensorsSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DefaultSerialGuardSetting integer 2" "$configs"
+	sudo "$program" -c "Add :DeviceActivityHeartbeatEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DeviceMetricsReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :DriveDisabled bool true" "$configs"
+	sudo "$program" -c "Add :ExtensionManifestV2Availability integer 2" "$configs"
+	sudo "$program" -c "Add :HeartbeatEnabled bool false" "$configs"
+	sudo "$program" -c "Add :LogUploadEnabled bool false" "$configs"
+	sudo "$program" -c "Add :MetricsReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ParcelTrackingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :PasswordLeakDetectionEnabled bool false" "$configs"
+	sudo "$program" -c "Add :PasswordManagerEnabled bool false" "$configs"
+	sudo "$program" -c "Add :PasswordSharingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :QuickAnswersEnabled bool false" "$configs"
+	sudo "$program" -c "Add :RelatedWebsiteSetsEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ReportAppInventory array" "$configs"
+	sudo "$program" -c "Add :ReportDeviceActivityTimes bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceAppInfo bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceSystemInfo bool false" "$configs"
+	sudo "$program" -c "Add :ReportDeviceUsers bool false" "$configs"
+	sudo "$program" -c "Add :ReportWebsiteTelemetry array" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingDeepScanningEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingExtendedReportingEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SafeBrowsingSurveysEnabled bool false" "$configs"
+	sudo "$program" -c "Add :ShoppingListEnabled bool false" "$configs"
+	sudo "$program" -c "Add :SyncDisabled bool true" "$configs"
+
+	# Change extensions
+	sudo "$program" -c "Delete :ExtensionInstallForcelist" "$configs"
+	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
+	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
+
+	# Change icon
+	change_appicon "google-chrome" "/Applications/Google Chrome.app"
 
 }
 
@@ -2000,7 +1997,7 @@ update_utm() {
 	update_cask utm
 
 	# Change icon
-	change_appicon "youtube-music" "/Applications/UTM.app"
+	change_appicon "utm" "/Applications/UTM.app"
 
 }
 
@@ -2383,17 +2380,17 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		"update_system"
-		"update_android_studio"
+		# "update_system"
+		# "update_android_studio"
 		"update_chromium"
 		# "update_chromium_developer"
-		"update_cursor"
-		"update_intellij_idea"
-		"update_vscode"
-		"update_xcode"
+		# "update_cursor"
+		# "update_intellij_idea"
+		# "update_vscode"
+		# "update_xcode"
 
 		# "update_calibre"
-		# "update_chrome"
+		
 		# "update_claude_code"
 		# "update_comfyui"
 		# "update_crossover"
@@ -2405,9 +2402,10 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_frame0"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
+		"update_google_chrome"
 		# "update_icon_composer"
 		# "update_iina"
-		# "update_jdownloader"
+		"update_jdownloader"
 		# "update_joal_desktop"
 		# "update_keepingyouawake"
 		# "update_keka"
