@@ -147,7 +147,7 @@ change_appicon() {
 
 	# Change icon
 	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/dark/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -1023,6 +1023,9 @@ update_android_studio() {
 	# Update cursor extension
 	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
+	# Change appearance
+	change_appicon "cursor" "/Applications/Cursor.app"
+
 }
 
 # @define Update appearance
@@ -1036,7 +1039,7 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.Dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 38
+	defaults write com.apple.dock tilesize -int 36
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
@@ -1055,7 +1058,7 @@ update_appearance() {
 	append_dock_application "/Applications/Transmission.app"
 
 	# Append finance elements
-	append_dock_application "/Applications/IBKR Desktop.app"
+	# append_dock_application "/Applications/IBKR Desktop.app"
 	append_dock_application "/Applications/TradingView.app"
 
 	# Append social elements
@@ -1063,7 +1066,7 @@ update_appearance() {
 	append_dock_application "/Applications/Telegram.app"
 
 	# Append office elements
-	append_dock_application "/Applications/calibre.app"
+	append_dock_application "/Applications/Calibre.app"
 	append_dock_application "/Applications/Notion.app"
 
 	# Append developer elements
@@ -1075,13 +1078,14 @@ update_appearance() {
 
 	# Append graphics elements
 	append_dock_application "/Applications/Blender.app"
-	append_dock_application "/Applications/DiffusionBee.app"
+	append_dock_application "/Applications/ComfyUI.app"
 	append_dock_application "/Applications/Icon Composer.app"
 	append_dock_application "/Applications/Figma.app"
+	append_dock_application "/Applications/Frame0.app"
 
 	# Append multimedia elements
-	append_dock_application "/Applications/DaVinci Resolve.app"
-	append_dock_application "/Applications/IINA.app"
+	# append_dock_application "/Applications/DaVinci Resolve.app"
+	# append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/Mpv.app"
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/YouTube Music.app"
@@ -1117,15 +1121,22 @@ update_calibre() {
 	invoke_once "calibre"
 
 	# Update goodreads
-	# TODO: Always get the latest version
+	# TODO: Scrape the latest version from github api
 	local program="/Applications/calibre.app/Contents/MacOS/calibre-customize"
 	local address="https://github.com/kiwidude68/calibre_plugins/releases/download/goodreads-v1.8.3/goodreads-v1.8.3.zip"
 	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
 	"$program" --add-plugin "$archive"
 	"$program" --enable-plugin "Goodreads"
 
-	# Change icon
-	change_appicon "calibre" "/Applications/calibre.app"
+	# Change appearance
+	sudo /usr/libexec/PlistBuddy -c "Set :CFBundleName Calibre" /Applications/calibre.app/Contents/Info.plist 2>/dev/null
+	sudo /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Calibre" /Applications/calibre.app/Contents/Info.plist 2>/dev/null
+	sudo xattr -cr /Applications/calibre.app
+	sudo codesign --remove-signature /Applications/calibre.app
+	sudo codesign --force --deep --sign - /Applications/calibre.app
+	sudo mv /Applications/calibre.app /Applications/Calibre.app
+	change_appicon "calibre" "/Applications/Calibre.app"
+	
 
 }
 
@@ -1338,6 +1349,17 @@ update_claude_code() {
 
 }
 
+# @define Update comfyui
+update_comfyui() {
+
+	# Update package
+	update_cask comfyui
+
+	# Change icon
+	change_appicon "comfyui" "/Applications/ComfyUI.app"
+
+}
+
 # @define Update crossover
 update_crossover() {
 
@@ -1402,14 +1424,6 @@ update_davinci_resolve() {
 
 	# Change icon
 	change_appicon "davinci-resolve" "/Applications/DaVinci Resolve.app"
-
-}
-
-# @define Update diffusionbee
-update_diffusionbee() {
-
-	# Update package
-	update_cask diffusionbee
 
 }
 
@@ -1496,6 +1510,17 @@ update_fork() {
 
 	# Change icon
 	change_appicon "fork" "/Applications/Fork.app"
+
+}
+
+# @define Update frame0
+update_frame0() {
+
+	# Update package
+	update_cask frame0
+
+	# Change icon
+	change_appicon "frame0" "/Applications/Frame0.app"
 
 }
 
@@ -1676,7 +1701,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/glass/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/dark/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -2018,9 +2043,6 @@ update_xcode() {
 		sudo xcodebuild -runFirstLaunch
 		sudo xcodebuild -license accept
 	fi
-
-	# Change icon
-	change_appicon "xcode" "/Applications/Xcode.app"
 
 }
 
@@ -2366,13 +2388,14 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_calibre"
 		"update_chrome"
 		"update_claude_code"
+		"update_comfyui"
 		"update_crossover"
 		"update_davinci_resolve"
-		"update_diffusionbee"
 		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_flutter"
+		"update_frame0"
 		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_github_cli"
 		"update_icon_composer"
