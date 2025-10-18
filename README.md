@@ -22,6 +22,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 
+### Update CapCut
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
+
 ### Update Chromium (Ungoogled)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
@@ -35,6 +39,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 
 ### Update Cursor
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
+
+### Update DaVinci Resolve
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 

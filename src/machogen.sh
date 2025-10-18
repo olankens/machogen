@@ -688,7 +688,10 @@ invoke_wrapper() {
 	verify_executor || return 1
 
 	# Prompt password
-	sudo -v; local results=$?; printf "\n"; [[ $results -ne 0 ]] && return 1
+	sudo -v
+	local results=$?
+	printf "\n"
+	[[ $results -ne 0 ]] && return 1
 	clear && printf "\n\033[92m%s\033[00m\n\n" "$welcome"
 
 	# Remove timeouts
@@ -1054,8 +1057,8 @@ update_appearance() {
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
 
-	# Append internet elements
-	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	# Append network elements
+	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
 	append_dock_application "/Applications/Google Chrome.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
@@ -1074,7 +1077,7 @@ update_appearance() {
 	append_dock_application "/Applications/Calibre.app"
 	append_dock_application "/Applications/Notion.app"
 
-	# Append developer elements
+	# Append development elements
 	append_dock_application "/Applications/Android Studio.app"
 	append_dock_application "/Applications/Cursor.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
@@ -1087,18 +1090,21 @@ update_appearance() {
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/Frame0.app"
 
+	# Append audio and video elements
+	append_dock_application "/Applications/CapCut.app"
+	append_dock_application "/Applications/DaVinci Resolve.app"
+	append_dock_application "/Applications/OBS.app"
+
 	# Append multimedia elements
-	# append_dock_application "/Applications/DaVinci Resolve.app"
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/Mpv.app"
-	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/YouTube Music.app"
 
-	# Append entertainment elements
+	# Append gaming elements
 	# append_dock_application "/Applications/BlueStacks.app"
 	append_dock_application "/Applications/CrossOver.app"
 
-	# Append system elements
+	# Append utility elements
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
@@ -1142,7 +1148,25 @@ update_calibre() {
 	sudo codesign --force --deep --sign - /Applications/calibre.app
 	sudo mv /Applications/calibre.app /Applications/Calibre.app
 	change_appicon "calibre" "/Applications/Calibre.app"
-	
+
+}
+
+# @define Update capcut
+update_capcut() {
+
+	# Handle dependencies
+	update_brew mas
+
+	# Update package
+	mas install 1500855883
+	mas upgrade 1500855883
+
+	# Change appearance
+	# TODO: Verify why it requires sudo
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/capcut.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	sudo fileicon set "/Applications/CapCut.app" "$picture"
 
 }
 
@@ -1363,8 +1387,19 @@ update_cursor() {
 # @define Update davinci-resolve
 update_davinci_resolve() {
 
+	# Handle dependencies
+	update_brew mas
+
+	# Update package
+	mas install 571213070
+	mas upgrade 571213070
+
 	# Change appearance
-	change_appicon "davinci-resolve" "/Applications/DaVinci Resolve.app"
+	# TODO: Verify why it requires sudo
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/davinci-resolve.icns"
+	local picture="$(mktemp -d)/$(basename "$address")"
+	curl -LA "mozilla/5.0" "$address" -o "$picture"
+	sudo fileicon set "/Applications/DaVinci Resolve.app" "$picture"
 
 }
 
@@ -2025,22 +2060,16 @@ update_vscode() {
 update_xcode() {
 
 	# Handle dependencies
-	assert_apple_id || return 1
-	update_brew cocoapods grep xcodesorg/made/xcodes
+	update_brew cocoapods mas
 
 	# Update package
-	local starter="/Applications/Xcode.app"
-	local current=$(gather_version "$starter")
-	local version=$(xcodes list | tail -5 | grep -v Beta | tail -1 | ggrep -oP "[\d.]+" | head -1)
-	autoload is-at-least
-	local updated=$(is-at-least "$version" "$current" && echo "true" || echo "false")
-	if [[ "$updated" == "false" ]]; then
-		xcodes install --latest
-		rm -fr "$starter" && mv -f /Applications/Xcode*.app "$starter"
-		sudo xcode-select --switch "$starter/Contents/Developer"
-		sudo xcodebuild -runFirstLaunch
-		sudo xcodebuild -license accept
-	fi
+	mas install 497799835
+	mas upgrade 497799835
+
+	# Finish install
+	sudo xcode-select --switch "/Applications/Xcode.app/Contents/Developer"
+	sudo xcodebuild -runFirstLaunch
+	sudo xcodebuild -license accept
 
 }
 
@@ -2118,6 +2147,7 @@ update_angular_devtools() {
 		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
 		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
 		printf "\n%s" "# Enable angular cli completion" >>"$HOME/.zshrc"
+		printf "\n%s" "autoload -Uz compinit && compinit" >>"$HOME/.zshrc"
 		printf "\n%s" "source <(ng completion script)" >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
@@ -2352,7 +2382,7 @@ update_spring_devtools() {
 
 	# Update idea plugins
 	if command -v idea &>/dev/null; then
-		idea installPlugins com.haulmont.jpab # jpa-buddy
+		idea installPlugins com.haulmont.jpab            # jpa-buddy
 		idea installPlugins com.intellij.spring.debugger # spring-debugger
 	fi
 
@@ -2374,55 +2404,56 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	country="Europe/Brussels"
 	machine="macintosh"
 	members=(
-		# "update_system"
-		# "update_android_studio"
+		"update_system"
+		"update_android_studio"
 		"update_chromium"
-		# "update_chromium_developer"
-		# "update_cursor"
-		# "update_intellij_idea"
-		# "update_vscode"
-		# "update_xcode"
+		"update_chromium_developer"
+		"update_cursor"
+		"update_intellij_idea"
+		"update_vscode"
+		"update_xcode"
 
-		# "update_calibre"
-		# "update_claude_code"
-		# "update_comfyui"
-		# "update_crossover"
-		# "update_davinci_resolve"
-		# "update_discord"
-		# "update_docker"
-		# "update_figma"
-		# "update_flutter"
-		# "update_frame0"
-		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		"update_calibre"
+		"update_capcut"
+		"update_claude_code"
+		"update_comfyui"
+		"update_crossover"
+		"update_davinci_resolve"
+		"update_discord"
+		"update_docker"
+		"update_figma"
+		"update_flutter"
+		"update_frame0"
+		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		"update_google_chrome"
-		# "update_icon_composer"
-		# "update_iina"
+		"update_icon_composer"
+		"update_iina"
 		"update_jdownloader"
 		"update_joal_desktop"
-		# "update_keepingyouawake"
-		# "update_keka"
-		# "update_miniforge"
-		# "update_nightlight"
-		# "update_nodejs"
-		# "update_notion"
-		# "update_obs"
-		# "update_pearcleaner"
-		# "update_postgresql"
-		# "update_telegram"
-		# "update_temurin"
-		# "update_tradingview"
+		"update_keepingyouawake"
+		"update_keka"
+		"update_miniforge"
+		"update_nightlight"
+		"update_nodejs"
+		"update_notion"
+		"update_obs"
+		"update_pearcleaner"
+		"update_postgresql"
+		"update_telegram"
+		"update_temurin"
+		"update_tradingview"
 		"update_transmission"
-		# "update_utm"
-		# "update_youtube_music"
-		# "update_android_devtools"
-		# "update_angular_devtools"
-		# "update_apple_devtools"
-		# "update_flutter_devtools"
-		# "update_ionic_devtools"
-		# "update_react_devtools"
-		# "update_react_native_devtools"
-		# "update_shell_devtools"
-		# "update_spring_devtools"
+		"update_utm"
+		"update_youtube_music"
+		"update_android_devtools"
+		"update_angular_devtools"
+		"update_apple_devtools"
+		"update_flutter_devtools"
+		"update_ionic_devtools"
+		"update_react_devtools"
+		"update_react_native_devtools"
+		"update_shell_devtools"
+		"update_spring_devtools"
 		"update_appearance"
 	)
 
