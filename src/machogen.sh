@@ -146,8 +146,7 @@ change_appicon() {
 	local apppath=${2}
 
 	# Change icon
-	# local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/dark/$distant.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$apppath" "$picture" || sudo !!
@@ -552,7 +551,7 @@ change_wallpaper() {
 	# Handle parameters
 	local distant=${1}
 
-	# Change icon
+	# Change wallpaper
 	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/walls/$distant.heic"
 	local picture="$HOME/Pictures/Wallpapers/$(basename "$address")"
 	mkdir -p "$(dirname "$picture")"
@@ -701,7 +700,7 @@ invoke_wrapper() {
 	# Verify requirements
 	verify_security || return 1
 	verify_homebrew || return 1
-	# verify_apple_id || return 1
+	verify_apple_id || return 1
 
 	# Change timezone
 	change_timezone "$country"
@@ -1045,7 +1044,7 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 36
+	defaults write com.apple.dock tilesize -int 34
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
@@ -1243,8 +1242,9 @@ update_chromium() {
 		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
 	fi
 
-	# Change icon
-	change_appicon "chromium" "/Applications/Chromium.app"
+	# Change appearance
+	# TODO: proper icon
+	change_appicon "google-chrome" "/Applications/Chromium.app"
 
 }
 
@@ -1297,7 +1297,7 @@ update_comfyui() {
 	# Update package
 	update_cask comfyui
 
-	# Change icon
+	# Change appearance
 	change_appicon "comfyui" "/Applications/ComfyUI.app"
 
 }
@@ -1338,7 +1338,7 @@ update_crossover() {
 		done
 	done
 
-	# Change icon
+	# Change appearance
 	change_appicon "crossover" "/Applications/crossover.app"
 
 }
@@ -1356,7 +1356,7 @@ update_cursor() {
 	# Update android-studio plugin
 	command -v studio &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
-	# Change icon
+	# Change appearance
 	change_appicon "cursor" "/Applications/Cursor.app"
 
 }
@@ -1364,7 +1364,7 @@ update_cursor() {
 # @define Update davinci-resolve
 update_davinci_resolve() {
 
-	# Change icon
+	# Change appearance
 	change_appicon "davinci-resolve" "/Applications/DaVinci Resolve.app"
 
 }
@@ -1374,6 +1374,9 @@ update_discord() {
 
 	# Update package
 	update_cask discord
+
+	# Change appearance
+	change_appicon "discord" "/Applications/Discord.app"
 
 }
 
@@ -1408,7 +1411,7 @@ update_figma() {
 	local configs="$HOME/Library/Application Support/Figma/settings.json"
 	jq '.showFigmaInMenuBar = false' "$configs" | sponge "$configs"
 
-	# Change icon
+	# Change appearance
 	change_appicon "figma" "/Applications/Figma.app"
 
 }
@@ -1447,7 +1450,7 @@ update_fork() {
 	# Update package
 	update_cask fork
 
-	# Change icon
+	# Change appearance
 	change_appicon "fork" "/Applications/Fork.app"
 
 }
@@ -1458,7 +1461,7 @@ update_frame0() {
 	# Update package
 	update_cask frame0
 
-	# Change icon
+	# Change appearance
 	change_appicon "frame0" "/Applications/Frame0.app"
 
 }
@@ -1553,7 +1556,7 @@ update_google_chrome() {
 	sudo "$program" -c "Add :ExtensionInstallForcelist array" "$configs"
 	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
 
-	# Change icon
+	# Change appearance
 	change_appicon "google-chrome" "/Applications/Google Chrome.app"
 
 }
@@ -1564,7 +1567,7 @@ update_ibkr_desktop() {
 	# Update package
 	update_cask ibkr
 
-	# Change icon
+	# Change appearance
 	change_appicon "ibkr-desktop" "/Applications/IBKR Desktop.app"
 
 }
@@ -1625,7 +1628,7 @@ update_iina() {
 	expand_archive "$archive" "$deposit"
 	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
 
-	# Change icon
+	# Change appearance
 	change_appicon "iina" "/Applications/IINA.app"
 
 }
@@ -1643,7 +1646,7 @@ update_intellij_idea() {
 	# Finish install
 	if [[ "$present" == "false" ]]; then invoke_once "IntelliJ IDEA"; fi
 
-	# Change icon
+	# Change appearance
 	change_appicon "intellij-idea" "/Applications/IntelliJ IDEA.app"
 
 }
@@ -1705,7 +1708,7 @@ update_jdownloader() {
 	fi
 
 	# Changes icons
-	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/dark/jdownloader.icns"
+	local address="https://github.com/olankens/machogen/raw/HEAD/.assets/icons/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1751,7 +1754,7 @@ update_joal_desktop() {
 	jq '."keepTorrentWithZeroLeechers" = true' "$configs" | sponge "$configs"
 	jq '."uploadRatioTarget" = -1' "$configs" | sponge "$configs"
 
-	# Change icon
+	# Change appearance
 	change_appicon "joal-desktop" "/Applications/JoalDesktop.app"
 
 }
@@ -1773,7 +1776,7 @@ update_keka() {
 	# Finish install
 	/Applications/KekaExternalHelper.app/Contents/MacOS/KekaExternalHelper --set-as-default
 
-	# Change icon
+	# Change appearance
 	change_appicon "keka" "/Applications/Keka.app"
 
 }
@@ -1851,7 +1854,7 @@ update_notion() {
 	jq '.appState.preferences.isMenuBarIconEnabled = false' "$configs" | sponge "$configs"
 	jq '.appState.preferences.isAutoUpdaterDisabled = true' "$configs" | sponge "$configs"
 
-	# Change icon
+	# Change appearance
 	change_appicon "notion" "/Applications/Notion.app"
 
 }
@@ -1862,7 +1865,7 @@ update_obs() {
 	# Update package
 	update_cask obs
 
-	# Change icon
+	# Change appearance
 	change_appicon "obs" "/Applications/OBS.app"
 
 }
@@ -1873,7 +1876,7 @@ update_pearcleaner() {
 	# Update package
 	update_cask pearcleaner
 
-	# Change icon
+	# Change appearance
 	change_appicon "pearcleaner" "/Applications/Pearcleaner.app"
 
 }
@@ -1940,7 +1943,7 @@ update_telegram() {
 	# Update package
 	update_cask telegram
 
-	# Change icon
+	# Change appearance
 	change_appicon "telegram" "/Applications/Telegram.app"
 
 }
@@ -1959,7 +1962,7 @@ update_temurin() {
 # @define Update tradingview
 update_tradingview() {
 
-	# Change icon
+	# Change appearance
 	change_appicon "tradingview" "/Applications/TradingView.app"
 
 }
@@ -1985,7 +1988,7 @@ update_transmission() {
 	defaults write org.m0k.transmission WarningDonate -bool false
 	defaults write org.m0k.transmission WarningLegal -bool false
 
-	# Change icon
+	# Change appearance
 	change_appicon "transmission" "/Applications/Transmission.app"
 
 }
@@ -1996,7 +1999,7 @@ update_utm() {
 	# Update package
 	update_cask utm
 
-	# Change icon
+	# Change appearance
 	change_appicon "utm" "/Applications/UTM.app"
 
 }
@@ -2070,7 +2073,7 @@ update_youtube_music() {
 	jq '.plugins."synced-lyrics".enabled = true' "$configs" | sponge "$configs"
 	# jq '.plugins."no-google-login".enabled = true' "$configs" | sponge "$configs"
 
-	# Change icon
+	# Change appearance
 	change_appicon "youtube-music" "/Applications/YouTube Music.app"
 
 }
@@ -2382,30 +2385,29 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	members=(
 		# "update_system"
 		# "update_android_studio"
-		"update_chromium"
+		# "update_chromium"
 		# "update_chromium_developer"
 		# "update_cursor"
 		# "update_intellij_idea"
 		# "update_vscode"
-		# "update_xcode"
+		"update_xcode"
 
-		# "update_calibre"
-		
+		"update_calibre"
 		# "update_claude_code"
 		# "update_comfyui"
 		# "update_crossover"
 		# "update_davinci_resolve"
-		"update_discord"
+		# "update_discord"
 		# "update_docker"
 		# "update_figma"
 		# "update_flutter"
 		# "update_frame0"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
 		# "update_github_cli"
-		"update_google_chrome"
+		# "update_google_chrome"
 		# "update_icon_composer"
 		# "update_iina"
-		"update_jdownloader"
+		# "update_jdownloader"
 		# "update_joal_desktop"
 		# "update_keepingyouawake"
 		# "update_keka"
@@ -2414,13 +2416,13 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_nodejs"
 		"update_notion"
 		# "update_obs"
-		"update_pearcleaner"
+		# "update_pearcleaner"
 		# "update_postgresql"
 		# "update_telegram"
 		# "update_temurin"
 		# "update_tradingview"
 		# "update_transmission"
-		"update_utm"
+		# "update_utm"
 		# "update_youtube_music"
 		# "update_android_devtools"
 		# "update_angular_devtools"
