@@ -1031,6 +1031,12 @@ update_android_studio() {
 # @define Update appearance
 update_appearance() {
 
+	# Enable dark theme
+	osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+
+	# Enable light theme
+	# osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to false'
+
 	# Change dock settings
 	defaults write com.apple.dock autohide -bool true
 	defaults write com.apple.dock autohide-delay -float 0
@@ -1038,7 +1044,7 @@ update_appearance() {
 	defaults write com.apple.dock minimize-to-application -bool true
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
-	defaults write com.apple.Dock size-immutable -bool yes
+	defaults write com.apple.dock size-immutable -bool yes
 	defaults write com.apple.dock tilesize -int 36
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
@@ -1077,7 +1083,6 @@ update_appearance() {
 	append_dock_application "/Applications/Xcode.app"
 
 	# Append graphics elements
-	append_dock_application "/Applications/Blender.app"
 	append_dock_application "/Applications/ComfyUI.app"
 	append_dock_application "/Applications/Icon Composer.app"
 	append_dock_application "/Applications/Figma.app"
@@ -1085,17 +1090,19 @@ update_appearance() {
 
 	# Append multimedia elements
 	# append_dock_application "/Applications/DaVinci Resolve.app"
-	# append_dock_application "/Applications/IINA.app"
+	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/Mpv.app"
 	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/YouTube Music.app"
 
 	# Append entertainment elements
+	append_dock_application "/Applications/BlueStacks.app"
 	append_dock_application "/Applications/CrossOver.app"
 
 	# Append system elements
-	append_dock_application "/Applications/UTM.app"
+	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
+	append_dock_application "/Applications/UTM.app"
 
 	# Append downloads folder
 	append_dock_folder "$HOME/Downloads" 1 0 2
@@ -1992,6 +1999,9 @@ update_utm() {
 	# Update package
 	update_cask utm
 
+	# Change icon
+	change_appicon "youtube-music" "/Applications/UTM.app"
+
 }
 
 # @define Update vscode
@@ -2017,9 +2027,6 @@ update_vscode() {
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
 	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
 	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
-
-	# Change icon
-	change_appicon "vscode" "/Applications/Visual Studio Code.app"
 
 }
 
@@ -2385,38 +2392,38 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_vscode"
 		"update_xcode"
 
-		"update_calibre"
-		"update_chrome"
-		"update_claude_code"
-		"update_comfyui"
-		"update_crossover"
-		"update_davinci_resolve"
+		# "update_calibre"
+		# "update_chrome"
+		# "update_claude_code"
+		# "update_comfyui"
+		# "update_crossover"
+		# "update_davinci_resolve"
 		"update_discord"
-		"update_docker"
-		"update_figma"
-		"update_flutter"
-		"update_frame0"
-		"update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		"update_github_cli"
-		"update_icon_composer"
-		"update_iina"
-		"update_jdownloader"
-		"update_joal_desktop"
-		"update_keepingyouawake"
-		"update_keka"
-		"update_miniforge"
-		"update_nightlight"
-		"update_nodejs"
+		# "update_docker"
+		# "update_figma"
+		# "update_flutter"
+		# "update_frame0"
+		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
+		# "update_github_cli"
+		# "update_icon_composer"
+		# "update_iina"
+		# "update_jdownloader"
+		# "update_joal_desktop"
+		# "update_keepingyouawake"
+		# "update_keka"
+		# "update_miniforge"
+		# "update_nightlight"
+		# "update_nodejs"
 		"update_notion"
-		"update_obs"
+		# "update_obs"
 		"update_pearcleaner"
-		"update_postgresql"
-		"update_telegram"
-		"update_temurin"
-		"update_tradingview"
-		"update_transmission"
+		# "update_postgresql"
+		# "update_telegram"
+		# "update_temurin"
+		# "update_tradingview"
+		# "update_transmission"
 		"update_utm"
-		"update_youtube_music"
+		# "update_youtube_music"
 		# "update_android_devtools"
 		# "update_angular_devtools"
 		# "update_apple_devtools"
