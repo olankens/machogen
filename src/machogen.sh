@@ -1056,9 +1056,9 @@ update_appearance() {
 	defaults delete com.apple.dock persistent-others
 
 	# Append internet elements
-	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/Google Chrome.app"
+	# append_dock_application "/Applications/Google Chrome.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	append_dock_application "/Applications/JoalDesktop.app"
 	append_dock_application "/Applications/Transmission.app"
@@ -1208,7 +1208,7 @@ update_chrome() {
 	sudo "$program" -c "Add :ExtensionInstallForcelist:0 string 'ddkjiahejlhfcafbddmgiahcphecmpfh'" "$configs" # ublock-origin-lite
 
 	# Change icon
-	change_appicon "chrome" "/Applications/Google Chrome.app"
+	change_appicon "google-chrome" "/Applications/Google Chrome.app"
 
 }
 
