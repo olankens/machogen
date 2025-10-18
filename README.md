@@ -58,10 +58,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 
-### Update GitHub CLI
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
-
 ### Update IINA
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
@@ -94,10 +90,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 
-### Update NetNewsWire
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
-
 ### Update Node
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
@@ -115,10 +107,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi ege
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 
 ### Update PostgreSQL
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
-
-### Update QuickRecorder
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor nisi eget nibh egestas dictum. Phasellus sed ante ac odio maximus pharetra quis eget.
 

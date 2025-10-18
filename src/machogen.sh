@@ -700,7 +700,7 @@ invoke_wrapper() {
 	# Verify requirements
 	verify_security || return 1
 	verify_homebrew || return 1
-	verify_apple_id || return 1
+	# verify_apple_id || return 1
 
 	# Change timezone
 	change_timezone "$country"
@@ -1023,7 +1023,7 @@ update_android_studio() {
 	command -v cursor &>/dev/null && "/Applications/Android Studio.app/Contents/MacOS/studio" installPlugins com.github.blingyshs.openincursor
 
 	# Change appearance
-	change_appicon "cursor" "/Applications/Cursor.app"
+	change_appicon "android-studio" "/Applications/Android Studio.app"
 
 }
 
@@ -1232,19 +1232,18 @@ update_chromium() {
 	fi
 
 	# Update extensions
-	if [[ -z "$datadir" ]]; then
-		update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
-		update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
-		update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
-		update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
-		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
-		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
-	fi
+	# if [[ -z "$datadir" ]]; then
+	# 	update_chromium_extension "bcjindcccaagfpapjjmafapmmgkkhgoa" # json-formatter
+	# 	update_chromium_extension "cjpalhdlnbpafiamejdnhcphjbkeiagm" # ublock-origin
+	# 	update_chromium_extension "ibplnjkanclpjokhdolnendpplpjiace" # simple-translate
+	# 	update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
+	# 	update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
+	# 	update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
+	# 	update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+	# fi
 
 	# Change appearance
-	# TODO: proper icon
-	change_appicon "google-chrome" "/Applications/Chromium.app"
+	change_appicon "chromium" "/Applications/Chromium.app"
 
 }
 
@@ -1475,7 +1474,7 @@ update_git() {
 	local gitmail=${3}
 
 	# Update package
-	update_brew git
+	update_brew gh git
 
 	# Change settings
 	[[ -n "$gitmail" ]] && git config --global user.email "$gitmail"
@@ -1485,14 +1484,6 @@ update_git() {
 	git config --global http.postBuffer 1048576000
 	git config --global init.defaultBranch "$default"
 	git config --global push.autoSetupRemote true
-
-}
-
-# @define Update github-cli
-update_github_cli() {
-
-	# Update package
-	update_brew gh
 
 }
 
@@ -2385,14 +2376,14 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 	members=(
 		# "update_system"
 		# "update_android_studio"
-		# "update_chromium"
+		"update_chromium"
 		# "update_chromium_developer"
 		# "update_cursor"
 		# "update_intellij_idea"
 		# "update_vscode"
-		"update_xcode"
+		# "update_xcode"
 
-		"update_calibre"
+		# "update_calibre"
 		# "update_claude_code"
 		# "update_comfyui"
 		# "update_crossover"
@@ -2403,8 +2394,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_flutter"
 		# "update_frame0"
 		# "update_git 'main' 'olankens' '173156207+olankens@users.noreply.github.com'"
-		# "update_github_cli"
-		# "update_google_chrome"
+		"update_google_chrome"
 		# "update_icon_composer"
 		# "update_iina"
 		# "update_jdownloader"
@@ -2414,7 +2404,7 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_miniforge"
 		# "update_nightlight"
 		# "update_nodejs"
-		"update_notion"
+		# "update_notion"
 		# "update_obs"
 		# "update_pearcleaner"
 		# "update_postgresql"
