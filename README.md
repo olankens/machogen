@@ -6,7 +6,7 @@ Post-installation script to set up a whole developer-friendly environment on mac
 
 It intentionally uses Ungoogled Chromium as the main browser and has advanced mechanisms to install official and unofficial extensions Yeah, the best extensions are not on the store and the best features are not available on official Chrome or shit-tier forks. Ungoogled Chromium is also used for development purposes with a specific Developer profile. This profile has to be used when debugging with your code editors and IDEs.
 
-### Features
+# <samp>FEATURES</samp>
 
 - Update System
 - Update Android Cmdline
