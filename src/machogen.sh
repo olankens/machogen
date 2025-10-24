@@ -1321,10 +1321,10 @@ update_claude_code() {
 	# Change settings
 	if [[ "$withzai" == "true" ]]; then
 		local configs="$HOME/.claude/settings.json"
-		jq '.env = { 
-			ANTHROPIC_AUTH_TOKEN: (.env.ANTHROPIC_AUTH_TOKEN // "your_zai_api_key"), 
-			ANTHROPIC_BASE_URL: "https://api.z.ai/api/anthropic", 
-			API_TIMEOUT_MS: "3000000" 
+		jq '.env = {
+			ANTHROPIC_AUTH_TOKEN: (.env.ANTHROPIC_AUTH_TOKEN // "your_zai_api_key"),
+			ANTHROPIC_BASE_URL: "https://api.z.ai/api/anthropic",
+			API_TIMEOUT_MS: "3000000"
 		}' "$configs" | sponge "$configs"
 	fi
 
@@ -2196,9 +2196,6 @@ update_vscode() {
 	# Update package
 	update_cask visual-studio-code
 
-	# Update extensions
-	code --install-extension "github.github-vscode-theme"
-
 	# Change settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
@@ -2207,14 +2204,31 @@ update_vscode() {
 	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
 	jq '."telemetry.telemetryLevel" = "crash"' "$configs" | sponge "$configs"
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
-	jq '."workbench.colorTheme" = "GitHub Dark Default"' "$configs" | sponge "$configs"
-	jq '."workbench.startupEditor" = "none"' "$configs" | sponge "$configs"
 
 	# Remove chat
 	jq '."chat.agent.enabled" = false' "$configs" | sponge "$configs"
 	jq '."chat.commandCenter.enabled" = false' "$configs" | sponge "$configs"
 	jq '."inlineChat.accessibleDiffView" = "off"' "$configs" | sponge "$configs"
 	jq '."terminal.integrated.initialHint" = false' "$configs" | sponge "$configs"
+
+}
+
+# @define Update vscodium
+update_vscodium() {
+
+	# Handle dependencies
+	update_brew jq sponge
+
+	# Update package
+	update_cask vscodium
+
+	# Change settings
+	local configs="$HOME/Library/Application Support/VSCodium/User/settings.json"
+	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	jq '."editor.guides.bracketPairs" = "active"' "$configs" | sponge "$configs"
+	jq '."editor.minimap.enabled" = false' "$configs" | sponge "$configs"
+	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
+	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
 
 }
 
@@ -2350,6 +2364,52 @@ update_apple_devtools() {
 
 	# Handle dependencies
 	update_xcode
+
+}
+
+# @define Update catppuccin devtools
+update_catppuccin_devtools() {
+
+	# Handle dependencies
+	update_brew xmlstarlet
+
+	# Update code theme
+	if command -v code &>/dev/null; then
+		code --install-extension "Catppuccin.catppuccin-vsc"
+		local configs="$HOME/Library/Application Support/Code/User/settings.json"
+		[[ -s "$configs" ]] || echo "{}" >"$configs"
+		jq '."workbench.colorTheme" = "Catppuccin Mocha"' "$configs" | sponge "$configs"
+	fi
+
+	# Update codium theme
+	if command -v codium &>/dev/null; then
+		codium --install-extension "Catppuccin.catppuccin-vsc"
+		local configs="$HOME/Library/Application Support/VSCodium/User/settings.json"
+		[[ -s "$configs" ]] || echo "{}" >"$configs"
+		jq '."workbench.colorTheme" = "Catppuccin Mocha"' "$configs" | sponge "$configs"
+	fi
+
+	# Update intellij theme
+	if command -v idea &>/dev/null; then
+		idea installPlugins com.github.catppuccin.jetbrains
+		local configs=$(find "$HOME/Library/Application Support/JetBrains/IntelliJIdea"*/options -name "colors.scheme.xml" 2>/dev/null | head -1)
+		if [[ -f "$configs" ]]; then
+			xmlstarlet ed -L -u "//component[@name='EditorColorsManagerImpl']/global_color_scheme/@name" -v "Catppuccin Mocha" "$configs" 2>/dev/null || \
+			xmlstarlet ed -L -s "//application" -t elem -n "component" -v "" \
+				-i "//component[not(@name)]" -t attr -n "name" -v "EditorColorsManagerImpl" \
+				-s "//component[@name='EditorColorsManagerImpl']" -t elem -n "global_color_scheme" -v "" \
+				-i "//global_color_scheme" -t attr -n "name" -v "Catppuccin Mocha" \
+				"$configs" 2>/dev/null
+		fi
+	fi
+
+	# Update zed theme
+	if command -v zed &>/dev/null; then
+		local configs="$HOME/.config/zed/settings.json"
+		[[ -s "$configs" ]] || echo "{}" >"$configs"
+		jq '."theme" = "Catppuccin Mocha"' "$configs" | sponge "$configs"
+		jq '."auto_install_extensions" = {"catppuccin": true}' "$configs" | sponge "$configs"
+	fi
 
 }
 
@@ -2612,11 +2672,12 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_cursor"
 		# "update_intellij_idea"
 		# "update_vscode"
+		"update_vscodium"
 		# "update_xcode"
 
 		# "update_calibre"
 		# "update_capcut"
-		"update_claude_code 'true'"
+		# "update_claude_code 'true'"
 		# "update_comfyui"
 		# "update_conductor"
 		# "update_crossover"
@@ -2655,8 +2716,9 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		# "update_android_devtools"
 		# "update_angular_devtools"
 		# "update_apple_devtools"
+		"update_catppuccin_devtools"
 		# "update_flutter_devtools"
-		"update_git_devtools"
+		# "update_git_devtools"
 		# "update_ionic_devtools"
 		# "update_react_devtools"
 		# "update_react_native_devtools"
