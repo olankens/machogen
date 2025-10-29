@@ -1033,10 +1033,10 @@ update_appearance() {
 	# ---
 	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	append_dock_application "/Applications/JoalDesktop.app"
-	append_dock_application "/Applications/NetNewsWire.app"
-	append_dock_application "/Applications/Transmission.app"
+	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	# append_dock_application "/Applications/JoalDesktop.app"
+	# append_dock_application "/Applications/NetNewsWire.app"
+	# append_dock_application "/Applications/Transmission.app"
 	# ---
 	append_dock_application "/Applications/Discord.app"
 	# append_dock_application "/Applications/Telegram.app"
@@ -1073,10 +1073,6 @@ update_appearance() {
 	# ---
 	append_dock_folder "$HOME/Downloads" 1 1 2
 	append_dock_folder "$HOME/Documents" 1 1 2
-
-	# Change menubar
-	defaults write .GlobalPreferences AppleMenuBarVisibleInFullscreen -bool false
-	defaults write .GlobalPreferences _HIHideMenuBar -bool true
 
 	# Change wallpaper
 	local address="https://github.com/olankens/codewall/raw/HEAD/src/node-01.avif"
