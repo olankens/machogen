@@ -1027,68 +1027,56 @@ update_appearance() {
 	defaults write com.apple.dock wvous-tl-corner -int 0
 	defaults write com.apple.dock wvous-tr-corner -int 0
 
-	# Remove dock elements
+	# Change dock elements
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
-
-	# Append network elements
-	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	# ---
+	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	# append_dock_application "/Applications/Google Chrome.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
-	# append_dock_application "/Applications/JoalDesktop.app"
+	append_dock_application "/Applications/JoalDesktop.app"
 	append_dock_application "/Applications/NetNewsWire.app"
 	append_dock_application "/Applications/Transmission.app"
-
-	# Append finance elements
-	# append_dock_application "/Applications/IBKR Desktop.app"
-
-	# Append social elements
+	# ---
 	append_dock_application "/Applications/Discord.app"
 	# append_dock_application "/Applications/Telegram.app"
-
-	# Append office elements
+	# ---
 	append_dock_application "/Applications/Calibre.app"
 	append_dock_application "/Applications/Notion.app"
-
-	# Append development elements
+	# ---
 	append_dock_application "/Applications/Android Studio.app"
-	append_dock_application "/Applications/Conductor.app"
+	# append_dock_application "/Applications/Conductor.app"
 	# append_dock_application "/Applications/Fork.app"
 	# append_dock_application "/Applications/Hoppscotch.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	# append_dock_application "/Applications/MQTTX.app"
 	append_dock_application "/Applications/VSCodium.app"
 	append_dock_application "/Applications/Xcode.app"
-
-	# Append graphics elements
+	# ---
 	append_dock_application "/Applications/ComfyUI.app"
 	append_dock_application "/Applications/Icon Composer.app"
 	append_dock_application "/Applications/Figma.app"
 	# append_dock_application "/Applications/Frame0.app"
-
-	# Append audio and video elements
+	# ---
 	append_dock_application "/Applications/CapCut.app"
 	append_dock_application "/Applications/DaVinci Resolve.app"
 	append_dock_application "/Applications/OBS.app"
-
-	# Append multimedia elements
+	# ---
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/YouTube Music.app"
-
-	# Append gaming elements
+	# ---
 	append_dock_application "/Applications/CrossOver.app"
-
-	# Append utility elements
+	# ---
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
-
-	# Append downloads folder
+	# ---
 	append_dock_folder "$HOME/Downloads" 1 1 2
-
-	# Append documents folder
 	append_dock_folder "$HOME/Documents" 1 1 2
+
+	# Change menubar
+	defaults write .GlobalPreferences AppleMenuBarVisibleInFullscreen -bool false
+	defaults write .GlobalPreferences _HIHideMenuBar -bool true
 
 	# Change wallpaper
 	local address="https://github.com/olankens/codewall/raw/HEAD/src/node-01.avif"
@@ -1594,8 +1582,8 @@ update_homebrew() {
 	# Change environment
 	local configs="$HOME/.zprofile"
 	if ! grep -q "/opt/homebrew/bin/brew shellenv" "$configs" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		[[ -s "$configs" ]] || printf "#!/bin/zsh" >"$configs"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$configs" 2>/dev/null || true
 		printf "\n%s" "# Invoke homebrew environment" >>"$configs"
 		printf "\n%s\n" 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -1614,17 +1602,6 @@ update_hoppscotch() {
 
 	# Change appearance
 	change_appicon "hoppscotch" "/Applications/Hoppscotch.app"
-
-}
-
-# @define Update ibkr
-update_ibkr_desktop() {
-
-	# Update package
-	update_cask ibkr
-
-	# Change appearance
-	change_appicon "ibkr-desktop" "/Applications/IBKR Desktop.app"
 
 }
 
@@ -2000,6 +1977,9 @@ update_postgresql() {
 # @define Update system
 update_system() {
 
+	# Handle dependencies
+	update_brew zsh-autosuggestions
+
 	# Change finder
 	defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 	defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
@@ -2008,7 +1988,7 @@ update_system() {
 	# Change globals
 	defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 	defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-	defaults -currentHost write -globalDomain NSStatusItemSpacing -int 5
+	# defaults -currentHost write -globalDomain NSStatusItemSpacing -int 5
 
 	# Change preview
 	defaults write com.apple.Preview NSRecentDocumentsLimit 0
@@ -2018,6 +1998,16 @@ update_system() {
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 	defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 	defaults write com.apple.LaunchServices "LSQuarantine" -bool false
+
+	# Enable autosuggestions
+	if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc" 2>/dev/null; then
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Enable autosuggestions" >>"$HOME/.zshrc"
+		printf "\n%s" "autoload -Uz compinit && compinit" >>"$HOME/.zshrc"
+		printf "\n%s\n" "source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
+	fi
 
 	# Enable tap-to-click
 	defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
@@ -2239,7 +2229,6 @@ update_angular_devtools() {
 		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
 		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
 		printf "\n%s" "# Enable angular cli completion" >>"$HOME/.zshrc"
-		printf "\n%s" "autoload -Uz compinit && compinit" >>"$HOME/.zshrc"
 		printf "\n%s\n" "source <(ng completion script)" >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
