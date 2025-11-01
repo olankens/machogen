@@ -770,114 +770,58 @@ update_cask() {
 }
 
 # @define Update chromium extension
-# @params The payload (crx url, zip url or extension uuid)
+# @params The payload (crx url or extension uuid)
 # @params The user-data-dir full path, empty for default one
+# @params Maximum age in seconds before extension is considered outdated (default: 2592000)
 update_chromium_extension() {
 
 	# Handle parameters
 	local payload=${1}
-	local datadir=${2}
+	local datadir=${2:-$HOME/Library/Application Support/Chromium}
+	local maximum=${3:-2592000}
 
-	# Return if chromium not installed
+	# Verify presence
 	[[ ! -d "/Applications/Chromium.app" ]] && return 1
 
-	# Ignore updates under 30 days
+	# Verify outdated
+	if [[ ${payload:0:4} == "http" ]] && [[ "$payload" == *.crx ]]; then
+		local package=$(mktemp) && curl -LA "mozilla/5.0" "$payload" -o "$package" || return 1
+		local key=$(python3 -c "import zipfile,json;print(zipfile.ZipFile('$package').open('manifest.json').read().decode().split('\"key\": \"')[1].split('\"')[0] if 'key' in zipfile.ZipFile('$package').open('manifest.json').read().decode() else '')" 2>/dev/null)
+		local uuid=$(python3 -c "import base64,hashlib;h=hashlib.sha256(base64.b64decode('$key')).digest()[:16];a='abcdefghijklmnop';print(''.join([a[b>>4&0xF]+a[b&0xF] for b in h])[:32])" 2>/dev/null)
+		[[ $(stat -f %B "$datadir/Default/Extensions/$uuid"/*/manifest.json 2>/dev/null | head -n1) -gt $(($(date +%s) - maximum)) ]] && return 0
+	elif [[ ${payload:0:4} != "http" ]]; then
+		local configs=$(ls -1t "$datadir/Default/Extensions/$payload"/*/manifest.json 2>/dev/null | head -n1)
+		[[ $(stat -f %B "$configs" 2>/dev/null) -gt $(($(date +%s) - maximum)) ]] && return 0
+	fi
+
+	# Create address
 	if [[ ${payload:0:4} != "http" ]]; then
-		local ext_dir="${datadir:-$HOME/Library/Application Support/Chromium}/Default/Extensions/${payload}"
-		echo "$ext_dir"
-		if [[ -d "$ext_dir" ]]; then
-			local manifest=$(ls -1t "$ext_dir"/*/manifest.json 2>/dev/null | head -n1)
-			if [[ -n "$manifest" ]] && [[ $(stat -f %B "$manifest" 2>/dev/null) -gt $(($(date +%s) - 2592000)) ]]; then
-				return 0
-			fi
-		fi
+		local version=$(defaults read "/Applications/Chromium.app/Contents/Info" CFBundleShortVersionString)
+		local baseurl="https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3"
+		local payload="${baseurl}&prodversion=${version}&x=id%3D${payload}%26installsource%3Dondemand%26uc"
 	fi
 
 	# Update extension
-	if [[ ${payload:0:4} == "http" ]]; then
-		local address="$payload"
-		local package=$(mktemp -d)/$(basename "$address")
-	else
-		local version=$(defaults read "/Applications/Chromium.app/Contents/Info" CFBundleShortVersionString)
-		local address="https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3"
-		local address="${address}&prodversion=${version}&x=id%3D${payload}%26installsource%3Dondemand%26uc"
-		local package=$(mktemp -d)/${payload}.crx
-	fi
-	curl -LA "mozilla/5.0" "$address" -o "$package" || return 1
 	defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
-	if [[ $package = *.zip ]]; then
-		local storage="/Applications/Chromium.app/Unpacked/$(echo "$payload" | cut -d / -f5)"
-		local present=$([[ -d "$storage" ]] && echo "true" || echo "false")
-		expand_archive "$package" "$storage" 1
-		if [[ "$present" == "false" ]]; then
-			osascript <<-EOD
-				do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
-				delay 4
-				tell application "Chromium"
-					activate
-					reopen
-					delay 4
-					open location "chrome://extensions/"
-					delay 2
-					tell application "System Events"
-						key code 48
-						delay 2
-						key code 49
-						delay 2
-						key code 48
-						delay 2
-						key code 49
-						delay 2
-						key code 5 using {command down, shift down}
-						delay 2
-						keystroke "$storage"
-						delay 2
-						key code 36
-						delay 2
-						key code 36
-					end tell
-					delay 2
-					quit
-					delay 2
-				end tell
-				tell application "Chromium"
-					activate
-					reopen
-					delay 4
-					open location "chrome://extensions/"
-					delay 2
-					tell application "System Events"
-						key code 48
-						delay 2
-						key code 49
-					end tell
-					delay 2
-					quit
-					delay 2
-				end tell
-			EOD
-		fi
-	else
-		osascript <<-EOD
-			do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+	osascript <<-EOD
+		do shell script "open -na '/Applications/Chromium.app' --args --user-data-dir='$datadir'"
+		delay 4
+		tell application "Chromium"
+			activate
+			reopen
 			delay 4
-			tell application "Chromium"
-				activate
-				reopen
-				delay 4
-				open location "file:///$package"
-				delay 4
-				tell application "System Events"
-					key code 125
-					delay 2
-					key code 49
-				end tell
-				delay 6
-				quit
+			open location "$payload"
+			delay 4
+			tell application "System Events"
+				key code 125
 				delay 2
+				key code 49
 			end tell
-		EOD
-	fi
+			delay 6
+			quit
+			delay 2
+		end tell
+	EOD
 
 }
 
@@ -1083,67 +1027,51 @@ update_appearance() {
 	defaults write com.apple.dock wvous-tl-corner -int 0
 	defaults write com.apple.dock wvous-tr-corner -int 0
 
-	# Remove dock elements
+	# Change dock elements
 	defaults delete com.apple.dock persistent-apps
 	defaults delete com.apple.dock persistent-others
-
-	# Append network elements
-	# append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
+	# ---
+	append_dock_application "/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app"
 	append_dock_application "/Applications/Chromium.app"
-	# append_dock_application "/Applications/Google Chrome.app"
-	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
+	# append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	# append_dock_application "/Applications/JoalDesktop.app"
-	append_dock_application "/Applications/NetNewsWire.app"
-	append_dock_application "/Applications/Transmission.app"
-
-	# Append finance elements
-	# append_dock_application "/Applications/IBKR Desktop.app"
-
-	# Append social elements
+	# append_dock_application "/Applications/NetNewsWire.app"
+	# append_dock_application "/Applications/Transmission.app"
+	# ---
 	append_dock_application "/Applications/Discord.app"
 	# append_dock_application "/Applications/Telegram.app"
-
-	# Append office elements
+	# ---
 	append_dock_application "/Applications/Calibre.app"
 	append_dock_application "/Applications/Notion.app"
-
-	# Append development elements
+	# ---
 	append_dock_application "/Applications/Android Studio.app"
-	append_dock_application "/Applications/Conductor.app"
+	# append_dock_application "/Applications/Conductor.app"
 	# append_dock_application "/Applications/Fork.app"
 	# append_dock_application "/Applications/Hoppscotch.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	# append_dock_application "/Applications/MQTTX.app"
 	append_dock_application "/Applications/VSCodium.app"
 	append_dock_application "/Applications/Xcode.app"
-
-	# Append graphics elements
+	# ---
 	append_dock_application "/Applications/ComfyUI.app"
 	append_dock_application "/Applications/Icon Composer.app"
 	append_dock_application "/Applications/Figma.app"
 	# append_dock_application "/Applications/Frame0.app"
-
-	# Append audio and video elements
+	# ---
 	append_dock_application "/Applications/CapCut.app"
 	append_dock_application "/Applications/DaVinci Resolve.app"
 	append_dock_application "/Applications/OBS.app"
-
-	# Append multimedia elements
+	# ---
 	append_dock_application "/Applications/IINA.app"
 	append_dock_application "/Applications/YouTube Music.app"
-
-	# Append gaming elements
+	# ---
 	append_dock_application "/Applications/CrossOver.app"
-
-	# Append utility elements
+	# ---
 	append_dock_application "/Applications/Pearcleaner.app"
 	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
-
-	# Append downloads folder
+	# ---
 	append_dock_folder "$HOME/Downloads" 1 1 2
-
-	# Append documents folder
 	append_dock_folder "$HOME/Documents" 1 1 2
 
 	# Change wallpaper
@@ -1296,7 +1224,8 @@ update_chromium() {
 		# update_chromium_extension "mgpdnhlllbpncjpgokgfogidhoegebod" # photoshow
 		update_chromium_extension "mnjggcdmjocbbbhaepdhchncahnbgone" # sponsorblock-for-youtube
 		update_chromium_extension "nngceckbapebfimnlniiiahkandclblb" # bitwarden-password-manage
-		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+		# update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-master.zip"
+		update_chromium_extension "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass-paywalls-chrome-clean-latest.crx"
 	fi
 
 	# Change appearance
@@ -1649,8 +1578,8 @@ update_homebrew() {
 	# Change environment
 	local configs="$HOME/.zprofile"
 	if ! grep -q "/opt/homebrew/bin/brew shellenv" "$configs" 2>/dev/null; then
-		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
-		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		[[ -s "$configs" ]] || printf "#!/bin/zsh" >"$configs"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$configs" 2>/dev/null || true
 		printf "\n%s" "# Invoke homebrew environment" >>"$configs"
 		printf "\n%s\n" 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$configs"
 		eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -1669,17 +1598,6 @@ update_hoppscotch() {
 
 	# Change appearance
 	change_appicon "hoppscotch" "/Applications/Hoppscotch.app"
-
-}
-
-# @define Update ibkr
-update_ibkr_desktop() {
-
-	# Update package
-	update_cask ibkr
-
-	# Change appearance
-	change_appicon "ibkr-desktop" "/Applications/IBKR Desktop.app"
 
 }
 
@@ -2055,6 +1973,9 @@ update_postgresql() {
 # @define Update system
 update_system() {
 
+	# Handle dependencies
+	update_brew zsh-autosuggestions
+
 	# Change finder
 	defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 	defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
@@ -2063,7 +1984,7 @@ update_system() {
 	# Change globals
 	defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 	defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-	defaults -currentHost write -globalDomain NSStatusItemSpacing -int 5
+	# defaults -currentHost write -globalDomain NSStatusItemSpacing -int 5
 
 	# Change preview
 	defaults write com.apple.Preview NSRecentDocumentsLimit 0
@@ -2073,6 +1994,16 @@ update_system() {
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 	defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 	defaults write com.apple.LaunchServices "LSQuarantine" -bool false
+
+	# Enable autosuggestions
+	if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc" 2>/dev/null; then
+		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
+		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
+		printf "\n%s" "# Enable autosuggestions" >>"$HOME/.zshrc"
+		printf "\n%s" "autoload -Uz compinit && compinit" >>"$HOME/.zshrc"
+		printf "\n%s\n" "source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" >>"$HOME/.zshrc"
+		source "$HOME/.zshrc"
+	fi
 
 	# Enable tap-to-click
 	defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
@@ -2294,7 +2225,6 @@ update_angular_devtools() {
 		[[ -s "$HOME/.zshrc" ]] || printf "#!/bin/zsh" >"$HOME/.zshrc"
 		perl -i -0777 -pe "s/\n*\z/\n/s" "$HOME/.zshrc" 2>/dev/null || true
 		printf "\n%s" "# Enable angular cli completion" >>"$HOME/.zshrc"
-		printf "\n%s" "autoload -Uz compinit && compinit" >>"$HOME/.zshrc"
 		printf "\n%s\n" "source <(ng completion script)" >>"$HOME/.zshrc"
 		source "$HOME/.zshrc"
 	fi
@@ -2621,7 +2551,6 @@ if [[ $ZSH_EVAL_CONTEXT != *:file ]]; then
 		"update_postgresql"
 		"update_telegram"
 		"update_temurin"
-		"update_tradingview"
 		"update_transmission"
 		"update_utm"
 		"update_youtube_music"
