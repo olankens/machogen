@@ -1920,7 +1920,7 @@ update_devtools_astro() {
 update_devtools_bash() {
 
 	# Handle dependencies
-	# update_intellij_idea
+	update_intellij_idea
 	update_visual_studio_code
 	update_brew shellcheck shfmt
 
@@ -1928,7 +1928,7 @@ update_devtools_bash() {
 	sleep 5 && code --install-extension "mads-hartmann.bash-ide-vscode" --force
 
 	# Update idea
-	# idea installPlugins "pro.bashsupport"
+	idea installPlugins "pro.bashsupport"
 
 }
 
@@ -2046,7 +2046,6 @@ update_devtools_js_ts() {
 	update_visual_studio_code
 
 	# Update code
-	sleep 5 && code --install-extension "biomejs.biome" --force
 	sleep 5 && code --install-extension "dbaeumer.vscode-eslint" --force
 	sleep 5 && code --install-extension "esbenp.prettier-vscode" --force
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
