@@ -59,6 +59,7 @@
   <tbody><tr><td>Installs Keka with its external helper set as the default archive handler, plus Mole from the tw93 tap, covering every extraction and cleanup need without any further manual configuration.</td><td>✅</td></tr></tbody>
   <tbody><tr><td>Installs KeepingYouAwake for display sleep control, and Nightlight with the color temperature set to sixty percent and an always-on schedule running from three until three every single day.</td><td>✅</td></tr></tbody>
 </table>
+
 ## LEARNING
 
 ### LAUNCH SCRIPT

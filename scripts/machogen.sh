@@ -146,7 +146,7 @@ change_icon() {
 	update_brew curl fileicon
 
 	# Change icon
-	local address="https://github.com/olankens/obscured/raw/refs/heads/main/source/$distant/$distant.icns"
+	local address="https://github.com/olankens/papirika/raw/refs/heads/main/source/$distant/$distant.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "$element" "$picture" 2>/dev/null || sudo fileicon set "$element" "$picture"
@@ -939,7 +939,7 @@ update_appearance() {
 	defaults write com.apple.dock orientation bottom
 	defaults write com.apple.dock show-recents -bool false
 	defaults write com.apple.dock size-immutable -bool yes
-	defaults write com.apple.dock tilesize -int 40
+	defaults write com.apple.dock tilesize -int 38
 	defaults write com.apple.dock wvous-bl-corner -int 0
 	defaults write com.apple.dock wvous-br-corner -int 0
 	defaults write com.apple.dock wvous-tl-corner -int 0
@@ -951,7 +951,12 @@ update_appearance() {
 	append_dock_application "/Applications/Chromium.app"
 	append_dock_application "/Applications/JDownloader 2/JDownloader2.app"
 	append_dock_application "/Applications/Transmission.app"
+	append_dock_application "/Applications/Discord.app"
+	append_dock_application "/Applications/Telegram.app"
+	append_dock_application "/Applications/Calibre.app"
+	append_dock_application "/Applications/KeePassXC.app"
 	append_dock_application "/Applications/Notion.app"
+	append_dock_application "/Applications/UTM.app"
 	append_dock_application "/Applications/IntelliJ IDEA.app"
 	append_dock_application "/Applications/Visual Studio Code.app"
 	append_dock_application "/Applications/Android Studio.app"
@@ -960,9 +965,9 @@ update_appearance() {
 	append_dock_application "/Applications/Postman.app"
 	append_dock_application "/Applications/Figma.app"
 	append_dock_application "/Applications/Icon Composer.app"
-	append_dock_application "/System/Applications/QuickTime Player.app"
-	append_dock_application "/Applications/UTM.app"
-	append_dock_application "/Applications/Calibre.app"
+	append_dock_application "/Applications/Upscayl.app"
+	append_dock_application "/Applications/IINA.app"
+	append_dock_application "/Applications/OBS.app"
 	append_dock_application "/Applications/GameHub.app"
 	append_dock_application "/System/Applications/Utilities/Terminal.app"
 	append_dock_folder "$HOME/Downloads" 1 0 2
@@ -1168,6 +1173,17 @@ update_claude_code() {
 
 }
 
+# @define Update discord
+update_discord() {
+
+	# Update package
+	update_cask discord
+
+	# Change appearance
+	change_icon "discord" "/Applications/Discord.app"
+
+}
+
 # @define Update docker
 update_docker() {
 
@@ -1235,7 +1251,7 @@ update_gamehub() {
 	update_cask gamehub
 
 	# Change appearance
-	local address="https://github.com/olankens/obscured/raw/refs/heads/main/source/gamehub/gamehub.icns"
+	local address="https://github.com/olankens/papirika/raw/refs/heads/main/source/gamehub/gamehub.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/GameHub.app" "$picture" || sudo !!
@@ -1310,6 +1326,67 @@ update_homebrew() {
 
 }
 
+# @define Update icon-composer
+update_icon_composer() {
+
+	# Change appearance
+	change_icon "icon-composer" "/Applications/Icon Composer.app"
+
+}
+
+# @define Update iina
+update_iina() {
+
+	# Update dependencies
+	update_brew curl jq
+
+	# Update package
+	local present=$([[ -d "/Applications/IINA.app" ]] && echo "true" || echo "false")
+	update_cask iina
+
+	# Finish install
+	if [[ "$present" == "false" ]]; then
+		osascript <<-EOD
+			set checkup to "/Applications/IINA.app"
+			tell application checkup
+				activate
+				reopen
+				tell application "System Events"
+					with timeout of 10 seconds
+						repeat until (exists window 1 of application process "IINA")
+							delay 0.02
+						end repeat
+						tell application process "IINA" to set visible to false
+					end timeout
+				end tell
+				delay 4
+				quit
+				delay 4
+			end tell
+		EOD
+		update_chromium_extension "pdnojahnhpgmdhjdhgphgdcecehkbhfo"
+	fi
+
+	# Change settings
+	defaults write com.colliderli.iina recordPlaybackHistory -integer 0
+	defaults write com.colliderli.iina recordRecentFiles -integer 0
+	defaults write com.colliderli.iina SUEnableAutomaticChecks -integer 0
+	defaults write com.colliderli.iina ytdlSearchPath "/usr/local/bin"
+
+	# Change association
+	local address="https://api.github.com/repos/jdek/openwith/releases/latest"
+	local version=$(curl -LA "mozilla/5.0" "$address" | jq -r ".tag_name" | tr -d "v")
+	local address="https://github.com/jdek/openwith/releases/download/v$version/openwith-v$version.tar.xz"
+	local archive=$(mktemp -d)/$(basename "$address") && curl -LA "mozilla/5.0" "$address" -o "$archive"
+	local deposit=$(mktemp -d)
+	expand_archive "$archive" "$deposit"
+	"$deposit/openwith" com.colliderli.iina mkv mov mp4 avi
+
+	# Change appearance
+	change_icon "iina" "/Applications/IINA.app"
+
+}
+
 # @define Update intellij-idea
 update_intellij_idea() {
 
@@ -1381,7 +1458,7 @@ update_jdownloader() {
 	# update_chromium_extension "fbcohnmimjicjdomonkcbcpbpnhggkip"
 
 	# Change appearance
-	local address="https://github.com/olankens/obscured/raw/refs/heads/main/source/jdownloader/jdownloader.icns"
+	local address="https://github.com/olankens/papirika/raw/refs/heads/main/source/jdownloader/jdownloader.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/JDownloader 2/JDownloader2.app" "$picture" || sudo !!
@@ -1389,6 +1466,17 @@ update_jdownloader() {
 	cp "$picture" "/Applications/JDownloader 2/JDownloader2.app/Contents/Resources/app.icns"
 	local sitting="/Applications/JDownloader 2/themes/standard/org/jdownloader/images/logo/jd_logo_128_128.png"
 	sips -Z 128 -s format png "$picture" --out "$sitting"
+
+}
+
+# @define Update keepassxc
+update_keepassxc() {
+
+	# Update package
+	update_cask keepassxc
+
+	# Change appearance
+	change_icon "keepassxc" "/Applications/KeePassXC.app"
 
 }
 
@@ -1408,6 +1496,9 @@ update_keka() {
 
 	# Finish install
 	/Applications/KekaExternalHelper.app/Contents/MacOS/KekaExternalHelper --set-as-default
+
+	# Change appearance
+	change_icon "keka" "/Applications/Keka.app"
 
 }
 
@@ -1495,6 +1586,17 @@ update_notion() {
 
 }
 
+# @define Update obs
+update_obs() {
+
+	# Update package
+	update_cask obs
+
+	# Change appearance
+	change_icon "obs" "/Applications/OBS.app"
+
+}
+
 # @define Update orca
 update_orca() {
 
@@ -1505,7 +1607,7 @@ update_orca() {
 	update_cask stablyai/orca/orca
 
 	# Change appearance
-	local address="https://github.com/olankens/obscured/raw/refs/heads/main/source/orca/orca.icns"
+	local address="https://github.com/olankens/papirika/raw/refs/heads/main/source/orca/orca.icns"
 	local picture="$(mktemp -d)/$(basename "$address")"
 	curl -LA "mozilla/5.0" "$address" -o "$picture"
 	fileicon set "/Applications/Orca.app" "$picture" || sudo !!
@@ -1547,6 +1649,7 @@ update_system() {
 	defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 	defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 	defaults write com.apple.finder ShowPathbar -bool true
+	[[ "$(csrutil status)" == *"disabled"* ]] && change_icon "finder" "/System/Library/CoreServices/Finder.app"
 
 	# Change globals
 	defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
@@ -1563,6 +1666,9 @@ update_system() {
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 	defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 	defaults write com.apple.LaunchServices "LSQuarantine" -bool false
+
+	# Change terminal
+	[[ "$(csrutil status)" == *"disabled"* ]] && change_icon "terminal" "/System/Applications/Utilities/Terminal.app"
 
 	# Enable autosuggestions
 	update_brew zsh-autosuggestions
@@ -1592,6 +1698,17 @@ update_system() {
 
 	# Update system
 	# sudo softwareupdate --download --all --force --agree-to-license --verbose
+
+}
+
+# @define Update telegram
+update_telegram() {
+
+	# Update package
+	update_cask telegram
+
+	# Change appearance
+	change_icon "telegram" "/Applications/Telegram.app"
 
 }
 
@@ -1629,6 +1746,17 @@ update_transmission() {
 
 }
 
+# @define Update upscayl
+update_upscayl() {
+
+	# Update package
+	update_cask upscayl
+
+	# Change appearance
+	change_icon "upscayl" "/Applications/Upscayl.app"
+
+}
+
 # @define Update utm
 update_utm() {
 
@@ -1657,8 +1785,8 @@ update_visual_studio_code() {
 	# Change settings
 	local configs="$HOME/Library/Application Support/Code/User/settings.json"
 	[[ -s "$configs" ]] || echo "{}" >"$configs"
+	# jq '."chat.disableAIFeatures" = true' "$configs" | sponge "$configs"
 	jq '."chat.agentHost.allowSignedOutWhenUsable" = true' "$configs" | sponge "$configs"
-	jq '."chat.disableAIFeatures" = true' "$configs" | sponge "$configs"
 	jq '."chat.titleBar.openInAgentsWindow.enabled" = false' "$configs" | sponge "$configs"
 	jq '."chat.titleBar.signIn.enabled" = false' "$configs" | sponge "$configs"
 	jq '."editor.codeActionsOnSave" = {"source.fixAll": "explicit"}' "$configs" | sponge "$configs"
@@ -1675,27 +1803,33 @@ update_visual_studio_code() {
 	jq '."telemetry.telemetryLevel" = "crash"' "$configs" | sponge "$configs"
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
 
+	# Change appearance
+	change_icon "vscode" "/Applications/Visual Studio Code.app"
+
 }
 
 # @define Update xcode
 update_xcode() {
 
-	# Handle parameters
-	local version=${1:-26.0}
-
 	# Handle dependencies
 	update_brew cocoapods grep xcodesorg/made/xcodes
+
+	# Change appearance
+	[[ -d "/Applications/Xcode.app" ]] && change_icon "xcode" "/Applications/Xcode.app"
 
 	# Verify credentials
 	[[ -z "$XCODES_USERNAME" || -z "$XCODES_PASSWORD" ]] && return 1
 
 	# Update package
-	xcodes install "$version"
+	xcodes install --latest --experimental-unxip
 
 	# Finish install
 	sudo xcode-select --switch "/Applications/Xcode.app/Contents/Developer"
 	sudo xcodebuild -runFirstLaunch
 	sudo xcodebuild -license accept
+
+	# Change appearance
+	change_icon "xcode" "/Applications/Xcode.app"
 
 }
 
@@ -1755,7 +1889,6 @@ update_devtools_angular() {
 
 	# Update chromium
 	update_chromium_extension "ienfalfjdbdpebioblfackkekamfmbnh" "$datadir" # angular-devtools
- # update_chromium_extension "kgpbgfjgjanmdcoefmofbmlhhkmeipng" "$datadir" # angulariad
 
 }
 
@@ -1825,10 +1958,8 @@ update_devtools_claude_code() {
 		jq '.enable_streaming_scenario_routing = true' "$configs" | sponge "$configs"
 		# jq '.respect_requested_model = true' "$configs" | sponge "$configs"
 		# jq 'del(.model_family_overrides)' "$configs" | sponge "$configs"
-		jq '.model_family_overrides.opus.model_id = "gpt-5.6-luna" | .model_family_overrides.opus.wire_format = "responses"' "$configs" |
-			sponge "$configs"
-		jq '.model_family_overrides.sonnet.model_id = "gpt-5.6-luna" | .model_family_overrides.sonnet.wire_format = "responses"' "$configs" |
-			sponge "$configs"
+		jq '.model_family_overrides.opus.model_id = "glm-5.3-flash" | .model_family_overrides.opus.wire_format = "responses"' "$configs" | sponge "$configs"
+		jq '.model_family_overrides.sonnet.model_id = "glm-5.3-flash" | .model_family_overrides.sonnet.wire_format = "responses"' "$configs" | sponge "$configs"
 		jq '.model_family_overrides.haiku.model_id = "glm-5.3-flash"' "$configs" | sponge "$configs"
 		headroom install apply --preset persistent-service --scope provider --providers auto
 		routatic-proxy autostart enable
@@ -1842,24 +1973,6 @@ update_devtools_claude_code() {
 		headroom install apply --preset persistent-service --scope provider --providers auto \
 			--env ANTHROPIC_TARGET_API_URL=https://api.z.ai/api/anthropic
 	fi
-
-	# Update air
-	# INFO: Use default Claude Agent
-	# - Select Anthropic Console authentication
-	# - Finish the launched browser and CTRL-C in the opened terminal
-	# - Claude Agent is now configured as "managed by agent"
-	# if [[ -d "/Applications/Air.app" ]]; then
-	# 	local configs="$HOME/Library/Application Support/JetBrains/Air/acp.json" && mkdir -p "$(dirname "$configs")"
-	# 	[[ -s "$configs" ]] || echo "{}" >"$configs"
-	# 	npm install -g @agentclientprotocol/claude-agent-acp
-	# 	jq '
-	# 		.agent_servers //= {}
-	# 		| .agent_servers["Claude (ACP)"] = {
-	# 				command: "/opt/homebrew/bin/claude-agent-acp",
-	# 				args: ["acp"]
-	# 			}
-	# 	' "$configs" | sponge "$configs"
-	# fi
 
 	# Update jetbrains
 	# INFO: Use default Claude Agent
@@ -1897,8 +2010,6 @@ update_devtools_claude_code() {
 		[[ -s "$configs" ]] || echo "{}" >"$configs"
 		jq '."chat.agentHost.allowSignedOutWhenUsable" = true' "$configs" | sponge "$configs"
 		jq '."chat.byokUtilityModelDefault" = "mainAgent"' "$configs" | sponge "$configs"
-		sleep 5 && code --install-extension "Anthropic.claude-code" --force
-		sleep 5 && code --install-extension "skyran.ran-commit" --force
 	fi
 
 }
@@ -1946,7 +2057,7 @@ update_devtools_js_ts() {
 
 }
 
-update_devtools_kmm() {
+update_devtools_kmp() {
 
 	# Handle dependencies
 	update_devtools_android
@@ -2035,14 +2146,18 @@ main() {
 		"update_chromium"
 		"update_chromium_debug"
 		"update_claude_code"
+		"update_discord"
 		"update_docker"
 		"update_figma"
 		"update_flutter"
 		"update_gamehub"
 		"update_git"
 		"update_headroom"
+		"update_icon_composer"
+		"update_iina"
 		"update_intellij_idea"
 		"update_jdownloader"
+		"update_keepassxc"
 		"update_keepingyouawake"
 		"update_keka"
 		"update_miniforge"
@@ -2050,11 +2165,14 @@ main() {
 		"update_nightlight"
 		"update_nodejs"
 		"update_notion"
+		"update_obs"
 		"update_orca"
 		"update_postman"
 		"update_powershell"
+		"update_telegram"
 		"update_temurin"
 		"update_transmission"
+		"update_upscayl"
 		"update_utm"
 		"update_visual_studio_code"
 		"update_xcode"
@@ -2066,7 +2184,7 @@ main() {
 		"update_devtools_claude_code 'opencode'"
 		"update_devtools_flutter"
 		"update_devtools_js_ts"
-		"update_devtools_kmm"
+		"update_devtools_kmp"
 		"update_devtools_nestjs"
 		"update_devtools_powershell"
 		"update_devtools_spring"
