@@ -876,10 +876,26 @@ update_android_studio() {
 	# Finish install
 	[[ "$present" == "false" ]] && invoke_once "Android Studio"
 
-	# Change settings
-	change_jetbrains_deposit "Google/AndroidStudio" "$deposit"
-	change_jetbrains_scheme "Google/AndroidStudio" "Islands Dark"
-	change_jetbrains_theme "Google/AndroidStudio" "Islands Dark"
+	# Refine performance
+	local vmoptions=(
+		"-Dsun.java2d.metal=false"
+		"-Dsun.java2d.opengl=false"
+		"-Dide.mac.message.dialogs.as.sheets=false"
+		"-Didea.max.intellisense.filesize=2500"
+		"-Didea.indexing.threads=2"
+		"-Djava.util.concurrent.ForkJoinPool.common.parallelism=4"
+	)
+	local removal=()
+	for option in "${vmoptions[@]}"; do
+		removal+=(-e "${option%%=*}")
+	done
+	while IFS= read -r configs; do
+		configs="$configs/idea.vmoptions"
+		[[ -f "$configs" ]] || cp "/Applications/Android Studio.app/Contents/bin/studio.vmoptions" "$configs"
+		grep -v -F "${removal[@]}" "$configs" >"$configs.tmp" 2>/dev/null || true
+		mv "$configs.tmp" "$configs"
+		printf "%s\n" "${vmoptions[@]}" >>"$configs"
+	done < <(find "$HOME/Library/Application Support/Google" -maxdepth 1 -type d -name "AndroidStudio*" -print 2>/dev/null)
 
 	# Change appearance
 	change_icon "android-studio" "/Applications/Android Studio.app"
@@ -1398,6 +1414,27 @@ update_intellij_idea() {
 	# Finish install
 	[[ "$present" == "false" ]] && invoke_once "IntelliJ IDEA"
 
+	# Refine performance
+	local vmoptions=(
+		"-Dsun.java2d.metal=false"
+		"-Dsun.java2d.opengl=false"
+		"-Dide.mac.message.dialogs.as.sheets=false"
+		"-Didea.max.intellisense.filesize=2500"
+		"-Didea.indexing.threads=2"
+		"-Djava.util.concurrent.ForkJoinPool.common.parallelism=4"
+	)
+	local removal=()
+	for option in "${vmoptions[@]}"; do
+		removal+=(-e "${option%%=*}")
+	done
+	while IFS= read -r configs; do
+		configs="$configs/idea.vmoptions"
+		[[ -f "$configs" ]] || cp "/Applications/IntelliJ IDEA.app/Contents/bin/idea.vmoptions" "$configs"
+		grep -v -F "${removal[@]}" "$configs" >"$configs.tmp" 2>/dev/null || true
+		mv "$configs.tmp" "$configs"
+		printf "%s\n" "${vmoptions[@]}" >>"$configs"
+	done < <(find "$HOME/Library/Application Support/JetBrains" -maxdepth 1 -type d -name "IntelliJIdea*" -print 2>/dev/null)
+
 	# Change appearance
 	change_icon "intellij-idea" "/Applications/IntelliJ IDEA.app"
 
@@ -1802,6 +1839,16 @@ update_visual_studio_code() {
 	jq '."security.workspace.trust.enabled" = false' "$configs" | sponge "$configs"
 	jq '."telemetry.telemetryLevel" = "crash"' "$configs" | sponge "$configs"
 	jq '."update.mode" = "none"' "$configs" | sponge "$configs"
+
+	# Refine performance
+	jq '."extensions.autoCheckUpdates" = false' "$configs" | sponge "$configs"
+	jq '."extensions.autoUpdate" = "off"' "$configs" | sponge "$configs"
+	jq '."files.watcherExclude" = {"**/.git/**": true, "**/node_modules/**": true, "**/.next/**": true, "**/dist/**": true, "**/build/**": true, "**/target/**": true, "**/.idea/**": true, "**/.gradle/**": true, "**/out/**": true, "**/coverage/**": true, "**/.turbo/**": true, "**/.cache/**": true}' "$configs" | sponge "$configs"
+	jq '."js/ts.tsserver.maxMemory" = 2048' "$configs" | sponge "$configs"
+	jq '."search.exclude" ={"**/node_modules": true, "**/.git": true, "**/.next": true, "**/dist": true, "**/build": true, "**/target": true, "**/.idea": true, "**/.gradle": true, "**/out": true, "**/coverage": true, "**/.turbo": true, "**/.cache": true}' "$configs" | sponge "$configs"
+	jq '."search.followSymlinks" = false' "$configs" | sponge "$configs"
+	jq '."search.useGlobalIgnoreFiles" = true' "$configs" | sponge "$configs"
+	jq '."search.useIgnoreFiles" = true' "$configs" | sponge "$configs"
 
 	# Change appearance
 	change_icon "vscode" "/Applications/Visual Studio Code.app"
