@@ -2179,7 +2179,7 @@ main() {
 	[[ "$ZSH_EVAL_CONTEXT" != *:file || "$TERM_PROGRAM" == "vscode" || $(ps -p $PPID -o comm=) =~ idea ]] || return 0
 
 	local heading="MACHOGEN"
-	local version="0.0.0" # x-release-please-version
+	local version="1.0.0" # x-release-please-version
 	local maximum="82"
 	local country="Europe/Brussels"
 	local machine="macintosh"
